@@ -1,0 +1,212 @@
+﻿using UnityEngine;
+using UnityEngine.UI;
+using System.Collections.Generic;
+using Fizzyo.Data;
+
+/// <summary>
+/// Class which manages the Achievements scene
+/// </summary>
+public class AchievementManager : MonoBehaviour
+{
+    // Achievement prefab used to hold information on each achievement
+    public GameObject achPre;
+
+    // Sprite arrays for holding the sprites used for displaying locked and unlocked achievements
+    public Sprite[] achPics;
+    public Sprite[] achBack;
+
+    // json achievement data path
+    string path;
+
+    // One string containing all data from json achievement data path
+    string achJSONData;
+
+    // Holds the total point value of all unlocked achievements
+    int totalPoints = 0;
+
+    // Active category button
+    private AchievementButton active;
+
+    // Changed when a different category is selected
+    public ScrollRect scroll;
+
+    // Holds the name of each category
+    List<string> catagories = new List<string>();
+
+    // Used to acurately display the progress of dependency achievements
+    Dictionary<string,int> dependencyProgress = new Dictionary<string, int>();
+
+    // category Button Prefab
+    public GameObject catPre;
+
+    // category List Prefab
+    public GameObject catList;
+
+    /// <summary>
+    /// Pulls the achievements from player preferences, creates each one in the scene and adds the total points for display
+    /// </summary>
+    void Start()
+    {
+
+        totalPoints = 0;
+
+        GameObject text = GameObject.Find("Total");
+        Text total = text.GetComponent<Text>();
+
+        string achievements = PlayerPrefs.GetString("achievements");
+        AllAchievementData allDataLead = JsonUtility.FromJson<AllAchievementData>(achievements);
+
+        for (int i = 0; i < allDataLead.achievements.Length; i++)
+        {
+            if (!(catagories.Contains(allDataLead.achievements[i].category)))
+            {
+                Createcategory(allDataLead.achievements[i].category);
+            }
+
+            if (allDataLead.achievements[i].unlock == 1)
+            {
+                totalPoints += allDataLead.achievements[i].points;
+            }
+
+            CreateAch(allDataLead.achievements[i].category, allDataLead.achievements[i].title, allDataLead.achievements[i].description, allDataLead.achievements[i].points, allDataLead.achievements[i].unlock, allDataLead.achievements[i].unlockProgress, allDataLead.achievements[i].unlockRequirement);            
+
+        }
+
+        foreach (GameObject achList in GameObject.FindGameObjectsWithTag("AchList"))
+        {
+            achList.SetActive(false);
+        }
+
+        active.Click();
+
+        total.text = "Total Achievment Points: " + totalPoints;
+    }
+
+    /// <summary>
+    /// Instatiates a game object for an achievement and assigns it the correct values
+    /// </summary>
+    /// /// <param name="parentCat"> 
+    /// String that contains the category for that achievement
+    /// </param>  
+    /// <param name="title"> 
+    /// String that contains the title for that achievement
+    /// </param>  
+    /// <param name="desc"> 
+    /// String that contains the description for that achievement
+    /// </param>  
+    /// <param name="points"> 
+    /// Integer that contains the points for the current achievement
+    /// </param>  
+    /// <param name="unlock"> 
+    /// Integer that contains a 0 or 1 based on whether the achievement id locked or unlocked
+    /// </param>  
+    /// <param name="unlockProgress"> 
+    /// Integer that contains the achievements unlock progress
+    /// </param>  
+    /// <param name="unlockRequirement"> 
+    /// Integer that contains the achievements unlock requirement
+    /// </param>  
+    public void CreateAch(string parentCat, string title, string desc, int points, int unlock, int unlockProgress, int unlockRequirement)
+    {
+        GameObject ach = (GameObject)Instantiate(achPre);
+
+        SetInfoAch(parentCat, ach, title, desc, points, unlock, unlockProgress, unlockRequirement);
+    }
+
+    /// <summary>
+    /// Sets the parent, scale and all relevent information to be shown in an achievement
+    /// </summary>
+    /// /// <param name="parentCat"> 
+    /// String that contains the category for that achievement
+    /// </param>  
+    /// <param name="title"> 
+    /// String that contains the title for that achievement
+    /// </param>  
+    /// <param name="desc"> 
+    /// String that contains the description for that achievement
+    /// </param>  
+    /// <param name="points"> 
+    /// Integer that contains the points for the current achievement
+    /// </param>  
+    /// <param name="unlock"> 
+    /// Integer that contains a 0 or 1 based on whether the achievement id locked or unlocked
+    /// </param>  
+    /// <param name="unlockProgress"> 
+    /// Integer that contains the achievements unlock progress
+    /// </param>  
+    /// <param name="unlockRequirement"> 
+    /// Integer that contains the achievements unlock requirement
+    /// </param>  
+    /// <param name="ach"> 
+    /// GameObject that contains the instatiated prefab for this achievement
+    /// </param>  
+    public void SetInfoAch(string parentCat, GameObject ach, string title, string desc, int points, int unlock, int unlockProgress, int unlockRequirement)
+    {
+        ach.transform.SetParent(GameObject.Find(parentCat).transform);
+        ach.transform.localScale = new Vector3((float)Screen.width/1280, (float)Screen.width / 1280, 1);
+        ach.transform.GetChild(0).GetComponent<Text>().text = title;
+        ach.transform.GetChild(1).GetComponent<Text>().text = desc;
+        ach.transform.GetChild(2).GetComponent<Text>().text = points.ToString();
+        ach.transform.GetChild(3).GetComponent<Image>().sprite = achPics[unlock];
+
+        if (unlock != 0)
+            ach.transform.GetChild(4).GetComponent<Text>().text = "";
+        else
+            ach.transform.GetChild(4).GetComponent<Text>().text = unlockProgress.ToString() + " / " + unlockRequirement.ToString();
+
+        ach.transform.GetComponent<Image>().sprite = achBack[unlock];
+    }
+
+    /// <summary>
+    /// Instantiates a new category button and category area for achievement display
+    /// </summary>
+    /// /// <param name="category"> 
+    /// String that contains the category to be displayed
+    /// </param>
+    public void Createcategory(string category)
+    {
+        GameObject buttonPre = (GameObject)Instantiate(catPre);
+        buttonPre.name = "Cat" + category;
+        buttonPre.transform.SetParent(GameObject.Find("CatList").transform);
+        buttonPre.transform.GetChild(0).GetComponent<Text>().text = category;
+        buttonPre.transform.GetComponent<Button>().onClick.AddListener(() => Changecategory(buttonPre));
+        buttonPre.transform.localScale = new Vector3(1, 1, 1);
+
+        GameObject listPre = (GameObject)Instantiate(catList);
+        listPre.name = category;
+        listPre.transform.SetParent(GameObject.Find("MainMask").transform);
+        listPre.transform.GetComponent<RectTransform>().offsetMin = new Vector2(0, 0);
+        listPre.transform.GetComponent<RectTransform>().offsetMax = new Vector2(0, 0);
+
+        buttonPre.GetComponent<AchievementButton>().achList = listPre;
+
+        if (catagories.Count == 0)
+        {
+            active = GameObject.Find("Cat" + category).GetComponent<AchievementButton>();
+            scroll.content = active.achList.GetComponent<RectTransform>();
+        }
+
+        catagories.Add(category);
+    }
+
+    /// <summary>
+    /// Instantiates a new category button and category area for achievement display
+    /// </summary>
+    /// /// <param name="button"> 
+    /// GameObject which holds the button which is selected
+    /// </param>
+    public void Changecategory(GameObject button)
+    {
+        AchievementButton achButton = button.GetComponent<AchievementButton>();
+
+        // Changes scroll content on the main mask. Allows for scrolling of all catagories
+        scroll.content = achButton.achList.GetComponent<RectTransform>();
+
+        // Sets the active to false and the new button to true
+        achButton.Click();
+        active.Click();
+        active = achButton;
+    }
+
+}
+
