@@ -3,7 +3,7 @@ using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 using System.Collections;
 using System;
-using Fizzyo.Data;
+
 using Fizzyo;
 
 public class Recalibration : MonoBehaviour {
@@ -230,6 +230,7 @@ public class Recalibration : MonoBehaviour {
     // Checks that tag is available and moves to calibration
     void BeginClick()
 	{
+        /*
 
         string fullTag = tag1.text + tag2.text + tag3.text;
 
@@ -245,6 +246,7 @@ public class Recalibration : MonoBehaviour {
             tagChange.SetActive(false);
             calChange.SetActive(true);
         }
+        */
         
 	}
 

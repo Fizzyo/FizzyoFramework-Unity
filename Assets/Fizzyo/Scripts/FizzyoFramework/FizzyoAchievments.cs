@@ -6,36 +6,91 @@ using UnityEngine;
 
 namespace Fizzyo
 {
+
+    // Serializable which holds high score data
+    [System.Serializable]
+    public class AllHighscoreData
+    {
+        public HighscoreData[] highscores;
+
+    }
+
+    // Serializable which holds individual high score data
+    [System.Serializable]
+    public class HighscoreData
+    {
+        public string tag;
+        public int score;
+        public bool belongsToUser;
+    }
+
+    // Serializable which holds achievement data
+    [System.Serializable]
+    public class AllAchievementData
+    {
+        public AchievementData[] achievements;
+        public AchievementData[] unlockedAchievements;
+    }
+
+    // Serializable that is used to pull and hold the data of each Achievement in the Achievements.json file
+    [System.Serializable]
+    public class AchievementData
+    {
+        public string category;
+        public string id;
+        public string title;
+        public string description;
+        public int points;
+        public int unlock;
+        public int unlockProgress;
+        public int unlockRequirement;
+        public string dependency;
+        public string unlockedOn;
+    }
+
+    // Serializable which holds calibration data
+    [System.Serializable]
+    public class CalibrationData
+    {
+        public string calibratedOn;
+        public float pressure;
+        public int time;
+    }
+
+
+
     public class FizzyoAchievments : MonoBehaviour
     {
 
-
+        private AllAchievementData achievments = new AllAchievementData();
         /// <summary>
-        /// Loads in the users unlocked achievements and achievement progress
+        /// Loads all game achievments and the users unlocked achievements and achievement progress
         /// </summary>
-        private static void GetUnlockedAchievements()
+        public  void LoadAchievements()
         {
-
-            PlayerPrefs.SetString("achievementsToUpload", "");
-
-            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/unlocked-achievements/" + PlayerPrefs.GetString("gameId");
+            //Get all achievments from server
+            string getAchievments = "https://api.fizzyo-ucl.co.uk/api/v1/users/games/achievements/" + Fizzyo.Instance.GameID; 
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + PlayerPrefs.GetString("accessToken"));
+            headers.Add("Authorization", "Bearer " + Fizzyo.Instance.User.AccessToken);
+            WWW sendGetAchievments = new WWW(getAchievments, null, headers);
+
+            while (!sendGetAchievments.isDone) { }
+
+            string achievmentsJSONData = sendGetAchievments.text;
+            AllAchievementData allAchievments = JsonUtility.FromJson<AllAchievementData>(achievmentsJSONData);
+
+            //get unlocked achievments
+            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + Fizzyo.Instance.User.UserID + "/unlocked-achievements/" + Fizzyo.Instance.GameID;
+
+            headers = new Dictionary<string, string>();
+            headers.Add("Authorization", "Bearer " + Fizzyo.Instance.User.AccessToken);
             WWW sendGetUnlock = new WWW(getUnlock, null, headers);
 
             while (!sendGetUnlock.isDone) { }
 
-            if (sendGetUnlock.error != null)
-            {
-                PlayerPrefs.SetInt("achLoaded", 0);
-                return;
-            }
-
             string unlockedJSONData = sendGetUnlock.text;
             AllAchievementData allUnlocked = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData);
-
-            AllAchievementData allAchievements = JsonUtility.FromJson<AllAchievementData>(PlayerPrefs.GetString("achievements"));
 
             string progress = PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress");
 
@@ -45,34 +100,33 @@ namespace Fizzyo
                 progress = PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress");
             }
 
-            Debug.Log(progress);
 
             AllAchievementData allUserProgress = JsonUtility.FromJson<AllAchievementData>(progress);
 
             for (int i = 0; i < allUnlocked.unlockedAchievements.Length; i++)
             {
 
-                for (int j = 0; j < allAchievements.achievements.Length; j++)
+                for (int j = 0; j < allAchievments.achievements.Length; j++)
                 {
 
-                    if (allUnlocked.unlockedAchievements[i].id == allAchievements.achievements[j].id)
+                    if (allUnlocked.unlockedAchievements[i].id == allAchievments.achievements[j].id)
                     {
-                        allAchievements.achievements[j].unlock = 1;
+                        allAchievments.achievements[j].unlock = 1;
                     }
 
                 }
 
             }
 
-            for (int j = 0; j < allAchievements.achievements.Length; j++)
+            for (int j = 0; j < allAchievments.achievements.Length; j++)
             {
 
                 for (int k = 0; k < allUserProgress.achievements.Length; k++)
                 {
 
-                    if (allUserProgress.achievements[k].id == allAchievements.achievements[j].id)
+                    if (allUserProgress.achievements[k].id == allAchievments.achievements[j].id)
                     {
-                        allAchievements.achievements[j].unlockProgress = allUserProgress.achievements[k].unlockProgress;
+                        allAchievments.achievements[j].unlockProgress = allUserProgress.achievements[k].unlockProgress;
 
                     }
 
@@ -82,13 +136,14 @@ namespace Fizzyo
 
             // string allJSONUserAchievementProgress = PlayerPrefs.GetString("achievementProgress");
             // AllAchievementData allUserAchievementProgress = JsonUtility.FromJson<AllAchievementData>(allJSONUserAchievementProgress);
+            /*
 
             Debug.Log(PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress"));
 
             string newAllData = JsonUtility.ToJson(allAchievements);
             PlayerPrefs.SetString("achievements", newAllData);
             PlayerPrefs.SetInt("achLoaded", 1);
-
+            */
         }
 
 
@@ -132,7 +187,7 @@ namespace Fizzyo
         /// String - "High Score Upload Complete" - If upload completes  
         /// String - "High Score Upload Failed" - If upload fails
         /// </returns>
-        public static string Score(int score)
+        public static string PostScore(int score)
         {
             if (PlayerPrefs.GetInt("online") == 0)
             {
@@ -164,13 +219,45 @@ namespace Fizzyo
 
 
         /// <summary>
+        /// Unlock an achievemnt
+        /// </summary>
+        /// <returns>
+        /// String - "Achievement Upload Complete" - If upload completes  
+        /// String - "Achievement Upload Failed" - If upload fails
+        /// </returns>
+        /// 
+        public bool UnlockAchievemnt(string achievmentId)
+        {
+            string unlockAchievment = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/achievments/" + achievmentId + "/unlock" ;
+
+            WWWForm form = new WWWForm();
+            form.AddField("gameSecret", PlayerPrefs.GetString("gameSecret"));
+            form.AddField("userId", PlayerPrefs.GetString("userId"));
+            form.AddField("achievementId", achievmentId);
+            Dictionary<string, string> headers = form.headers;
+            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+
+            byte[] rawData = form.data;
+
+            WWW sendPostUnlock = new WWW(unlockAchievment, rawData, headers);
+
+            while (!sendPostUnlock.isDone) { };
+
+            if (sendPostUnlock.error != null)
+            {
+                return false;
+            }
+            return true;
+        }
+
+        /// <summary>
         /// Uploads a players achievements for a session
         /// </summary>
         /// <returns>
         /// String - "Achievement Upload Complete" - If upload completes  
         /// String - "Achievement Upload Failed" - If upload fails
         /// </returns>
-        private static string Achievements()
+        private static string PostAchievements()
         {
             string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
 
@@ -265,55 +352,6 @@ namespace Fizzyo
 
     }
 
-    // Serializable which holds high score data
-    [System.Serializable]
-    public class AllHighscoreData
-    {
-        public HighscoreData[] highscores;
-
-    }
-
-    // Serializable which holds individual high score data
-    [System.Serializable]
-    public class HighscoreData
-    {
-        public string tag;
-        public int score;
-        public bool belongsToUser;
-    }
-
-    // Serializable which holds achievement data
-    [System.Serializable]
-    public class AllAchievementData
-    {
-        public AchievementData[] achievements;
-        public AchievementData[] unlockedAchievements;
-    }
-
-    // Serializable that is used to pull and hold the data of each Achievement in the Achievements.json file
-    [System.Serializable]
-    public class AchievementData
-    {
-        public string category;
-        public string id;
-        public string title;
-        public string description;
-        public int points;
-        public int unlock;
-        public int unlockProgress;
-        public int unlockRequirement;
-        public string dependency;
-        public string unlockedOn;
-    }
-
-    // Serializable which holds calibration data
-    [System.Serializable]
-    public class CalibrationData
-    {
-        public string calibratedOn;
-        public float pressure;
-        public int time;
-    }
 
 
 

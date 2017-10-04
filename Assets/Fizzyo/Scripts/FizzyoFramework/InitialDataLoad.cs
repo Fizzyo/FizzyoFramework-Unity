@@ -2,7 +2,6 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
-using Fizzyo.Data;
 
 public class InitialDataLoad : MonoBehaviour
 {
@@ -88,7 +87,7 @@ public class InitialDataLoad : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        bool dataLoaded = Load.LoadUserData(gameId, gameSecret);
+        bool dataLoaded = false;// Load.LoadUserData(gameId, gameSecret);
         
         if (!dataLoaded)
         {
@@ -207,7 +206,7 @@ public class InitialDataLoad : MonoBehaviour
 
         string fullTag = tag1.text + tag2.text + tag3.text;
 
-        string tagUpload = Upload.UserTag(fullTag);
+        string tagUpload = "";// Upload.UserTag(fullTag);
 
         if (tagUpload != "Tag Upload Complete")
         {
@@ -233,7 +232,7 @@ public class InitialDataLoad : MonoBehaviour
     {
         tagChange.SetActive(false);
         loadingData.SetActive(true);
-        Load.PlayOffline();
+        //Load.PlayOffline();
 
         loadingDataText.text = "Log In Failed / Playing Offline (Achievements, High Scores, Calibration Data and Session Data Will Not Be Uploaded)";
         loadingDataText.color = Color.white;
@@ -248,7 +247,7 @@ public class InitialDataLoad : MonoBehaviour
     void OfflineClick()
     {
         offline.SetActive(false);
-        Load.PlayOffline();
+        //Load.PlayOffline();
         StartCoroutine("EndLoad");
     }
 

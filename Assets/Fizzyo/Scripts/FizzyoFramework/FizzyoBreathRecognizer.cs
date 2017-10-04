@@ -2,8 +2,7 @@
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
-using System.Threading.Tasks;
-
+using UnityEngine;
 
 public class Session : MonoBehaviour
 {
@@ -48,11 +47,11 @@ public class Session : MonoBehaviour
     /// /// <param name="score"> 
     /// Integer holding the score for this session
     /// </param>  
-    public string SessionUpload(int goodBreathCount, int badBreathCount, int score)
+    public bool SessionUpload(int goodBreathCount, int badBreathCount, int score)
     {
 
-        return Data.Upload.Session(goodBreathCount, badBreathCount, score, startTime, setCount, breathCount);
-
+        //return Data.Upload.Session(goodBreathCount, badBreathCount, score, startTime, setCount, breathCount);
+        return true;
     }
 }
 

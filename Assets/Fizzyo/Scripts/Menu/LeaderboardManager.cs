@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-using Fizzyo.Data;
+
 
 public class LeaderboardManager : MonoBehaviour
 {
@@ -28,7 +28,7 @@ public class LeaderboardManager : MonoBehaviour
     void Start()
     {
 
-        string highscores = Load.GetHighscores();
+        string highscores = "";// Load.GetHighscores();
 
         if (highscores == "Highscore Load Failed")
         {
@@ -37,9 +37,9 @@ public class LeaderboardManager : MonoBehaviour
 
         } else
         {
-           
-            AllHighscoreData allDataLead = JsonUtility.FromJson<AllHighscoreData>(highscores);
 
+            //AllHighscoreData allDataLead = JsonUtility.FromJson<AllHighscoreData>(highscores);
+            /*
             for (int i = 0; i < allDataLead.highscores.Length; i++)
             {
                 switch (i)
@@ -57,11 +57,12 @@ public class LeaderboardManager : MonoBehaviour
                         position = (i + 1) + "th";
                         break;
                 }
-
-                CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
+                
+               // CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
             }
+            */
         }
-     }
+    }
 
     /// <summary>
     /// Instatiates a game object for a high score and assigns it the correct values

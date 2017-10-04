@@ -1,7 +1,7 @@
 ﻿using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
-using Fizzyo.Data;
+using Fizzyo;
 
 public class FizzyoOverlay : MonoBehaviour
 {
@@ -276,7 +276,7 @@ public class FizzyoOverlay : MonoBehaviour
         if (score != 0)
         {
 
-            string status = Upload.Score(score);
+            string status = "";// Upload.Score(score);
 
             GameObject scorePopup = Instantiate(scorePrefab);
             scorePopup.transform.SetParent(GameObject.Find("LeadUnlock").transform);

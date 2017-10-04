@@ -1,7 +1,7 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
-using Fizzyo.Data;
+using Fizzyo;
 
 /// <summary>
 /// Class which manages the Achievements scene
@@ -47,7 +47,7 @@ public class AchievementManager : MonoBehaviour
     /// </summary>
     void Start()
     {
-
+        Fizzyo.Fizzyo.Instance.Achievments.LoadAchievements();
         totalPoints = 0;
 
         GameObject text = GameObject.Find("Total");

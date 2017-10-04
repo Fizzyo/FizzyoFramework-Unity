@@ -22,17 +22,18 @@ namespace Fizzyo
         public bool showSetGamerTagAutomatically = false;
         public bool showCalibrateAutomatically = false;
 
+        public string GameID { get; set; }
 
         private static Fizzyo _instance = null;
-        private FizzyoUser user;
+        public FizzyoUser User { get; set; }
         private FizzyoDevice device;
-        private FizzyoAchievments achievments;
+        public FizzyoAchievments Achievments { get; set; }
 
         private Fizzyo()
         {
-            user = new FizzyoUser();
+            User = new FizzyoUser();
             device = new FizzyoDevice();
-            achievments = new FizzyoAchievments();
+            Achievments = new FizzyoAchievments();
         }
         public static Fizzyo Instance
         {
@@ -53,44 +54,45 @@ namespace Fizzyo
 
         void Start()
         {
-            user = new FizzyoUser();
-            user.Login();
+            User = new FizzyoUser();
+            User.Login();
 
         }
 
-            /// <summary>
-            /// Loads the user data from the Fizzyo API
-            /// PlayerPrefs holds the users information in the following configuration:
-            /// "online" - Integer - 0 or 1 - Tells the developer if the user is playing offline or online 
-            /// "calDone" - Integer - 0 or 1 - Tells the developer if the user has completed calibration 
-            /// "achievments" - String - Holds the achievements for the game and, if the user is online, tells the developer
-            /// which achievements have been unlocked 
-            /// "achievmentsToUpload" - String - Holds the achievements that have been unlocked in the current session
-            /// Current players userID + "AchievementProgress" - String - Holds data on the achievement progress that the user has made in this game 
-            /// "accessToken" - String - Holds the access token that is aquired for the current user
-            /// "tagDone" - Integer - 0 or 1 - Tells the developer if the user has completed setting a tag
-            /// "userTag" - String - Holds the user tag
-            /// "calPressure" - Float - Holds the pressure that the user has set in their calibration
-            /// "calTime" - Integer - Holds the breath length that the user has set in their calibration
-            /// "userId" - String - Holds the user Id that is aquired for the current user
-            /// "gameId" - String - Holds the game Id for this specific game
-            /// "gameSecret" - String - Holds the game secret for this specific game
-            /// "userLoaded" - Integer - 0 or 1 - Shows if the users access token was loaded
-            /// "calLoaded" - Integer - 0 or 1 - Shows if the users calibration data was loaded
-            /// "achLoaded" - Integer - 0 or 1 - Shows if the users achievement data was loaded
-            /// "tagLoaded" - Integer - 0 or 1 - Shows if the users tag was loaded
-            /// </summary>
-            /// <param name="gameId"> 
-            /// String that contains the current games ID
-            /// </param>  
-            /// <param name="gameSecret"> 
-            /// String that contains the current games secret
-            /// </param>  
-            /// <returns>
-            /// true if data is loaded and playing online
-            /// false if daa is not loaded and playing offline
-            /// </returns>  
-            public static bool LoadUserData()
+
+        /// <summary>
+        /// Loads the user data from the Fizzyo API
+        /// PlayerPrefs holds the users information in the following configuration:
+        /// "online" - Integer - 0 or 1 - Tells the developer if the user is playing offline or online 
+        /// "calDone" - Integer - 0 or 1 - Tells the developer if the user has completed calibration 
+        /// "achievments" - String - Holds the achievements for the game and, if the user is online, tells the developer
+        /// which achievements have been unlocked 
+        /// "achievmentsToUpload" - String - Holds the achievements that have been unlocked in the current session
+        /// Current players userID + "AchievementProgress" - String - Holds data on the achievement progress that the user has made in this game 
+        /// "accessToken" - String - Holds the access token that is aquired for the current user
+        /// "tagDone" - Integer - 0 or 1 - Tells the developer if the user has completed setting a tag
+        /// "userTag" - String - Holds the user tag
+        /// "calPressure" - Float - Holds the pressure that the user has set in their calibration
+        /// "calTime" - Integer - Holds the breath length that the user has set in their calibration
+        /// "userId" - String - Holds the user Id that is aquired for the current user
+        /// "gameId" - String - Holds the game Id for this specific game
+        /// "gameSecret" - String - Holds the game secret for this specific game
+        /// "userLoaded" - Integer - 0 or 1 - Shows if the users access token was loaded
+        /// "calLoaded" - Integer - 0 or 1 - Shows if the users calibration data was loaded
+        /// "achLoaded" - Integer - 0 or 1 - Shows if the users achievement data was loaded
+        /// "tagLoaded" - Integer - 0 or 1 - Shows if the users tag was loaded
+        /// </summary>
+        /// <param name="gameId"> 
+        /// String that contains the current games ID
+        /// </param>  
+        /// <param name="gameSecret"> 
+        /// String that contains the current games secret
+        /// </param>  
+        /// <returns>
+        /// true if data is loaded and playing online
+        /// false if daa is not loaded and playing offline
+        /// </returns>  
+        public static bool LoadUserData()
             {
 
                 ResetPlayerPrefs();
@@ -103,10 +105,10 @@ namespace Fizzyo
                 } else
                 {
 
-                    GetCalibrationData(); 
-                    GetUnlockedAchievements(); 
-                    user.GetUserTag();
-
+                  //  GetCalibrationData(); 
+                  //  GetUnlockedAchievements(); 
+                  //  user.GetUserTag();
+               
                     if (PlayerPrefs.GetInt("calLoaded") == 0 || PlayerPrefs.GetInt("achLoaded") == 0 || PlayerPrefs.GetInt("tagLoaded") == 0)
                     {
 
@@ -332,7 +334,7 @@ namespace Fizzyo
                         calibrationStatus = "Status: Uploading...";
                         calibrationColor = Color.green;
 
-                        calibrationStatus = "Status: " + Data.Upload.Calibration(avgPressureReading, avgLength);
+                       // calibrationStatus = "Status: " + Data.Upload.Calibration(avgPressureReading, avgLength);
                         if (calibrationStatus == "Status: Upload Failed")
                         {
                             calibrationColor = Color.red;

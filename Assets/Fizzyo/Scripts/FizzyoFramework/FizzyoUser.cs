@@ -24,7 +24,6 @@ namespace Fizzyo
         public string accessToken;
         public string expiresIn;
         public UserData user;
-
     }
 
     // Serializable that holds user data
@@ -66,8 +65,8 @@ namespace Fizzyo
         public string testUsername = "test-patient";
         public string testPassword = "FizzyoTesting2017";
 
-
-
+        public string UserID { get; internal set; }
+        public string AccessToken { get; internal set; }
 
         public void Login()
         {
@@ -80,7 +79,7 @@ namespace Fizzyo
 #endif
 
 #if UNITY_EDITOR
-                PostAuthentication();
+                PostAuthentication(testUsername, testPassword);
 #endif
         }
 
@@ -88,14 +87,14 @@ namespace Fizzyo
         {
 
         }
-#if UNITY_UWP
+
 
 
         /// <summary>
         /// Uses a username and password to access the Fizzyo API and load in the users access token and user Id
         /// This is currently incomplete as it does not use Windows live authorization
         /// </summary>
-        private static void PostAuthentication(string username, string password)
+        private void PostAuthentication(string username, string password)
         {
 
             string postAuth = "https://api.fizzyo-ucl.co.uk/api/v1/auth/test-token";
@@ -120,9 +119,17 @@ namespace Fizzyo
             PlayerPrefs.SetString("accessToken", allData.accessToken);
             PlayerPrefs.SetString("userId", allData.user.id);
 
+            UserID = allData.user.id;
+            AccessToken = allData.accessToken;
+
             PlayerPrefs.SetInt("userLoaded", 1);
 
         }
+
+
+
+
+#if UNITY_UWP
 
 
 
@@ -178,7 +185,7 @@ namespace Fizzyo
             return false;
 
         }
-#endif
+
 
         //TODO: look at adding Password vault : https://docs.microsoft.com/en-us/windows/uwp/security/credential-locker
         //https://www.wintellect.com/single-sign-on-with-oauth-in-windows-store-apps/
@@ -226,7 +233,7 @@ namespace Fizzyo
             }
 
         }
-
+#endif
         /// <summary>
         /// Loads in the users tag
         /// </summary>
