@@ -44,6 +44,11 @@ namespace Fizzyo
 
 
 
+
+    public enum LoginReturnType { SUCCESS, INCORRECT, FAILED_TO_CONNECT }
+    public enum UserTagReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT, BANNED_TAG }
+    public enum CalibrationReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT}
+
     public class FizzyoUser : MonoBehaviour
     {
 
@@ -60,7 +65,6 @@ namespace Fizzyo
 
         public bool loggedIn = false;
         public string username;
-        public string name;
 
         public string testUsername = "test-patient";
         public string testPassword = "FizzyoTesting2017";
@@ -68,19 +72,31 @@ namespace Fizzyo
         public string UserID { get; internal set; }
         public string AccessToken { get; internal set; }
 
-        public void Login()
+
+        private bool loginInProgress = false;
+        private LoginReturnType loginResult;
+        private bool userTagSet;
+        private bool calibrationSet;
+
+        public LoginReturnType Login()
         {
+
 #if UNITY_UWP
+            loginInProgress = true;
      UnityEngine.WSA.Application.InvokeOnUIThread(
             async () =>
             {
                 LoginAsync();
             }, true);
+
+            while(loginInProgress){}
+            return loginResult;
 #endif
 
 #if UNITY_EDITOR
-                PostAuthentication(testUsername, testPassword);
+            return PostAuthentication(testUsername, testPassword);
 #endif
+
         }
 
         public void Logout()
@@ -94,7 +110,7 @@ namespace Fizzyo
         /// Uses a username and password to access the Fizzyo API and load in the users access token and user Id
         /// This is currently incomplete as it does not use Windows live authorization
         /// </summary>
-        private void PostAuthentication(string username, string password)
+        private LoginReturnType PostAuthentication(string username, string password)
         {
 
             string postAuth = "https://api.fizzyo-ucl.co.uk/api/v1/auth/test-token";
@@ -109,20 +125,18 @@ namespace Fizzyo
 
             if (sendPostAuth.error != null)
             {
-                PlayerPrefs.SetInt("userLoaded", 0);
-                PlayerPrefs.SetInt("calDone", 0);
-                return;
+                return LoginReturnType.INCORRECT;
             }
+            
 
             AllUserData allData = JsonUtility.FromJson<AllUserData>(sendPostAuth.text);
-
-            PlayerPrefs.SetString("accessToken", allData.accessToken);
-            PlayerPrefs.SetString("userId", allData.user.id);
-
             UserID = allData.user.id;
             AccessToken = allData.accessToken;
 
-            PlayerPrefs.SetInt("userLoaded", 1);
+            
+            return LoginReturnType.SUCCESS;
+            
+
 
         }
 
@@ -134,7 +148,7 @@ namespace Fizzyo
 
 
 
-        public async Task<bool> LoginAsync()
+        public async Task<void> LoginAsync()
         {
 
             string authorizationRequest = String.Format("{0}?client_id={1}&scope={2}&response_type=code&redirect_uri={3}",
@@ -172,17 +186,24 @@ namespace Fizzyo
 
                 if (tokenExhanged == true)
                 {
-                    return true;
+                       loginResult =  LoginReturnType.SUCCESS;
+                        loginInProgress = false;
+                        return;
+
                 }
                 else
                 {
-                    return false;
+                    loginResult =  LoginReturnType.INCORRECT;
+                    loginInProgress = false;
+                    return;
                 }
 
 
             }
 
-            return false;
+            loginResult =  LoginReturnType.FAILED_TO_CONNECT;
+            loginInProgress = false;
+            return;
 
         }
 
@@ -234,10 +255,38 @@ namespace Fizzyo
 
         }
 #endif
+
+
+        public void Load()
+        {
+         
+            switch (LoadUserTag())
+            {
+                case UserTagReturnType.NOT_SET | UserTagReturnType.FAILED_TO_CONNECT:
+                    userTagSet = false;
+                    break;
+                case UserTagReturnType.SUCCESS:
+                    userTagSet = true;
+                    break;
+            }
+
+
+            switch (LoadCalibrationData())
+            {
+                case CalibrationReturnType.NOT_SET | CalibrationReturnType.FAILED_TO_CONNECT:
+                    calibrationSet = false;
+                    break;
+                case CalibrationReturnType.SUCCESS:
+                    calibrationSet = true;
+                    break;
+            }
+
+
+        }
         /// <summary>
         /// Loads in the users tag
         /// </summary>
-        private static void GetUserTag()
+        public UserTagReturnType LoadUserTag()
         {
 
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
@@ -252,25 +301,20 @@ namespace Fizzyo
 
             if (sendGetTag.error != null)
             {
-                PlayerPrefs.SetInt("tagLoaded", 0);
-                return;
+                return UserTagReturnType.FAILED_TO_CONNECT;
             }
 
-            PlayerPrefs.SetInt("tagLoaded", 1);
 
             UserTag allData = JsonUtility.FromJson<UserTag>(sendGetTag.text);
 
             if (Regex.IsMatch(allData.gamerTag, "^[A-Z]{3}$"))
             {
-
                 PlayerPrefs.SetInt("tagDone", 1);
-
-                return;
+                return UserTagReturnType.SUCCESS;
             }
             else
             {
-                PlayerPrefs.SetInt("tagDone", 0);
-                return;
+                return UserTagReturnType.NOT_SET;
             }
 
 
@@ -285,19 +329,19 @@ namespace Fizzyo
         /// String - "Tag Upload Failed" - If upload fails
         /// String - "Please Select A Different Tag" - If tag contains profanity
         /// </returns> 
-        public static string UserTag(string tag)
+        public UserTagReturnType PostUserTag(string tag)
         {
 
             if (PlayerPrefs.GetInt("online") == 0)
             {
-                return "Tag Upload Failed";
+                return UserTagReturnType.FAILED_TO_CONNECT;
             }
 
             string[] tagFilter = { "ASS", "FUC", "FUK", "FUQ", "FUX", "FCK", "COC", "COK", "COQ", "KOX", "KOC", "KOK", "KOQ", "CAC", "CAK", "CAQ", "KAC", "KAK", "KAQ", "DIC", "DIK", "DIQ", "DIX", "DCK", "PNS", "PSY", "FAG", "FGT", "NGR", "NIG", "CNT", "KNT", "SHT", "DSH", "TWT", "BCH", "CUM", "CLT", "KUM", "KLT", "SUC", "SUK", "SUQ", "SCK", "LIC", "LIK", "LIQ", "LCK", "JIZ", "JZZ", "GAY", "GEY", "GEI", "GAI", "VAG", "VGN", "SJV", "FAP", "PRN", "LOL", "JEW", "JOO", "GVR", "PUS", "PIS", "PSS", "SNM", "TIT", "FKU", "FCU", "FQU", "HOR", "SLT", "JAP", "WOP", "KIK", "KYK", "KYC", "KYQ", "DYK", "DYQ", "DYC", "KKK", "JYZ", "PRK", "PRC", "PRQ", "MIC", "MIK", "MIQ", "MYC", "MYK", "MYQ", "GUC", "GUK", "GUQ", "GIZ", "GZZ", "SEX", "SXX", "SXI", "SXE", "SXY", "XXX", "WAC", "WAK", "WAQ", "WCK", "POT", "THC", "VAJ", "VJN", "NUT", "STD", "LSD", "POO", "AZN", "PCP", "DMN", "ORL", "ANL", "ANS", "MUF", "MFF", "PHK", "PHC", "PHQ", "XTC", "TOK", "TOC", "TOQ", "MLF", "RAC", "RAK", "RAQ", "RCK", "SAC", "SAK", "SAQ", "PMS", "NAD", "NDZ", "NDS", "WTF", "SOL", "SOB", "FOB", "SFU", "PEE", "DIE", "BUM", "BUT", "IRA" };
 
             if (tagFilter.Contains(tag) || !Regex.IsMatch(tag, "^[A-Z]{3}$"))
             {
-                return "Please Select A Different Tag";
+                return UserTagReturnType.BANNED_TAG;
             }
 
             string uploadTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/gamer-tag";
@@ -315,13 +359,14 @@ namespace Fizzyo
 
             if (sendPostUnlock.error != null)
             {
-                return "Tag Upload Failed";
+                return UserTagReturnType.FAILED_TO_CONNECT;
             }
 
             PlayerPrefs.SetInt("tagDone", 1);
             PlayerPrefs.SetString("userTag", tag);
 
-            return "Tag Upload Complete";
+                return UserTagReturnType.SUCCESS;
+
 
         }
 
@@ -329,7 +374,7 @@ namespace Fizzyo
         /// <summary>
         /// Loads in the users calibration data
         /// </summary>
-        private static void GetCalibrationData()
+        private CalibrationReturnType LoadCalibrationData()
         {
             //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
 
@@ -343,8 +388,7 @@ namespace Fizzyo
 
             if (sendGetCal.error != null)
             {
-                PlayerPrefs.SetInt("calLoaded", 0);
-                return;
+                return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
             CalibrationData allData = JsonUtility.FromJson<CalibrationData>(sendGetCal.text);
@@ -354,8 +398,8 @@ namespace Fizzyo
 
             if ((allData.pressure == 0) || (allData.time == 0))
             {
-                PlayerPrefs.SetInt("calDone", 0);
-                return;
+                return CalibrationReturnType.NOT_SET;
+
             }
             else
             {
@@ -365,6 +409,9 @@ namespace Fizzyo
                 PlayerPrefs.SetInt("calDone", 1);
                 PlayerPrefs.SetFloat("calPressure", allData.pressure);
                 PlayerPrefs.SetFloat("calTime", allData.time);
+
+                return CalibrationReturnType.SUCCESS;
+
             }
 
         }
@@ -377,7 +424,7 @@ namespace Fizzyo
         /// String - "Upload Complete" - If upload completes  
         /// String - "Upload Failed" - If upload fails
         /// </returns> 
-        public static string Calibration(float pressure, float time)
+        public CalibrationReturnType Calibration(float pressure, float time)
         {
 
             PlayerPrefs.SetFloat("calPressure", pressure);
@@ -386,7 +433,7 @@ namespace Fizzyo
 
             if (PlayerPrefs.GetInt("online") == 0)
             {
-                return "Upload Failed";
+                return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
             string uploadCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/calibration";
@@ -410,12 +457,87 @@ namespace Fizzyo
 
             if (sendPostUnlock.error != null)
             {
-                return "Upload Failed";
+                return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-            return "Upload Complete";
+                return CalibrationReturnType.SUCCESS;
+
         }
 
+
+        /// <summary>
+        /// Uploads a players session data and achievements
+        /// </summary>
+        /// <param name="goodBreathCount"> 
+        /// Integer that contains the amount of good breaths that were completed in the session
+        /// </param>  
+        /// <param name="badBreathCount"> 
+        /// Integer that contains the amount of bad breaths that were completed in the session
+        /// </param>  
+        /// <param name="score"> 
+        /// Integer that holds the players score for that session
+        /// </param>  
+        /// <param name="startTime"> 
+        /// Integer that holds the time that the session was started
+        /// </param>  
+        /// <param name="setCount"> 
+        /// Integer that holds the amount of sets that were completed in the session
+        /// </param>  
+        /// <param name="breathCount"> 
+        /// Integer that holds the amount of breaths that were completed in the session
+        /// <returns>
+        /// String - "Session Upload Complete /nAchievement Upload Complete" - If session upload completes and achievement upload completes
+        /// String - "Session Upload Complete /nAchievement Upload Failed" - If session upload completes and achievement upload fails
+        /// String - "Session Upload Failed /nAchievement Upload Complete" - If session upload fails and achievement upload completes
+        /// String - "Session Upload Failed /nAchievement Upload Failed" - If session upload fails and achievement upload fails
+        /// </returns>
+        public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
+        {
+
+            if (PlayerPrefs.GetInt("online") == 0)
+            {
+                return "Session Upload Failed";
+            }
+
+            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
+            TimeSpan diff = DateTime.UtcNow - origin;
+            int endTime = (int)Math.Floor(diff.TotalSeconds);
+
+            string postSession = "https://api.fizzyo-ucl.co.uk/api/v1/game/:id/sessions";
+
+            WWWForm form = new WWWForm();
+
+            form.AddField("id", PlayerPrefs.GetString("gameId"));
+            form.AddField("secret", PlayerPrefs.GetString("gameSecret"));
+            form.AddField("userId", PlayerPrefs.GetString("userId"));
+            form.AddField("setCount", setCount);
+            form.AddField("breathCount", breathCount);
+            form.AddField("goodBreathCount", goodBreathCount);
+            form.AddField("badBreathCount", badBreathCount);
+            form.AddField("score", score);
+            form.AddField("startTime", startTime);
+            form.AddField("endTime", endTime);
+
+            Dictionary<string, string> headers = form.headers;
+            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+
+            byte[] rawData = form.data;
+
+            WWW sendPostSession = new WWW(postSession, rawData, headers);
+
+            string status = "Session Upload Complete";
+
+            while (!sendPostSession.isDone) { }
+
+            if (sendPostSession.error != null)
+            {
+                status = "Session Upload Failed";
+            }
+
+
+            return status;
+
+        }
 
 
     }

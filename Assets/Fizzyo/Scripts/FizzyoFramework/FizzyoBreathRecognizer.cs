@@ -180,9 +180,13 @@ public class BreathRecogniser
     public BreathRecogniser()
     {
 
+
+    }
+
+    public void Start()
+    {
         maxPressure = PlayerPrefs.GetFloat("calPressure");
         maxBreathLength = PlayerPrefs.GetFloat("calTime");
-
     }
 
     /// The length of the current exhaled breath in seconds

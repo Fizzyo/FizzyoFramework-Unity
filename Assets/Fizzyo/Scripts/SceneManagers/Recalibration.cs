@@ -32,10 +32,11 @@ public class Recalibration : MonoBehaviour {
     private Slider slider;
 
     // Used to hold an instance of calibration
-    private Calibration currentCal;
+    //private Calibration currentCal;
 
     // Shows whether the calibration has finished
     bool calComplete = false;
+    private Calibration currentCal;
 
     /// <summary>
     /// Sets up the scene
@@ -45,7 +46,7 @@ public class Recalibration : MonoBehaviour {
 
         SceneSetup();
 
-        currentCal = new Fizzyo.Calibration();
+        currentCal = new Calibration();
 
 
         // Give button correct value 

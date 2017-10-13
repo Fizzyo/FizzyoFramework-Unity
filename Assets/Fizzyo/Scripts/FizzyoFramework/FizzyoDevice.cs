@@ -1,5 +1,6 @@
 ﻿using System;
 using System.IO;
+using System.Timers;
 // using System.Timers;
 using UnityEngine;
 
@@ -14,45 +15,20 @@ namespace Fizzyo
         public bool loop = true;
 
         // Data path of recorded data
-        // public string recordedDataPath = "Data/FizzyoData_3min.fiz";
-
-        // Used to create an instance of FizzyoDevice
-        private static FizzyoDevice instance;
+         public string recordedDataPath = "Fizzyo/Data/FizzyoData_3min.fiz";
 
 
-        private static object threadLock = new System.Object();
+        //private static object threadLock = new System.Object();
 
         //protected
         // protected StreamReader fileReader = null;
         protected string text = " "; // assigned to allow first line to be read below
                                      // System.Timers.Timer pollTimer = new System.Timers.Timer();
         float pressure = 0;
+        private StreamReader fileReader;
+        private Timer pollTimer;
 
 
-        public static FizzyoDevice Instance()
-        {
-            if (instance == null)
-            {
-                lock (threadLock)
-                {
-                    /*
-                    if (instance == null)
-                    {
-                        instance = GameObject.FindObjectOfType<FizzyoDevice>();
-                    }
-                    */
-
-                    if (instance == null)
-                    {
-                        instance = (new GameObject("EasySingleton")).AddComponent<FizzyoDevice>();
-                    }
-
-                }
-            }
-            return instance;
-        }
-
-        /*
         // Use this for initialization
         void Start()
         {
@@ -84,11 +60,9 @@ namespace Fizzyo
 
             //Stop Timer 
             pollTimer.Stop();
-
-            Debug.Log("OnApplicationQuit");
         }
-        */
-
+        
+        
         /// <summary>
         /// If useRecordedData is set to false pressure data is streamed from the device or streamed from a log file if set to true.
         /// </summary>
@@ -117,8 +91,7 @@ namespace Fizzyo
             return Input.GetButtonDown("Fire1");
         }
 
-
-        /*
+        
         void PollLoggedData(object o, System.EventArgs e)
         {
             if (text != null)
@@ -138,6 +111,6 @@ namespace Fizzyo
                 }
             }
         }
-        */
+       
     }
 }

@@ -118,7 +118,7 @@ GameObject:
   - component: {fileID: 1369542655}
   - component: {fileID: 1369542656}
   m_Layer: 0
-  m_Name: Fizzyo
+  m_Name: FizzyoFramework
   m_TagString: Untagged
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
@@ -148,8 +148,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: bc2c607f2ff22354b9193ee107173be7, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  user: {fileID: 0}
-  device: {fileID: 0}
+  showLoginAutomatically: 0
+  showSetGamerTagAutomatically: 0
+  showCalibrateAutomatically: 0
+  gameID: 
 --- !u!1 &1829906973
 GameObject:
   m_ObjectHideFlags: 0

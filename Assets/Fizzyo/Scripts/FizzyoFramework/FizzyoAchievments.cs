@@ -29,7 +29,6 @@ namespace Fizzyo
     public class AllAchievementData
     {
         public AchievementData[] achievements;
-        public AchievementData[] unlockedAchievements;
     }
 
     // Serializable that is used to pull and hold the data of each Achievement in the Achievements.json file
@@ -62,88 +61,53 @@ namespace Fizzyo
     public class FizzyoAchievments : MonoBehaviour
     {
 
-        private AllAchievementData achievments = new AllAchievementData();
+        public AchievementData[] allAchievments;
+        public AchievementData[] unlockedAchievments;
+
+
+
         /// <summary>
         /// Loads all game achievments and the users unlocked achievements and achievement progress
         /// </summary>
-        public  void LoadAchievements()
+        public FizzyoRequestReturnType LoadAchievements()
         {
             //Get all achievments from server
-            string getAchievments = "https://api.fizzyo-ucl.co.uk/api/v1/users/games/achievements/" + Fizzyo.Instance.GameID; 
+            string getAchievments = "https://api.fizzyo-ucl.co.uk/api/v1/users/games/achievements/" + FizzyoFramework.Instance.gameID; 
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + Fizzyo.Instance.User.AccessToken);
+            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
             WWW sendGetAchievments = new WWW(getAchievments, null, headers);
 
             while (!sendGetAchievments.isDone) { }
 
             string achievmentsJSONData = sendGetAchievments.text;
-            AllAchievementData allAchievments = JsonUtility.FromJson<AllAchievementData>(achievmentsJSONData);
-
+            allAchievments = JsonUtility.FromJson<AllAchievementData>(achievmentsJSONData).achievements;
+             
             //get unlocked achievments
-            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + Fizzyo.Instance.User.UserID + "/unlocked-achievements/" + Fizzyo.Instance.GameID;
+            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.gameID;
 
             headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + Fizzyo.Instance.User.AccessToken);
+            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
             WWW sendGetUnlock = new WWW(getUnlock, null, headers);
 
             while (!sendGetUnlock.isDone) { }
 
+            if(sendGetUnlock.error != null)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+
             string unlockedJSONData = sendGetUnlock.text;
-            AllAchievementData allUnlocked = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData);
-
-            string progress = PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress");
-
-            if (progress == "" || progress == null)
-            {
-                PlayerPrefs.SetString(PlayerPrefs.GetString("userId") + "AchievementProgress", PlayerPrefs.GetString("achievements"));
-                progress = PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress");
-            }
+            unlockedAchievments = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData).achievements;
 
 
-            AllAchievementData allUserProgress = JsonUtility.FromJson<AllAchievementData>(progress);
+            return FizzyoRequestReturnType.SUCCESS;
 
-            for (int i = 0; i < allUnlocked.unlockedAchievements.Length; i++)
-            {
+        }
 
-                for (int j = 0; j < allAchievments.achievements.Length; j++)
-                {
-
-                    if (allUnlocked.unlockedAchievements[i].id == allAchievments.achievements[j].id)
-                    {
-                        allAchievments.achievements[j].unlock = 1;
-                    }
-
-                }
-
-            }
-
-            for (int j = 0; j < allAchievments.achievements.Length; j++)
-            {
-
-                for (int k = 0; k < allUserProgress.achievements.Length; k++)
-                {
-
-                    if (allUserProgress.achievements[k].id == allAchievments.achievements[j].id)
-                    {
-                        allAchievments.achievements[j].unlockProgress = allUserProgress.achievements[k].unlockProgress;
-
-                    }
-
-                }
-
-            }
-
-            // string allJSONUserAchievementProgress = PlayerPrefs.GetString("achievementProgress");
-            // AllAchievementData allUserAchievementProgress = JsonUtility.FromJson<AllAchievementData>(allJSONUserAchievementProgress);
-            /*
-
-            Debug.Log(PlayerPrefs.GetString(PlayerPrefs.GetString("userId") + "AchievementProgress"));
-
-            string newAllData = JsonUtility.ToJson(allAchievements);
-            PlayerPrefs.SetString("achievements", newAllData);
-            PlayerPrefs.SetInt("achLoaded", 1);
-            */
+        internal void Load()
+        {
+            throw new NotImplementedException();
         }
 
 
@@ -153,13 +117,10 @@ namespace Fizzyo
         /// <returns>
         /// A JSON formatted string containing tag and score for the top 20 unlocked achievements
         /// </returns> 
-        public static string GetHighscores()
+        public FizzyoRequestReturnType GetHighscores()
         {
 
-            if (PlayerPrefs.GetInt("online") == 0)
-            {
-                return "Highscore Load Failed";
-            }
+   
 
             string getHighscores = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/highscores";
 
@@ -171,10 +132,10 @@ namespace Fizzyo
 
             if (sendGetHighscores.error != null)
             {
-                return "Highscore Load Failed";
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
-            return sendGetHighscores.text;
+            return FizzyoRequestReturnType.SUCCESS;
         }
 
 
@@ -187,12 +148,9 @@ namespace Fizzyo
         /// String - "High Score Upload Complete" - If upload completes  
         /// String - "High Score Upload Failed" - If upload fails
         /// </returns>
-        public static string PostScore(int score)
+        public FizzyoRequestReturnType PostScore(int score)
         {
-            if (PlayerPrefs.GetInt("online") == 0)
-            {
-                return "Score Upload Failed";
-            }
+           
 
             string uploadScore = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/highscores";
 
@@ -211,10 +169,10 @@ namespace Fizzyo
 
             if (sendPostUnlock.error != null)
             {
-                return "Score Upload Failed";
+               return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
-            return "Score Upload Complete";
+            return FizzyoRequestReturnType.SUCCESS;
         }
 
 
@@ -226,7 +184,7 @@ namespace Fizzyo
         /// String - "Achievement Upload Failed" - If upload fails
         /// </returns>
         /// 
-        public bool UnlockAchievemnt(string achievmentId)
+        public FizzyoRequestReturnType UnlockAchievemnt(string achievmentId)
         {
             string unlockAchievment = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/achievments/" + achievmentId + "/unlock" ;
 
@@ -245,9 +203,10 @@ namespace Fizzyo
 
             if (sendPostUnlock.error != null)
             {
-                return false;
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                //TODO add upload que here
             }
-            return true;
+            return FizzyoRequestReturnType.SUCCESS;
         }
 
         /// <summary>
@@ -257,7 +216,7 @@ namespace Fizzyo
         /// String - "Achievement Upload Complete" - If upload completes  
         /// String - "Achievement Upload Failed" - If upload fails
         /// </returns>
-        private static string PostAchievements()
+        private FizzyoRequestReturnType PostAchievements()
         {
             string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
 
@@ -292,7 +251,7 @@ namespace Fizzyo
 
                         if (sendPostUnlock.error != null)
                         {
-                            return Environment.NewLine + "Achievement Upload Failed";
+                            return FizzyoRequestReturnType.FAILED_TO_CONNECT;
                         }
 
                     }
@@ -342,9 +301,7 @@ namespace Fizzyo
 
             }
 
-            PlayerPrefs.SetString("achievementsToUpload", "");
-            PlayerPrefs.SetString("achievementsToProgress", "");
-            return Environment.NewLine + "Achievement Upload Complete";
+               return FizzyoRequestReturnType.SUCCESS;
 
         }
 

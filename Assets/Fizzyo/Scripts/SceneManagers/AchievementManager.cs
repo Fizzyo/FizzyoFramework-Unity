@@ -47,28 +47,30 @@ public class AchievementManager : MonoBehaviour
     /// </summary>
     void Start()
     {
-        Fizzyo.Fizzyo.Instance.Achievments.LoadAchievements();
+        FizzyoFramework.Instance.Load();
+
         totalPoints = 0;
 
         GameObject text = GameObject.Find("Total");
         Text total = text.GetComponent<Text>();
 
-        string achievements = PlayerPrefs.GetString("achievements");
-        AllAchievementData allDataLead = JsonUtility.FromJson<AllAchievementData>(achievements);
+        
 
-        for (int i = 0; i < allDataLead.achievements.Length; i++)
+        for (int i = 0; i < FizzyoFramework.Instance.Achievments.allAchievments.Length; i++)
         {
-            if (!(catagories.Contains(allDataLead.achievements[i].category)))
+            AchievementData achievment = FizzyoFramework.Instance.Achievments.allAchievments[i];
+
+            if (!(catagories.Contains(achievment.category)))
             {
-                Createcategory(allDataLead.achievements[i].category);
+                Createcategory(achievment.category);
             }
 
-            if (allDataLead.achievements[i].unlock == 1)
+            if (achievment.unlock == 1)
             {
-                totalPoints += allDataLead.achievements[i].points;
+                totalPoints += achievment.points;
             }
 
-            CreateAch(allDataLead.achievements[i].category, allDataLead.achievements[i].title, allDataLead.achievements[i].description, allDataLead.achievements[i].points, allDataLead.achievements[i].unlock, allDataLead.achievements[i].unlockProgress, allDataLead.achievements[i].unlockRequirement);            
+            CreateAch(achievment.category, achievment.title, achievment.description, achievment.points, achievment.unlock, achievment.unlockProgress, achievment.unlockRequirement);            
 
         }
 
