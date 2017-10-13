@@ -4,6 +4,7 @@ using System.IO;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using UnityEngine.SceneManagement;
 
 /// <summary>
 /// This namespace contains all of the classes that handle loading and uploading data via the Fizzyo API, calibration
@@ -60,13 +61,14 @@ namespace Fizzyo
             }
         }
 
+        public Scene CallbackScene { get; private set; }
+
         private FizzyoFramework()
         {
             User = new FizzyoUser();
             Device = new FizzyoDevice();
             Recogniser = new BreathRecogniser();
             Achievments = new FizzyoAchievments();
-
         }
 
         void Awake()
@@ -76,12 +78,35 @@ namespace Fizzyo
 
         void Start()
         {
+
+            //handle if FizzyoFramework is attached to scene.
+            if (_instance == null)
+            {
+                _instance = this;
+            }
+
             Load();
 
             if (showCalibrateAutomatically)
             {
                //TODO: callup calibration here. 
             }
+
+            if (useTestHarnessData)
+            {
+                Device.StartPreRecordedData("Fizzyo/Data/" + testHarnessDataFile.ToString() + ".fiz");
+            }
+
+
+            if (showCalibrateAutomatically && !Device.Calibrated)
+            {
+                Scene scene = SceneManager.GetActiveScene();
+                CallbackScene = scene;
+                SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
+            }
+
+
+
         }
 
 
@@ -155,9 +180,6 @@ namespace Fizzyo
             {
                 PlayerPrefs.SetInt("online", 0);
                 PlayerPrefs.SetInt("calDone", 0);
-                string path = Application.streamingAssetsPath + "/Achievements.json";
-                string achJSONData = File.ReadAllText(path);
-                PlayerPrefs.SetString("achievements", achJSONData);
                 PlayerPrefs.SetString("achievementsToUpload", "");
                 PlayerPrefs.SetString("achievementsToProgress", "");
 

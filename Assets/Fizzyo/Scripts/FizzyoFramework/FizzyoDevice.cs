@@ -28,27 +28,13 @@ namespace Fizzyo
         private StreamReader fileReader;
         private Timer pollTimer;
 
+        public bool Calibrated = false;
+
 
         // Use this for initialization
         void Start()
         {
-            //Open a StreamReader to our recorded data
-            try
-            {
-                fileReader = new StreamReader(Application.dataPath + "/" + recordedDataPath);
-            }
-            catch
-            {
-                Debug.Log("could not load file " + recordedDataPath);
-            }
-            finally
-            {
-                Debug.Log("file loaded " + recordedDataPath);
-                pollTimer = new Timer();
-                pollTimer.Interval = 300; //load new pressure val every 30ms 
-                pollTimer.Elapsed += PollLoggedData;
-                pollTimer.Start();
-            }
+
         }
 
 
@@ -91,7 +77,30 @@ namespace Fizzyo
             return Input.GetButtonDown("Fire1");
         }
 
-        
+        internal void StartPreRecordedData(string path)
+        {
+            useRecordedData = true;
+            recordedDataPath = path;
+
+            //Open a StreamReader to our recorded data
+            try
+            {
+                fileReader = new StreamReader(Application.dataPath + "/" + recordedDataPath);
+            }
+            catch
+            {
+                Debug.Log("could not load file " + recordedDataPath);
+            }
+            finally
+            {
+                Debug.Log("file loaded " + recordedDataPath);
+                pollTimer = new Timer();
+                pollTimer.Interval = 300; //load new pressure val every 30ms 
+                pollTimer.Elapsed += PollLoggedData;
+                pollTimer.Start();
+            }
+        }
+
         void PollLoggedData(object o, System.EventArgs e)
         {
             if (text != null)

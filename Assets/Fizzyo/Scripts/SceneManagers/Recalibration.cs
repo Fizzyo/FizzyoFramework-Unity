@@ -36,6 +36,11 @@ public class Recalibration : MonoBehaviour {
 
     // Shows whether the calibration has finished
     bool calComplete = false;
+
+    //minimun threshold to be considered a breath
+    float minThreshold = 0.01f;
+    float holdBreathFor = 2.0f;//breath out for at least 2 seconds
+    float breathRepetitions = 1.0f; //how many times to blow out.
     private Calibration currentCal;
 
     /// <summary>
@@ -60,55 +65,8 @@ public class Recalibration : MonoBehaviour {
     private void SceneSetup()
     {
 
-        tagChange.SetActive(true);
-        calChange.SetActive(true);
-        backButton.SetActive(true);
-        calResults.SetActive(true);
-
-        results = calResults.transform.GetChild(0).GetComponent<Text>();
-
-        startCal = GameObject.Find("StartCal").GetComponent<Button>();
-        startButton = startCal.GetComponentInChildren<Text>();
-
-        changeTag = GameObject.Find("ChangeTag").GetComponent<Button>();
-        begin = GameObject.Find("Begin").GetComponent<Button>();
 
         slider = GameObject.Find("Slider").GetComponent<Slider>();
-
-        tag1 = GameObject.Find("Tag1").GetComponent<Text>();
-        tag2 = GameObject.Find("Tag2").GetComponent<Text>();
-        tag3 = GameObject.Find("Tag3").GetComponent<Text>();
-
-        status = GameObject.Find("Status").GetComponent<Text>();
-
-
-        GameObject.Find("Tag1Up").GetComponent<Button>().onClick.AddListener(Tag1UpClick);
-        GameObject.Find("Tag1Down").GetComponent<Button>().onClick.AddListener(Tag1DownClick);
-        GameObject.Find("Tag2Up").GetComponent<Button>().onClick.AddListener(Tag2UpClick);
-        GameObject.Find("Tag2Down").GetComponent<Button>().onClick.AddListener(Tag2DownClick);
-        GameObject.Find("Tag3Up").GetComponent<Button>().onClick.AddListener(Tag3UpClick);
-        GameObject.Find("Tag3Down").GetComponent<Button>().onClick.AddListener(Tag3DownClick);
-
-        GameObject.Find("Cancel").GetComponent<Button>().onClick.AddListener(CancelClick);
-        GameObject.Find("Menu").GetComponent<Button>().onClick.AddListener(LoadMenuClick);
-
-        begin.onClick.AddListener(BeginClick);
-        changeTag.GetComponent<Button>().onClick.AddListener(ChangeTagClick);
-        startCal.GetComponent<Button>().onClick.AddListener(StartCalClick);
-
-        // Check if calibration has been done by checking if tag is set for the user
-        if (PlayerPrefs.GetInt("calDone") == 0)
-        {
-            backButton.SetActive(false);
-        }
-
-        if (PlayerPrefs.GetInt("online") == 0)
-        {
-            GameObject.Find("ChangeTag").SetActive(false);
-        }
-
-        tagChange.SetActive(false);
-        calResults.SetActive(false);
     }
 
     /// <summary>
@@ -119,7 +77,6 @@ public class Recalibration : MonoBehaviour {
         if (currentCal.calibrating == true) {
 
             currentCal.Calibrate();
-
             slider.value = currentCal.pressure;
             status.text = currentCal.calibrationStatus;
             status.color = currentCal.calibrationColor;
@@ -130,7 +87,6 @@ public class Recalibration : MonoBehaviour {
                 changeTag.interactable = true;
                 startCal.interactable = true;
             }
-
         }
 
         if (currentCal.calibrationFinished == true && calComplete == false)
@@ -140,137 +96,6 @@ public class Recalibration : MonoBehaviour {
         }
     }
 		
-	// Stops all interaction and waits before changing scene
-	private IEnumerator EndCalibration()
-	{
-        startCal.interactable = false;
-		changeTag.interactable = false;
 
-        status.text = currentCal.calibrationStatus;
-        status.color = currentCal.calibrationColor;
-
-        yield return new WaitForSeconds(1);
-
-        calResults.SetActive(true);
-        calChange.SetActive(false);
-
-        results.text = "Calibrated Pressure (Between 0 and 1) " + Environment.NewLine + PlayerPrefs.GetFloat("calPressure") + Environment.NewLine + Environment.NewLine + "Calibrated Breath Length " + Environment.NewLine + PlayerPrefs.GetFloat("calTime") + "s";
-      
-	}
-
-    /// <summary>
-    /// Loads the menu when the Back to Menu Button is pressed
-    /// </summary>
-    void LoadMenuClick()
-    {
-        SceneManager.LoadScene("Menu");
-    }
-
-    // Tag methods used to change the tag with arrows
-    void Tag1UpClick()
-	{
-		char myChar = (tag1.text)[0];
-		myChar = ++myChar;
-		int i = (int)myChar;
-		tag1.text = myChar.ToString();
-
-		if (i == 91) 
-			tag1.text = "A";
-	}
-	void Tag1DownClick()
-	{
-		char myChar = (tag1.text)[0];
-		myChar = --myChar;
-		int i = (int)myChar;
-		tag1.text = myChar.ToString();
-
-		if (i == 64) 
-			tag1.text = "Z";
-	}
-	void Tag2UpClick()
-	{
-		char myChar = (tag2.text)[0];
-		myChar = ++myChar;
-		int i = (int)myChar;
-		tag2.text = myChar.ToString();
-
-		if (i == 91) 
-			tag2.text = "A";
-	}
-	void Tag2DownClick()
-	{
-		char myChar = (tag2.text)[0];
-		myChar = --myChar;
-		int i = (int)myChar;
-		tag2.text = myChar.ToString();
-
-		if (i == 64) 
-			tag2.text = "Z";
-	}
-	void Tag3UpClick()
-	{
-		char myChar = (tag3.text)[0];
-		myChar = ++myChar;
-		int i = (int)myChar;
-		tag3.text = myChar.ToString();
-
-		if (i == 91) 
-			tag3.text = "A";
-	}
-	void Tag3DownClick()
-	{
-		char myChar = (tag3.text)[0];
-		myChar = --myChar;
-		int i = (int)myChar;
-		tag3.text = myChar.ToString();
-
-		if (i == 64) 
-			tag3.text = "Z";
-	}
-
-    // Checks that tag is available and moves to calibration
-    void BeginClick()
-	{
-        /*
-
-        string fullTag = tag1.text + tag2.text + tag3.text;
-
-        string tagUpload = Upload.UserTag(fullTag);
-
-        if (tagUpload != "Tag Upload Complete")
-        {
-            tagError.GetComponent<Text>().text = tagUpload;
-            tagError.SetActive(true);
-        }
-        else {
-            tagError.SetActive(false);
-            tagChange.SetActive(false);
-            calChange.SetActive(true);
-        }
-        */
-        
-	}
-
-    // Used to go back to changing tag
-    void ChangeTagClick()
-	{
-        tagChange.SetActive (true);
-        calChange.SetActive (false);
-	}
-
-    // Used to start calibration
-	void StartCalClick()
-	{
-        currentCal.calibrating = true;
-        changeTag.interactable = false;
-        startCal.interactable = false;
-    }
-
-    void CancelClick()
-    {
-        tagError.SetActive(false);
-        tagChange.SetActive(false);
-        calChange.SetActive(true);
-    }
 
 }
