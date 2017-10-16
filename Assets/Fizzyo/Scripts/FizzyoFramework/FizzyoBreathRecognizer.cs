@@ -134,6 +134,7 @@ public class ExhalationCompleteEventArgs : EventArgs
 }
 
 public delegate void ExhalationCompleteEventHandler(object sender, ExhalationCompleteEventArgs e);
+public delegate void ExhalationStartedEventHandler(object sender);
 
 /// <summary>
 /// Breath Analyser class decouples the logic of recognizing breaths from a stream of pressure samples
@@ -175,7 +176,9 @@ public class BreathRecogniser
     private float breathPercentage = 0;
 
     public event ExhalationCompleteEventHandler ExhalationComplete;
+    public event ExhalationStartedEventHandler ExhalationStarted;
 
+    
 
     public BreathRecogniser()
     {
@@ -287,6 +290,11 @@ public class BreathRecogniser
         }
         else if (value >= this.minBreathThreshold)
         {
+            if (!this.isExhaling)
+            {
+                OnExhalationStarted(this);
+            }
+
             this.isExhaling = true;
             this.exhaledVolume += dt * value;
             this.breathLength += dt;
@@ -351,4 +359,16 @@ public class BreathRecogniser
             ExhalationComplete(this, e);
         }
     }
+
+
+    /// Invoke the event - called whenever exhalation starts
+    protected virtual void OnExhalationStarted(object sender)
+    {
+        if (ExhalationComplete != null)
+        {
+            ExhalationStarted(this);
+        }
+    }
+
+
 }

@@ -110,6 +110,13 @@ namespace Fizzyo
         }
 
 
+        private void Update()
+        {
+            //update the breath recoginiser
+            Recogniser.AddSample(Time.deltaTime,Device.Pressure());
+        }
+
+
         /// <summary>
         /// Loads the user data from the Fizzyo API
         /// PlayerPrefs holds the users information in the following configuration:
