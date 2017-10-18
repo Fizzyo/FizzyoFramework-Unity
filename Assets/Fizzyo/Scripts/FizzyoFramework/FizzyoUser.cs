@@ -49,7 +49,7 @@ namespace Fizzyo
     public enum UserTagReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT, BANNED_TAG }
     public enum CalibrationReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT}
 
-    public class FizzyoUser : MonoBehaviour
+    public class FizzyoUser 
     {
 
         //Client ID refers to the Fizzyo app ID, which is used to get the Windows Live auth code

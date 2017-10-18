@@ -57,8 +57,10 @@ namespace Fizzyo
     }
 
 
-
-    public class FizzyoAchievments : MonoBehaviour
+    /// <summary>
+    /// Used to unlock Fizzyo achievments and post high scores in the Fizzyo rest API 
+    /// </summary>
+    public class FizzyoAchievments 
     {
 
         public AchievementData[] allAchievments;
@@ -67,7 +69,7 @@ namespace Fizzyo
 
 
         /// <summary>
-        /// Loads all game achievments and the users unlocked achievements and achievement progress
+        /// Loads all game achievments and the users unlocked achievements and achievement progres.
         /// </summary>
         public FizzyoRequestReturnType LoadAchievements()
         {
@@ -107,7 +109,7 @@ namespace Fizzyo
 
         internal void Load()
         {
-            throw new NotImplementedException();
+
         }
 
 
@@ -184,7 +186,7 @@ namespace Fizzyo
         /// String - "Achievement Upload Failed" - If upload fails
         /// </returns>
         /// 
-        public FizzyoRequestReturnType UnlockAchievemnt(string achievmentId)
+        public FizzyoRequestReturnType UnlockAchievment(string achievmentId)
         {
             string unlockAchievment = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/achievments/" + achievmentId + "/unlock" ;
 
@@ -300,17 +302,10 @@ namespace Fizzyo
                 }
 
             }
-
                return FizzyoRequestReturnType.SUCCESS;
-
         }
 
-
-
     }
-
-
-
 
 }
 

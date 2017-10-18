@@ -3,6 +3,8 @@ using System.Collections.Generic;
 using UnityEngine;
 using Fizzyo;
 
+
+[ExecuteInEditMode]
 public class PressureGraph : MonoBehaviour {
 
 
@@ -11,20 +13,27 @@ public class PressureGraph : MonoBehaviour {
     public float width = 200.0f;
     public float height = 100.0f;
     public GameObject graphBar = null;
+
     private GraphBar[] graphBars;
     float currentSecond = 0.0f;
     float startTime = 0;
+   
     private bool exhaling;
+
+
+    void Awake()
+    {
+        Debug.Log("Editor causes this Awake");
+    }
 
     // Use this for initialization
     void Start () {
 
         //Hoockup the breath recognizer
-        FizzyoFramework.Instance.Recogniser.ExhalationStarted += OnBreathStarted;
-        FizzyoFramework.Instance.Recogniser.ExhalationComplete += OnBreathEnded;
+        FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
+        FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
 
         //setup default height of graph
-
         float spacing = width / dataPoints;
         graphBars = new GraphBar[dataPoints];
         int xPos = 0;
@@ -32,12 +41,14 @@ public class PressureGraph : MonoBehaviour {
         {
             GameObject gameObject = Object.Instantiate(graphBar);
             gameObject.transform.SetParent(this.transform);
+            float x = (graphBar.transform.localPosition.x + (spacing * i)) - (width / 2.0f);
             graphBars[i] = gameObject.AddComponent(typeof(GraphBar)) as GraphBar;
-            graphBars[i].transform.localPosition = new Vector3(graphBar.transform.localPosition.x + (spacing*i), graphBar.transform.localPosition.y, graphBar.transform.localPosition.z);
-            graphBars[i].transform.localScale = new Vector3(graphBars[i].transform.localScale.x, 0, graphBars[i].transform.localScale.z);
+            graphBars[i].transform.localPosition = new Vector3(x, graphBar.transform.localPosition.y, graphBar.transform.localPosition.z);
+            graphBars[i].transform.localScale = new Vector3(graphBars[i].transform.localScale.x, 0.1f, graphBars[i].transform.localScale.z);
+            graphBars[i].GetComponent<Renderer>().enabled = true;
 
         }
-
+        ZeroGraph();
         //hide template oject
         graphBar.GetComponent<Renderer>().enabled = false;
     }
@@ -78,7 +89,7 @@ public class PressureGraph : MonoBehaviour {
         for (int i = 0; i < graphBars.Length; i++)
         {
             GraphBar g = graphBars[i];
-            g.TweenToScale(0);
+            g.TweenToScale(0.1f);
         }
     }
 }

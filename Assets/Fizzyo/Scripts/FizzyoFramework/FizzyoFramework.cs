@@ -47,50 +47,94 @@ namespace Fizzyo
         public FizzyoDevice Device { get; set; }
         public FizzyoAchievments Achievments { get; set; }
         public BreathRecogniser Recogniser { get; set; }
-  
+
+        private static object _lock = new object();
+        private static bool applicationIsQuitting = false;
+        public string CallbackScenePath { get; private set; }
+
+
         //Singleton instance
         public static FizzyoFramework Instance
         {
+            //singleton pattern from: http://wiki.unity3d.com/index.php?title=Singleton
             get
             {
-                if (_instance == null)
+                if (applicationIsQuitting)
                 {
-                    _instance = new FizzyoFramework();
+                    Debug.LogWarning("[Singleton] Instance '" + typeof(FizzyoFramework) +
+                        "' already destroyed on application quit." +
+                        " Won't create again - returning null.");
+               //     return null;
                 }
-                return _instance;
+
+               // lock (_lock)
+                {
+                    if (_instance == null)
+                    {
+                        _instance = (FizzyoFramework)FindObjectOfType(typeof(FizzyoFramework));
+
+                        if (FindObjectsOfType(typeof(FizzyoFramework)).Length > 1)
+                        {
+                            Debug.LogError("[Singleton] Something went really wrong " +
+                                " - there should never be more than 1 singleton!" +
+                                " Reopening the scene might fix it.");
+                            return _instance;
+                        }
+
+                        if (_instance == null)
+                        {
+                            GameObject singleton = new GameObject();
+                            _instance = singleton.AddComponent<FizzyoFramework>();
+                            singleton.name = "(singleton) " + typeof(FizzyoFramework).ToString();
+
+                            DontDestroyOnLoad(singleton);
+
+                            Debug.Log("[Singleton] An instance of " + typeof(FizzyoFramework) +
+                                " is needed in the scene, so '" + singleton +
+                                "' was created with DontDestroyOnLoad.");
+                        }
+                        else
+                        {
+                            Debug.Log("[Singleton] Using instance already created: " +
+                                _instance.gameObject.name);
+                        }
+                    }
+
+                    return _instance;
+                }
             }
+
         }
 
-        public Scene CallbackScene { get; private set; }
 
         private FizzyoFramework()
         {
+
+            if (_instance != null)
+                return;
+
+            Debug.Log("[FizzyoFramework] Instantiate.");
+
+
             User = new FizzyoUser();
             Device = new FizzyoDevice();
             Recogniser = new BreathRecogniser();
             Achievments = new FizzyoAchievments();
         }
 
-        void Awake()
-        {
-           DontDestroyOnLoad(gameObject);
-        }
+
 
         void Start()
         {
+            Debug.Log("[FizzyoFramework] Start.");
 
-            //handle if FizzyoFramework is attached to scene.
-            if (_instance == null)
-            {
-                _instance = this;
-            }
+            if (_instance != null)
+                return;
+
+            DontDestroyOnLoad(gameObject);
 
             Load();
-
-            if (showCalibrateAutomatically)
-            {
-               //TODO: callup calibration here. 
-            }
+            
 
             if (useTestHarnessData)
             {
@@ -101,7 +145,7 @@ namespace Fizzyo
             if (showCalibrateAutomatically && !Device.Calibrated)
             {
                 Scene scene = SceneManager.GetActiveScene();
-                CallbackScene = scene;
+                CallbackScenePath = scene.path;
                 SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
             }
 
@@ -113,7 +157,12 @@ namespace Fizzyo
         private void Update()
         {
             //update the breath recoginiser
-            Recogniser.AddSample(Time.deltaTime,Device.Pressure());
+            if (Device != null) {
+                Recogniser.AddSample(Time.deltaTime, Device.Pressure());
+            }
+
+            
+
         }
 
 
@@ -177,39 +226,21 @@ namespace Fizzyo
         /// </summary>
         private static void PlayOffline()
             {
-                ResetPlayerPrefs();
+               // ResetPlayerPrefs();
             }
 
             /// <summary>
             /// Resets all of the player preferences
             /// </summary>
-            private static void ResetPlayerPrefs()
-            {
-                PlayerPrefs.SetInt("online", 0);
-                PlayerPrefs.SetInt("calDone", 0);
-                PlayerPrefs.SetString("achievementsToUpload", "");
-                PlayerPrefs.SetString("achievementsToProgress", "");
 
-                PlayerPrefs.DeleteKey("accessToken");
-                PlayerPrefs.DeleteKey("tagDone");
-                PlayerPrefs.DeleteKey("userTag");
-                PlayerPrefs.DeleteKey("calPressure");
-                PlayerPrefs.DeleteKey("calTime");
-                PlayerPrefs.DeleteKey("userId");
-                PlayerPrefs.DeleteKey("gameId");
-                PlayerPrefs.DeleteKey("gameSecret");
-                PlayerPrefs.DeleteKey("userLoaded");
-                PlayerPrefs.DeleteKey("calLoaded");
-                PlayerPrefs.DeleteKey("achLoaded");
-                PlayerPrefs.DeleteKey("tagLoaded"); 
+
+
+            public void OnDestroy()
+            {
+                applicationIsQuitting = true;
             }
 
-    
-    
 
-
-
-           
     }
 
 

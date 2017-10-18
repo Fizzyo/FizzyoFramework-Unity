@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Fizzyo
 {
-    public class FizzyoAnalytics: MonoBehaviour
+    public class FizzyoAnalytics
     {
 
 

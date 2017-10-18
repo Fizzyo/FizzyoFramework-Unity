@@ -4,7 +4,7 @@ using System.Linq;
 using System.Text;
 using UnityEngine;
 
-public class Session : MonoBehaviour
+public class Session 
 {
     // Various session parameters
     public int setCount;
@@ -175,8 +175,8 @@ public class BreathRecogniser
     private float minBreathThreshold = .05f;
     private float breathPercentage = 0;
 
-    public event ExhalationCompleteEventHandler ExhalationComplete;
-    public event ExhalationStartedEventHandler ExhalationStarted;
+    public event ExhalationCompleteEventHandler BreathComplete;
+    public event ExhalationStartedEventHandler BreathStarted;
 
     
 
@@ -186,14 +186,10 @@ public class BreathRecogniser
 
     }
 
-    public void Start()
-    {
-        maxPressure = PlayerPrefs.GetFloat("calPressure");
-        maxBreathLength = PlayerPrefs.GetFloat("calTime");
-    }
+
 
     /// The length of the current exhaled breath in seconds
-    public float Breathlength
+    public float BreathLength
     {
         get
         {
@@ -354,9 +350,9 @@ public class BreathRecogniser
     /// Invoke the event - called whenever exhalation finishes
     protected virtual void OnExhalationComplete(object sender, ExhalationCompleteEventArgs e)
     {
-        if (ExhalationComplete != null)
+        if (BreathComplete != null)
         {
-            ExhalationComplete(this, e);
+            BreathComplete(this, e);
         }
     }
 
@@ -364,9 +360,9 @@ public class BreathRecogniser
     /// Invoke the event - called whenever exhalation starts
     protected virtual void OnExhalationStarted(object sender)
     {
-        if (ExhalationComplete != null)
+        if (BreathStarted != null)
         {
-            ExhalationStarted(this);
+            BreathStarted(this);
         }
     }
 

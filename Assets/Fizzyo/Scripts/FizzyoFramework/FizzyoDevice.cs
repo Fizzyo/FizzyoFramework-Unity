@@ -6,7 +6,7 @@ using UnityEngine;
 
 namespace Fizzyo
 {
-    public class FizzyoDevice : MonoBehaviour
+    public class FizzyoDevice 
     {
         // True if pulling data from internal file
         public bool useRecordedData = false;
@@ -17,6 +17,8 @@ namespace Fizzyo
         // Data path of recorded data
          public string recordedDataPath = "Fizzyo/Data/FizzyoData_3min.fiz";
 
+        //this si the maxmimun pressure to expect from the device, all incomming values will be mapped to it. 
+        public float maxPressureCalibrated = 1.0f;
 
         //private static object threadLock = new System.Object();
 
@@ -25,23 +27,21 @@ namespace Fizzyo
         protected string text = " "; // assigned to allow first line to be read below
                                      // System.Timers.Timer pollTimer = new System.Timers.Timer();
         float pressure = 0;
-        private StreamReader fileReader;
+        private StreamReader fileReader = null;
         private Timer pollTimer;
 
         public bool Calibrated = false;
 
-
-        // Use this for initialization
-        void Start()
+        public FizzyoDevice()
         {
 
         }
-
 
         //Cleanup  
         void OnApplicationQuit()
         {
             //Close file pointer 
+            if(fileReader != null)
             fileReader.Close();
 
             //Stop Timer 
@@ -57,7 +57,7 @@ namespace Fizzyo
         {
             if (useRecordedData)
             {
-                return pressure;
+                return pressure / maxPressureCalibrated;
             }
             else
             {
@@ -67,7 +67,7 @@ namespace Fizzyo
                 }
                 else
                 {
-                    return Input.GetAxisRaw("Horizontal");
+                    return Input.GetAxisRaw("Horizontal") / maxPressureCalibrated;
                 }
             }
         }
@@ -119,6 +119,12 @@ namespace Fizzyo
                     fileReader.BaseStream.Seek(0, System.IO.SeekOrigin.Begin);
                 }
             }
+        }
+
+        public void SetCalibrationPressure(float maxPressure)
+        {
+            maxPressureCalibrated = maxPressure;
+            Calibrated = true;
         }
        
     }
