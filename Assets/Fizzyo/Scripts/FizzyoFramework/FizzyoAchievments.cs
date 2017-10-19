@@ -74,7 +74,7 @@ namespace Fizzyo
         public FizzyoRequestReturnType LoadAchievements()
         {
             //Get all achievments from server
-            string getAchievments = "https://api.fizzyo-ucl.co.uk/api/v1/users/games/achievements/" + FizzyoFramework.Instance.gameID; 
+            string getAchievments = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/achievements"; 
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
@@ -109,7 +109,7 @@ namespace Fizzyo
 
         internal void Load()
         {
-
+            LoadAchievements();
         }
 
 
@@ -121,9 +121,6 @@ namespace Fizzyo
         /// </returns> 
         public FizzyoRequestReturnType GetHighscores()
         {
-
-   
-
             string getHighscores = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/highscores";
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
@@ -152,8 +149,6 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType PostScore(int score)
         {
-           
-
             string uploadScore = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/highscores";
 
             WWWForm form = new WWWForm();

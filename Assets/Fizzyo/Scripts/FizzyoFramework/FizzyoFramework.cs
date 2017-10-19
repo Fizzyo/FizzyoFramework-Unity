@@ -30,8 +30,11 @@ namespace Fizzyo
         [Tooltip("Automatically show calibration screen if never calibratd by user.")]
         public bool showCalibrateAutomatically = false;
 
-        [Tooltip("Game ID given by API.")]
-        public string gameID;
+        [Tooltip("Game ID given by Fizzyo API.")]
+        public string gameID = "87f2ae03-d34f-4045-a308-feb746e857b2";
+
+        [Tooltip("Game secret given by Fizzyo API.")]
+        public string gameSecret = "7BErm0wMvbmXMpq6ANBNLnAaYAlO1nqVqM15wNJAPdRom7lYyKKOEzqeGyOXpZKn";
 
         [Header("Test Harness")]
 
