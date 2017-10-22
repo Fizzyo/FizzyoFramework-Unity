@@ -22,13 +22,13 @@ namespace Fizzyo
     {
         [Header("Script Behaviour")]
         [Tooltip("Automatically show login screen at start of game.")]
-        public bool showLoginAutomatically = false;
+        public bool showLoginAutomatically = true;
 
         [Tooltip("Automatically show gamer tag editor if user does not have this set.")]
         public bool showSetGamerTagAutomatically = false;
 
         [Tooltip("Automatically show calibration screen if never calibratd by user.")]
-        public bool showCalibrateAutomatically = false;
+        public bool showCalibrateAutomatically = true;
 
         [Tooltip("Game ID given by Fizzyo API.")]
         public string gameID = "87f2ae03-d34f-4045-a308-feb746e857b2";
@@ -141,7 +141,9 @@ namespace Fizzyo
 
             if (useTestHarnessData)
             {
+#if UNITY_EDITOR
                 Device.StartPreRecordedData("Fizzyo/Data/" + testHarnessDataFile.ToString() + ".fiz");
+#endif
             }
 
 
@@ -204,9 +206,19 @@ namespace Fizzyo
         public bool Load()
             {
             //Login to server
-            LoginReturnType loginResult =  User.Login();
 
+            if (showLoginAutomatically)
+            {
+                LoginReturnType loginResult = User.Login();
+
+           
             if (loginResult != LoginReturnType.SUCCESS)
+            {
+                PlayOffline();
+                return false;
+            }
+            }
+            else
             {
                 PlayOffline();
                 return false;

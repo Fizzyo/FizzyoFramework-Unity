@@ -74,7 +74,7 @@ namespace Fizzyo
 
 
         private bool loginInProgress = false;
-        private LoginReturnType loginResult;
+        private LoginReturnType loginResult = LoginReturnType.FAILED_TO_CONNECT;
         private bool userTagSet;
         private bool calibrationSet;
 
@@ -83,7 +83,7 @@ namespace Fizzyo
 
 #if UNITY_UWP
             loginInProgress = true;
-     UnityEngine.WSA.Application.InvokeOnUIThread(
+             UnityEngine.WSA.Application.InvokeOnUIThread(
             async () =>
             {
                 LoginAsync();
@@ -91,10 +91,13 @@ namespace Fizzyo
 
             while(loginInProgress){}
             return loginResult;
-#endif
+            
 
-#if UNITY_EDITOR
+#elif UNITY_EDITOR
             return PostAuthentication(testUsername, testPassword);
+#else
+       return loginResult;
+
 #endif
 
         }
@@ -148,7 +151,7 @@ namespace Fizzyo
 
 
 
-        public async Task<void> LoginAsync()
+        public async Task LoginAsync()
         {
 
             string authorizationRequest = String.Format("{0}?client_id={1}&scope={2}&response_type=code&redirect_uri={3}",
@@ -189,7 +192,6 @@ namespace Fizzyo
                        loginResult =  LoginReturnType.SUCCESS;
                         loginInProgress = false;
                         return;
-
                 }
                 else
                 {
@@ -197,8 +199,6 @@ namespace Fizzyo
                     loginInProgress = false;
                     return;
                 }
-
-
             }
 
             loginResult =  LoginReturnType.FAILED_TO_CONNECT;
@@ -230,11 +230,18 @@ namespace Fizzyo
             HttpResponseMessage response = await client.PostAsync(tokenEndpoint, content);
             string responseString = await response.Content.ReadAsStringAsync();
 
-            //https://chrisbitting.com/2016/05/02/parsing-json-data-in-c-json-net-linq-httpclient/
-            JsonObject jsonResponse = JsonObject.Parse(responseString);
-            userID = (string)jsonResponse.GetNamedObject("user").GetNamedString("id");
-            patientRecordId = (string)jsonResponse.GetNamedObject("user").GetNamedString("patientRecordId");
-            token = (string)jsonResponse.GetNamedString("accessToken");
+            try
+            {
+                //https://chrisbitting.com/2016/05/02/parsing-json-data-in-c-json-net-linq-httpclient/
+                JsonObject jsonResponse = JsonObject.Parse(responseString);
+                userID = (string)jsonResponse.GetNamedObject("user").GetNamedString("id");
+                patientRecordId = (string)jsonResponse.GetNamedObject("user").GetNamedString("patientRecordId");
+                token = (string)jsonResponse.GetNamedString("accessToken");
+            }catch(Exception e)
+            {
+                //exception such as no patient record in Json found
+                return false;
+            }
             //patientRecordId = (string)joResponse["user"]["patientRecordId"];
             //string token = (string)joResponse["accessToken"];
 

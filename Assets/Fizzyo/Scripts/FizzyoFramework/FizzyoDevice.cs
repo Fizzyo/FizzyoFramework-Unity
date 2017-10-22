@@ -1,6 +1,10 @@
 ﻿using System;
+
+#if UNITY_EDITOR
 using System.IO;
 using System.Timers;
+#endif
+
 // using System.Timers;
 using UnityEngine;
 
@@ -27,8 +31,11 @@ namespace Fizzyo
         protected string text = " "; // assigned to allow first line to be read below
                                      // System.Timers.Timer pollTimer = new System.Timers.Timer();
         float pressure = 0;
+    
+#if UNITY_EDITOR
         private StreamReader fileReader = null;
         private Timer pollTimer;
+#endif
 
         public bool Calibrated = false;
 
@@ -40,12 +47,14 @@ namespace Fizzyo
         //Cleanup  
         void OnApplicationQuit()
         {
+#if UNITY_EDITOR
             //Close file pointer 
-            if(fileReader != null)
+            if (fileReader != null)
             fileReader.Close();
 
             //Stop Timer 
             pollTimer.Stop();
+#endif
         }
         
         
@@ -77,6 +86,7 @@ namespace Fizzyo
             return Input.GetButtonDown("Fire1");
         }
 
+#if UNITY_EDITOR
         internal void StartPreRecordedData(string path)
         {
             useRecordedData = true;
@@ -120,6 +130,7 @@ namespace Fizzyo
                 }
             }
         }
+#endif
 
         public void SetCalibrationPressure(float maxPressure)
         {

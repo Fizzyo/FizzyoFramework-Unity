@@ -79,7 +79,10 @@ public class AchievementManager : MonoBehaviour
             achList.SetActive(false);
         }
 
-        active.Click();
+        if(active != null)
+        {
+            active.Click();
+        }
 
         total.text = "Total Achievment Points: " + totalPoints;
     }
