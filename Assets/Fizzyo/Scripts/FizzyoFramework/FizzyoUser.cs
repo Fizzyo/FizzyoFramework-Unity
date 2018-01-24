@@ -1,4 +1,4 @@
-﻿using System;
+﻿	using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -49,6 +49,9 @@ namespace Fizzyo
     public enum UserTagReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT, BANNED_TAG }
     public enum CalibrationReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT}
 
+	/// <summary>
+	/// Class that handles correct identification of each user, thanks to the use of Windows Live authentication
+	/// </summary>
     public class FizzyoUser 
     {
 
@@ -63,10 +66,21 @@ namespace Fizzyo
         private string patientRecordId;
         private string token;
 
+		/// <summary>
+		/// Indicates whether someone is logged in or not 
+		/// </summary>
         public bool loggedIn = false;
+		/// <summary>
+		/// String holding the username of the account logging in
+		/// </summary>
         public string username;
-
+		/// <summary>
+		/// Testing variables, by default, username should be : test-patient
+		/// </summary>
         public string testUsername = "test-patient";
+		/// <summary>
+		/// Testing variables, by default, password should be : FizzyoTesting2017
+		/// </summary>
         public string testPassword = "FizzyoTesting2017";
 
         public string UserID { get; internal set; }
@@ -78,6 +92,9 @@ namespace Fizzyo
         private bool userTagSet;
         private bool calibrationSet;
 
+		/// <summary>
+        /// Method that begins the login process.
+        /// </summary>
         public LoginReturnType Login()
         {
 
@@ -102,6 +119,9 @@ namespace Fizzyo
 
         }
 
+		/// <summary>
+        /// Logs out the user. TO BE IMPLEMENTED
+        /// </summary>
         public void Logout()
         {
 
@@ -264,6 +284,9 @@ namespace Fizzyo
 #endif
 
 
+		/// <summary>
+        /// Function that runs the methods responsible for loading user tags and calibration data. 
+        /// </summary>
         public void Load()
         {
          
@@ -492,10 +515,14 @@ namespace Fizzyo
         /// </param>  
         /// <param name="breathCount"> 
         /// Integer that holds the amount of breaths that were completed in the session
+		/// </param>
         /// <returns>
         /// String - "Session Upload Complete /nAchievement Upload Complete" - If session upload completes and achievement upload completes
+		///
         /// String - "Session Upload Complete /nAchievement Upload Failed" - If session upload completes and achievement upload fails
+		///
         /// String - "Session Upload Failed /nAchievement Upload Complete" - If session upload fails and achievement upload completes
+		///
         /// String - "Session Upload Failed /nAchievement Upload Failed" - If session upload fails and achievement upload fails
         /// </returns>
         public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
