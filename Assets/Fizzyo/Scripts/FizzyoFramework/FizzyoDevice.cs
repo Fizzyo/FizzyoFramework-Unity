@@ -10,18 +10,29 @@ using UnityEngine;
 
 namespace Fizzyo
 {
+		/// <summary>
+        /// Class responsible for parsing data from the Fizzyo device
+        /// </summary> 
     public class FizzyoDevice 
     {
-        // True if pulling data from internal file
+		/// <summary>
+        /// True if pulling data from an internal file. Useful for testing. 
+        /// </summary> 
         public bool useRecordedData = false;
 
-        // True if looping through recorded data
+		/// <summary>
+        /// True if looping through recorded data. Useful for testing
+        /// </summary> 
         public bool loop = true;
 
-        // Data path of recorded data
+		/// <summary>
+        /// Path of the recorded data 
+        /// </summary> 
          public string recordedDataPath = "Fizzyo/Data/FizzyoData_3min.fiz";
 
-        //this si the maxmimun pressure to expect from the device, all incomming values will be mapped to it. 
+		/// <summary>
+        /// This is the maxmimun pressure to expect from the device, all incomming values will be mapped to it. 
+        /// </summary>        
         public float maxPressureCalibrated = 1.0f;
 
         //private static object threadLock = new System.Object();
@@ -37,6 +48,9 @@ namespace Fizzyo
         private Timer pollTimer;
 #endif
 
+		/// <summary>
+        /// If true, indicates the device has been already calibrated. 
+        /// </summary>    
         public bool Calibrated = false;
 
         public FizzyoDevice()
@@ -81,6 +95,9 @@ namespace Fizzyo
             }
         }
 
+		/// <summary>
+        /// Checks if the button in the fizzyo device is being pushed down.  
+        /// </summary>    
         public bool ButtonDown()
         {
             return Input.GetButtonDown("Fire1");
@@ -132,6 +149,9 @@ namespace Fizzyo
         }
 #endif
 
+		/// <summary>
+        /// Changes the maximum callibrated pressure to the specified value. Will set the Calibrated boolean to true.  
+        /// </summary>    
         public void SetCalibrationPressure(float maxPressure)
         {
             maxPressureCalibrated = maxPressure;

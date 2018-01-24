@@ -6,6 +6,10 @@ using UnityEngine;
 
 namespace Fizzyo
 {
+		/// <summary>
+        /// An instance of this class can be created to send game analytics once a session is over. 
+        /// This class is waiting for the developments of the API endpoints to be created.
+        /// </summary> 
     public class FizzyoAnalytics
     {
 

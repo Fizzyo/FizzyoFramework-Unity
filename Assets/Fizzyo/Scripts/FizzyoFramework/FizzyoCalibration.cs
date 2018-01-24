@@ -14,16 +14,24 @@ namespace Fizzyo
         // Time that current breath has been held for
         private float breathLength;
 
-        // How many calibration steps have been completed
+		/// <summary>
+		/// How many calibration steps have been completed
+		/// </summary>
         public int calibrationStep = 1;
 
-        // How many calibration steps need to be completed
+		/// <summary>
+		/// How many calibration steps are required
+		/// </summary>
         public int requiredSteps = 3;
 
-        // Status of calibration
+		/// <summary>
+		/// Status of calibration
+		/// </summary>
         public string calibrationStatus;
 
-        // A color reflecting of the status of the calibration
+		/// <summary>
+		/// A color reflecting the status of calibration
+		/// </summary>
         public Color calibrationColor;
 
         // List that holds pressure readings from calibration
@@ -44,21 +52,31 @@ namespace Fizzyo
         // Breath has to be above this to register
         private float minPressureThreshold = 0.1f;
 
-        // Pressure used for calibration from device
+		/// <summary>
+		/// Pressure used for calibration from device
+		/// </summary>
         public float pressure;
 
-        // If true calibration script is running
+
+		/// <summary>
+		/// If true calibration script is running
+		/// </summary>
         public bool calibrating = false;
 
-        // If true calibration is finished
+		/// <summary>
+		/// If true calibration is finished
+		/// </summary>
         public bool calibrationFinished = false;
 
 
         /// <summary>
-        /// Used to get input from the device to get a pressure and time value that can be used in the breath framework, according to the breathing capacity of the user
-        /// Pressure is a float value that determines how hard the user needs to blow into the device to constitute a good breath
-        /// Time is an integer value that determines how long the user needs to blow into the device to constitute a good breath
-        /// Calibration pressure and time are saved in the player preferences as "calPressure" and "calTime"
+        /// Used to get input from the device to get a pressure and time value that can be used in the breath framework, according to the breathing capacity of the user.
+		///
+        /// Pressure is a float value that determines how hard the user needs to blow into the device to constitute a good breath.
+		///
+        /// Time is an integer value that determines how long the user needs to blow into the device to constitute a good breath.
+		///
+        /// Calibration pressure and time are saved in the player preferences as "calPressure" and "calTime".
         /// </summary>
         public void Calibrate()
         {
