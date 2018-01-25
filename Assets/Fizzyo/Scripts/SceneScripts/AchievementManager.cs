@@ -56,9 +56,9 @@ public class AchievementManager : MonoBehaviour
 
         
 
-        for (int i = 0; i < FizzyoFramework.Instance.Achievments.allAchievments.Length; i++)
+        for (int i = 0; i < FizzyoFramework.Instance.Achievements.allAchievements.Length; i++)
         {
-            AchievementData achievment = FizzyoFramework.Instance.Achievments.allAchievments[i];
+            AchievementData achievment = FizzyoFramework.Instance.Achievements.allAchievements[i];
 
             if (!(catagories.Contains(achievment.category)))
             {
