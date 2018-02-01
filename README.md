@@ -3,11 +3,12 @@ A Unity package for Fizzyo game development
 
 
 ## Installation
-Download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo)
+Download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo/FizzyoFramework-Unity/releases)
 
 - From Unity **select Assets** > **Import Package** > **Custom Package**
 - Select the **FizzyoFramework.unitypackage** that you have downloaded. 
-- In the window that pops up select **ok** to import the package. 
+- In the window that pops up select **ok** to import the package.
+- Add all scenes from **Assets/Fizzyo/Scenes** to your project build settings by opening them and going to **File** > **Build Settings** > **Add Open Scenes**.
 
 *the Unity package is also able to be cloned directly from GitHub and the fizzyo folder placed in your projects Assets folder.*
 
