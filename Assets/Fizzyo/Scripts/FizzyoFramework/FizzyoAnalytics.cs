@@ -70,7 +70,10 @@ namespace Fizzyo
         }
         private void OnApplicationQuit()
         {
+            Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
+            Debug.Log("[FizzyoAnalytics] Session creation Finished.");
+            Debug.Log("[FizzyoAnalytics] Posting Analytics...");
             PostAnalytics();
         }
 
@@ -86,6 +89,12 @@ namespace Fizzyo
             badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
             _score = 0;
             endTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
+            Debug.Log("Good breath count = " + goodBreathCount);
+            Debug.Log("Bearth count = " + breathCount);
+            Debug.Log("Bad breath count = " + badBreathCount);
+            Debug.Log("Score to post =  " + _score);
+            Debug.Log("Time in Unix epoch: " + endTime);
+
         }
 
        ///<summary>
