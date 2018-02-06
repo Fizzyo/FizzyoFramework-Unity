@@ -58,7 +58,7 @@ namespace Fizzyo
         ///Sets all the fields of the session before upload. 
         ///</summary>
         
-        void CreateSession
+        void CreateSession()
         {
             //All of the stats comes from the Breath Recognizer
             breathCount = FizzyoFramework.Instance.BreathRecognizer.BreathCount.get();
@@ -119,4 +119,4 @@ namespace Fizzyo
 
 
     }
-}
+

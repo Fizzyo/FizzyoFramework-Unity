@@ -148,6 +148,7 @@ namespace Fizzyo
             Device = new FizzyoDevice();
             Recogniser = new BreathRecogniser();
             Achievements = new FizzyoAchievements();
+            Analytics = new FizzyoAnalytics();
         }
 
 
