@@ -28,6 +28,18 @@ namespace Fizzyo
         public int startTime;
         public int endTime;
 
+        private int _score;
+        /// <summary>
+        /// Add this to your game to update the score to send in the session. 
+        /// </summary>
+        public int Score { get { return _score; } set { _score = value; } }
+
+        private int _setCount;
+        /// <summary>
+        /// Add this to your game to update the breathing setcount to send in the session. 
+        /// </summary>
+        public int SetCount { get { return _setCount; } set { _setCount = value; } }
+
         /// <summary>
         /// Constructor for a session
         /// </summary>
@@ -60,7 +72,6 @@ namespace Fizzyo
             PostAnalytics();
         }
 
-
         ///<summary>
         ///Sets all the fields of the session before upload. 
         ///</summary>
@@ -90,7 +101,7 @@ namespace Fizzyo
        /// </summary>
        /// <param name="score">Player score to post in this session</param>
        /// <param name="setCount">Number of sets during this session</param>
-        public FizzyoRequestReturnType PostAnalytics(int score, int setCount)
+        public FizzyoRequestReturnType PostAnalytics()
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
             string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/sessions";
@@ -98,11 +109,11 @@ namespace Fizzyo
             WWWForm form = new WWWForm();
             form.addField("secret", PlayerPrefs.GetString("gameSecret"));
             form.AddField("userId", PlayerPrefs.GetString("userId"));
-            form.AddField("setCount", setCount);
+            form.AddField("setCount", _setCount);
             form.AddField("breathCount", breathCount);
             form.AddField("goodBreathCount", goodBreathCount);
             form.AddField("badBreathCount", badBreathCount);
-            form.AddField("score", score);
+            form.AddField("score", _score);
             form.AddField("startTime", startTime);
             form.AddField("endTime", endTime);
             Dictionary<string, string> headers = form.headers;
