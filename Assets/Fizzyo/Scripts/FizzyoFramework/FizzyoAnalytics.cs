@@ -22,11 +22,9 @@ namespace Fizzyo
     {
         
         // Various session parameters
-        public int setCount;
         public int breathCount;
         public int goodBreathCount;
         public int badBreathCount;
-        public int score;
         public int startTime;
         public int endTime;
 
@@ -79,6 +77,7 @@ namespace Fizzyo
 
        ///<summary>
        ///Once the game shuts down, information from the session is sent to the server. 
+       ///
        ///It will send: 
        /// 1. Amount of sets in this session
        /// 2. Amounts of breaths in this session 
@@ -88,7 +87,10 @@ namespace Fizzyo
        /// 6. Start time of the session
        /// 7. End time of the session. 
        /// Note: Time represented as Unix Epoch time.
-        public FizzyoRequestReturnType PostAnalytics()
+       /// </summary>
+       /// <param name="score">Player score to post in this session</param>
+       /// <param name="setCount">Number of sets during this session</param>
+        public FizzyoRequestReturnType PostAnalytics(int score, int setCount)
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
             string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/sessions";
