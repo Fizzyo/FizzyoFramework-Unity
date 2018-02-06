@@ -6,9 +6,18 @@ using UnityEngine;
 
 namespace Fizzyo
 {
-		/// <summary>
-        /// This class is waiting for the developments of the API endpoints to be created.
-        /// </summary> 
+    /// <summary>
+    /// This class manages the creation of sessions to send over data once the game is about to shut down. 
+    /// It will post: 
+    /// 1. Amount of sets in this session
+    /// 2. Amounts of breaths in this session 
+    /// 3. Amount of good breaths in this session
+    /// 4. Amount of bad breaths in this session
+    /// 5. User's game score for this session
+    /// 6. Start time of the session
+    /// 7. End time of the session. 
+    /// Note: Time represented as Unix Epoch time.       
+    /// </summary> 
     public class FizzyoAnalytics
     {
         
