@@ -53,6 +53,7 @@ namespace Fizzyo
         private void Start()
         {
           //Set start time
+          ///
           startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
         }
         private void OnApplicationFocus(bool focus)
@@ -79,9 +80,9 @@ namespace Fizzyo
         void CreateSession()
         {
             //All of the stats comes from the Breath Recognizer
-            breathCount = FizzyoFramework.Instance.BreathRecognizer.BreathCount.get();
-            goodBreaths = FizzyoFramework.Instance.BreathRecognizer.GoodBreaths.get();
-            badBreaths = FizzyoFramework.Instance.BreathRecognizer.BadBreaths.get();
+            breathCount = FizzyoFramework.Instance.Recogniser.BreathCount.get();
+            goodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths.get();
+            badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths.get();
             score = 0;
             endTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
