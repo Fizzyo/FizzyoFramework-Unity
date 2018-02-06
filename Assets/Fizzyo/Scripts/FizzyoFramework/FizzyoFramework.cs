@@ -75,6 +75,7 @@ namespace Fizzyo
         public FizzyoDevice Device { get; set; }
         public FizzyoAchievements Achievements { get; set; }
         public BreathRecogniser Recogniser { get; set; }
+        public FizzyoAnalytics Analytics {get; set;}
 
         private static object _lock = new object();
         private static bool applicationIsQuitting = false;

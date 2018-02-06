@@ -54,7 +54,8 @@ namespace Fizzyo
         {
           //Set start time
           ///
-          startTime = DateTimeOffset.Now.ToUnixTimeMilliseconds();
+          System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
+          startTime = (int)(System.DateTime.UtcNow - epochStart).TotalSeconds;
         }
         private void OnApplicationFocus(bool focus)
         {
@@ -80,10 +81,10 @@ namespace Fizzyo
         void CreateSession()
         {
             //All of the stats comes from the Breath Recognizer
-            breathCount = FizzyoFramework.Instance.Recogniser.BreathCount.get();
-            goodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths.get();
-            badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths.get();
-            score = 0;
+            goodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths;
+            breathCount = FizzyoFramework.Instance.Recogniser.BreathCount;
+            badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
+            _score = 0;
             endTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
         }
 
@@ -107,7 +108,7 @@ namespace Fizzyo
             string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/sessions";
 
             WWWForm form = new WWWForm();
-            form.addField("secret", PlayerPrefs.GetString("gameSecret"));
+            form.AddField("secret", PlayerPrefs.GetString("gameSecret"));
             form.AddField("userId", PlayerPrefs.GetString("userId"));
             form.AddField("setCount", _setCount);
             form.AddField("breathCount", breathCount);
@@ -123,9 +124,9 @@ namespace Fizzyo
             
             WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
             
-            while (!sendPostUnlock.isDone) { };
+            while (!sendPostAnalytics.isDone) { };
 
-            if (sendPostUnlock.error != null)
+            if (sendPostAnalytics.error != null)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
                 
