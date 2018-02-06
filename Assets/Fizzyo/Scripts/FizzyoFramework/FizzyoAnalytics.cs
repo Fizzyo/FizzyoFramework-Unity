@@ -99,8 +99,7 @@ namespace Fizzyo
        /// 7. End time of the session. 
        /// Note: Time represented as Unix Epoch time.
        /// </summary>
-       /// <param name="score">Player score to post in this session</param>
-       /// <param name="setCount">Number of sets during this session</param>
+
         public FizzyoRequestReturnType PostAnalytics()
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
