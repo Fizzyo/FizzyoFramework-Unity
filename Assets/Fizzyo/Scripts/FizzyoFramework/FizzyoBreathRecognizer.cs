@@ -17,7 +17,7 @@ namespace Fizzyo
         private bool isBreathFull = false;
         private float breathPercentage = 0;
         private int breathQuality = 0;
-        private int setCount;
+        
 
 
         public ExhalationCompleteEventArgs(float breathLength, int breathCount, float exhaledVolume, bool isBreathFull, float breathPercentage, int breathQuality)
@@ -122,7 +122,7 @@ namespace Fizzyo
     {
         private float breathLength = 0;
         private int breathCount = 0;
-        private int goodBreaths = 0:
+        private int goodBreaths = 0;
         private int badBreaths = 0;
         private float exhaledVolume = 0;
         private bool isExhaling = false;
