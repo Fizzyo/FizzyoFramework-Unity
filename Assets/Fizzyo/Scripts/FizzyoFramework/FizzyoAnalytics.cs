@@ -50,7 +50,7 @@ namespace Fizzyo
         private void OnApplicationQuit()
         {
             CreateSession();
-            PostAnalytics(System.DateTime.Today);
+            PostAnalytics();
         }
 
 
