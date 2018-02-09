@@ -68,7 +68,11 @@ namespace Fizzyo
  
             }
         }
-        private void OnApplicationQuit()
+		
+		///<summary>
+		///Add this to the logic which manages quitting the application to Create and Post sessions.
+		///</summary>
+        public void OnApplicationQuit()
         {
             Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
