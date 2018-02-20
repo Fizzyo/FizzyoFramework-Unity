@@ -118,11 +118,11 @@ namespace Fizzyo
         public FizzyoRequestReturnType PostAnalytics()
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + PlayerPrefs.GetString("gameId") + "/sessions";
+            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/sessions";
 
             WWWForm form = new WWWForm();
-            form.AddField("secret", PlayerPrefs.GetString("gameSecret"));
-            form.AddField("userId", PlayerPrefs.GetString("userId"));
+            form.AddField("secret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("setCount", _setCount);
             form.AddField("breathCount", breathCount);
             form.AddField("goodBreathCount", goodBreathCount);
@@ -131,7 +131,7 @@ namespace Fizzyo
             form.AddField("startTime", startTime);
             form.AddField("endTime", endTime);
             Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 
             byte[] rawData = form.data;
             
