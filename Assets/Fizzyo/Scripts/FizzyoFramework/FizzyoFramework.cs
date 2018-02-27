@@ -185,6 +185,12 @@ namespace Fizzyo
 
         }
 
+        void OnApplicationQuit()
+        {
+            Analytics.OnApplicationQuit();
+        }
+
+
 
         private void Update()
         {
@@ -276,6 +282,7 @@ namespace Fizzyo
             return true;
         }
 
+        
 
 
 
