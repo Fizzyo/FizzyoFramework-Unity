@@ -72,7 +72,7 @@ namespace Fizzyo
 		///<summary>
 		///Add this to the logic which manages quitting the application to Create and Post sessions.
 		///</summary>
-        public void OnApplicationQuit()
+        public void PostOnQuit()
         {
             Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
@@ -141,9 +141,11 @@ namespace Fizzyo
 
             if (sendPostAnalytics.error != null)
             {
+                Debug.Log("[FizzyoAnalytics] Posting analytics failed. ");
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
                 
             }
+            Debug.Log("[FizzyoAnalytics] Posting analytics successful.");
             return FizzyoRequestReturnType.SUCCESS;
         }
 

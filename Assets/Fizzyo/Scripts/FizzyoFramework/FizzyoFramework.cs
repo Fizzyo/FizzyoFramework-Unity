@@ -187,7 +187,7 @@ namespace Fizzyo
 
         void OnApplicationQuit()
         {
-            Analytics.OnApplicationQuit();
+            Analytics.PostOnQuit();
         }
 
 
