@@ -98,7 +98,6 @@ namespace Fizzyo
             goodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths;
             breathCount = FizzyoFramework.Instance.Recogniser.BreathCount;
             badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
-            _score = 0;
             endTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
             Debug.Log("Good breath count = " + goodBreathCount);
             Debug.Log("Bearth count = " + breathCount);
