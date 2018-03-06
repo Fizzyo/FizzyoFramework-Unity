@@ -32,7 +32,14 @@ namespace Fizzyo
         /// <summary>
         /// Add this to your game to update the score to send in the session. 
         /// </summary>
-        public int Score { get { return _score; } set { _score = value; } }
+        public int Score {
+            get { return _score; } 
+            set {
+                if(value >= _score ){
+                    _score = value;                  
+                }    
+            } 
+        }
 
         private int _setCount;
         /// <summary>
@@ -96,7 +103,7 @@ namespace Fizzyo
             Debug.Log("Good breath count = " + goodBreathCount);
             Debug.Log("Bearth count = " + breathCount);
             Debug.Log("Bad breath count = " + badBreathCount);
-            Debug.Log("Score to post =  " + _score);
+            Debug.Log("Highest score =  " + _score);
             Debug.Log("Time in Unix epoch: " + endTime);
 
         }
@@ -109,7 +116,7 @@ namespace Fizzyo
        /// 2. Amounts of breaths in this session 
        /// 3. Amount of good breaths in this session
        /// 4. Amount of bad breaths in this session
-       /// 5. User's game score for this session
+       /// 5. User-s highest score for this session
        /// 6. Start time of the session
        /// 7. End time of the session. 
        /// Note: Time represented as Unix Epoch time.
