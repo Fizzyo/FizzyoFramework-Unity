@@ -187,7 +187,11 @@ namespace Fizzyo
 
         void OnApplicationQuit()
         {
-            Analytics.PostOnQuit();
+            if(Analytics != null) 
+            {
+                Analytics.PostOnQuit();
+            }
+            Debug.Log("[FizzyoFramework] Analytics is Null.")
         }
 
 
