@@ -191,7 +191,7 @@ namespace Fizzyo
             {
                 Analytics.PostOnQuit();
             }
-            Debug.Log("[FizzyoFramework] Analytics is Null.")
+            Debug.Log("[FizzyoFramework] Analytics is Null.");
         }
 
 
