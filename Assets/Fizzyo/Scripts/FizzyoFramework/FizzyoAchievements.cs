@@ -75,6 +75,22 @@ namespace Fizzyo
 
 
 
+        public AchievementData AllAchievements
+        {
+            get
+            {
+                return AllAchievements;
+            }
+        }
+        
+        public AchievementData UnlockedAchievements
+        {
+            get
+            {
+                return unlockedAchievements;
+            }
+        }
+
         /// <summary>
         /// Loads all game achievements and the users unlocked achievements and achievement progres.
         /// </summary>
