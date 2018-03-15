@@ -30,6 +30,8 @@ namespace Fizzyo
     public class AllAchievementData
     {
         public AchievementData[] achievements;
+        public AchievementData[] unlockedAchievements;
+
     }
 
     // Serializable that is used to pull and hold the data of each Achievement in the Achievements.json file
@@ -126,7 +128,7 @@ namespace Fizzyo
             }
 
             string unlockedJSONData = sendGetUnlock.text;
-            unlockedAchievements = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData).achievements;
+            unlockedAchievements = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData).unlockedAchievements;
 
 
             return FizzyoRequestReturnType.SUCCESS;
