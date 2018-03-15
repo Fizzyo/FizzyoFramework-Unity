@@ -31,7 +31,9 @@ namespace Fizzyo
 
         }
 
+        ///<summary>
         /// The length of the exhaled breath in seconds
+        /// </summary>
         public float Breathlength
         {
             get
@@ -40,7 +42,9 @@ namespace Fizzyo
             }
         }
 
+        ///<summary>
         /// The total number of exhaled breaths this session
+        ///</summary>
         public int BreathCount
         {
             get
@@ -49,7 +53,9 @@ namespace Fizzyo
             }
         }
 
+        /// <summary>
         /// The total exhaled volume of this breath
+        /// </summary>
         public float ExhaledVolume
         {
             get
@@ -57,8 +63,9 @@ namespace Fizzyo
                 return exhaledVolume;
             }
         }
-
+        ///<summary>
         /// Returns true if the breath was 100% completed
+        ///</summary>
         public bool IsBreathFull
         {
             get
@@ -67,7 +74,9 @@ namespace Fizzyo
             }
         }
 
-        /// Returns true if the breath was 100% completed
+        ///<summary>
+        ///Returns int indicating breath quality.
+        /// </summary>
         public int BreathQuality
         {
             get
@@ -76,7 +85,6 @@ namespace Fizzyo
             }
         }
 
-        /// Returns true if the breath was 100% completed
         public float BreathPercentage
         {
             get
@@ -140,7 +148,6 @@ namespace Fizzyo
 
         public BreathRecogniser()
         {
-
 
         }
 

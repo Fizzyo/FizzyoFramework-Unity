@@ -75,23 +75,12 @@ namespace Fizzyo
 		/// </summary>
         public AchievementData[] unlockedAchievements;
 
+        /// <summary>
+        /// Array of type HighscoreData which holds the top 20 highest scores for the game.
+        /// </summary>
+        public HighscoreData[] highscores;
 
 
-        public AchievementData AllAchievements
-        {
-            get
-            {
-                return AllAchievements;
-            }
-        }
-        
-        public AchievementData UnlockedAchievements
-        {
-            get
-            {
-                return unlockedAchievements;
-            }
-        }
 
         /// <summary>
         /// Loads all game achievements and the users unlocked achievements and achievement progres.
@@ -142,7 +131,7 @@ namespace Fizzyo
 
 
         /// <summary>
-        /// Loads in the top 20 highscores for the current game
+        /// Loads in the top 20 highscores for the current game.
         /// </summary>
         /// <returns>
         /// A JSON formatted string containing tag and score for the top 20 scores of the game
@@ -162,8 +151,8 @@ namespace Fizzyo
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
-            string topScoresJSONDATA = sendGetHighscores.text;
-            highscores = JsonUtility.FromJson<HighscoreData>(topScoresJSONDATA).highscores;
+            string topScoresJSONData = sendGetHighscores.text;
+            highscores = JsonUtility.FromJson<HighscoreData>(topScoresJSONData).highscores;
 
             return FizzyoRequestReturnType.SUCCESS;
         }
