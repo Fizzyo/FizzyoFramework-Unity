@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine;
 using Fizzyo;
+using UnityEngine.SceneManagement;
 
 public class PlayerBehaviour : MonoBehaviour {
 
@@ -24,5 +25,11 @@ public class PlayerBehaviour : MonoBehaviour {
         y = Mathf.Max(y, 0);
 
         transform.position = new Vector3(x,y, 0);
+
+        if (Input.GetKeyDown(KeyCode.Q))
+        {
+            Debug.Log("Level Restarted");
+            SceneManager.LoadScene("ExampleLevel");
+        }
 	}
 }
