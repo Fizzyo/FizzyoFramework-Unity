@@ -162,6 +162,9 @@ namespace Fizzyo
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
+            string topScoresJSONDATA = sendGetHighscores.text;
+            highscores = JsonUtility.FromJson<HighscoreData>(topScoresJSONDATA).highscores;
+
             return FizzyoRequestReturnType.SUCCESS;
         }
 
