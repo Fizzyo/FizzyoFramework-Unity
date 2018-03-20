@@ -1,5 +1,5 @@
 # Fizzyo Framework
-A Unity package for Fizzyo game development
+A Unity package for Fizzyo game development .
 
 
 ## Installation
