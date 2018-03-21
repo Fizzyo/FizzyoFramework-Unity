@@ -66,9 +66,9 @@ namespace Fizzyo
 
     public class FizzyoAchievements 
     {
-		/// <summary>
-		/// Array of type AchievementData which holds all the achievements that the game has to offer. 
-		/// </summary>
+        /// <summary>
+        /// Array of type AchievementData which holds all the achievements that the game has to offer. 
+        /// </summary>
         public AchievementData[] allAchievements;
 		/// <summary>
 		/// Array of type AchievementData which holds the achievements the user has unlocked. 
@@ -197,8 +197,8 @@ namespace Fizzyo
         /// Unlocks the achievement specified in the parameter, its achievementID. 
         /// </summary>
         /// <returns>
-        /// String - "Achievement Upload Complete" - If upload completes  
-        /// String - "Achievement Upload Failed" - If upload fails
+        /// FizzyoRequestReturnType.SUCCESS is upload is successful.  
+        /// FizzyoRequestReturnType.FAILED_TO_CONNECT if connection failed.  
         /// </returns>
         /// 
         public FizzyoRequestReturnType UnlockAchievement(string achievementId)
@@ -230,8 +230,8 @@ namespace Fizzyo
         /// Uploads a players achievements for a session
         /// </summary>
         /// <returns>
-        /// String - "Achievement Upload Complete" - If upload completes  
-        /// String - "Achievement Upload Failed" - If upload fails
+        /// FizzyoRequestReturnType.SUCCESS is upload is successful.  
+        /// FizzyoRequestReturnType.FAILED_TO_CONNECT if connection failed.  
         /// </returns>
         private FizzyoRequestReturnType PostAchievements()
         {

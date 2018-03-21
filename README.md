@@ -1,6 +1,6 @@
 # Fizzyo Framework
 A Unity package for Fizzyo game development .
-
+You can view more detailed documentation in the official documentation [website](http://dev.fizzyo-ucl.co.uk/).
 
 ## Installation
 Download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo/FizzyoFramework-Unity/releases)

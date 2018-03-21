@@ -68,6 +68,11 @@ namespace Fizzyo
         public TestHarnessData testHarnessDataFile = TestHarnessData.p1_acapella;
 
         ///<summary>
+        ///API http path
+        ///</summary>
+        public string apiPath = "https://api.fizzyo-ucl.co.uk/";
+
+        ///<summary>
         ///The singleton instance of the Fizzyo Framework
         ///</summary>
         public static FizzyoFramework _instance = null;
