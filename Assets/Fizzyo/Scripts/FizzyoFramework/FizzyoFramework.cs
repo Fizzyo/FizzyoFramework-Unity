@@ -98,10 +98,10 @@ namespace Fizzyo
                     Debug.LogWarning("[Singleton] Instance '" + typeof(FizzyoFramework) +
                         "' already destroyed on application quit." +
                         " Won't create again - returning null.");
-               //     return null;
+                    //     return null;
                 }
 
-               // lock (_lock)
+                // lock (_lock)
                 {
                     if (_instance == null)
                     {
@@ -204,7 +204,8 @@ namespace Fizzyo
         private void Update()
         {
             //update the breath recoginiser
-            if (Device != null) {
+            if (Device != null)
+            {
                 Recogniser.AddSample(Time.deltaTime, Device.Pressure());
             }
 
@@ -262,7 +263,7 @@ namespace Fizzyo
         /// false if data is not loaded and playing offline
         /// </returns>
         public bool Load()
-            {
+        {
             //Login to server
 
             if (showLoginAutomatically)
@@ -270,11 +271,11 @@ namespace Fizzyo
                 LoginReturnType loginResult = User.Login();
 
 
-            if (loginResult != LoginReturnType.SUCCESS)
-            {
-                PlayOffline();
-                return false;
-            }
+                if (loginResult != LoginReturnType.SUCCESS)
+                {
+                    PlayOffline();
+                    return false;
+                }
             }
             else
             {
@@ -299,20 +300,26 @@ namespace Fizzyo
         /// Sets up the player preferences to allow the user to play offline
         /// </summary>
         private static void PlayOffline()
-            {
-               // ResetPlayerPrefs();
-            }
+        {
+            // ResetPlayerPrefs();
+        }
 
-            /// <summary>
-            /// Resets all of the player preferences
-            /// </summary>
+        /// <summary>
+        /// Resets all of the player preferences
+        /// </summary>
 
 
 
-            public void OnDestroy()
-            {
-                applicationIsQuitting = true;
-            }
+        public void OnDestroy()
+        {
+            applicationIsQuitting = true;
+        }
+
+        private void OnEnable()
+        {
+            applicationIsQuitting = false;
+
+        }
 
 
     }
