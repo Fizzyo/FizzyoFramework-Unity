@@ -68,6 +68,11 @@ namespace Fizzyo
         public TestHarnessData testHarnessDataFile = TestHarnessData.p1_acapella;
 
         ///<summary>
+        ///API http path
+        ///</summary>
+        public string apiPath = "https://api.fizzyo-ucl.co.uk/";
+
+        ///<summary>
         ///The singleton instance of the Fizzyo Framework
         ///</summary>
         public static FizzyoFramework _instance = null;
@@ -75,6 +80,7 @@ namespace Fizzyo
         public FizzyoDevice Device { get; set; }
         public FizzyoAchievements Achievements { get; set; }
         public BreathRecogniser Recogniser { get; set; }
+        public FizzyoAnalytics Analytics {get; set;}
 
         private static object _lock = new object();
         private static bool applicationIsQuitting = false;
@@ -148,6 +154,7 @@ namespace Fizzyo
             Device = new FizzyoDevice();
             Recogniser = new BreathRecogniser();
             Achievements = new FizzyoAchievements();
+            Analytics = new FizzyoAnalytics();
         }
 
 
@@ -182,6 +189,16 @@ namespace Fizzyo
 
 
         }
+
+        void OnApplicationQuit()
+        {
+            if(Analytics != null) 
+            {
+                Analytics.PostOnQuit();
+            }
+            Debug.Log("[FizzyoFramework] Analytics is Null.");
+        }
+
 
 
         private void Update()
@@ -275,6 +292,7 @@ namespace Fizzyo
             return true;
         }
 
+        
 
 
 

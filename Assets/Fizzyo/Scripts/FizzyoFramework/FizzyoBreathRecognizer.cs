@@ -5,59 +5,7 @@ using System.Text;
 using UnityEngine;
 namespace Fizzyo
 {
-
-    //Deprecated?
-    public class Session 
-    {
-        // Various session parameters
-        public int setCount;
-        public int breathCount;
-        public int goodBreathCount;
-        public int badBreathCount;
-        public int score;
-        public int startTime;
-
-        /// <summary>
-        /// Constructor for a session
-        /// </summary>
-        /// <param name="setCount"> 
-        /// Integer holding the amount of sets that are to be completed in this session
-        /// </param>  
-        /// <param name="breathCount"> 
-        /// Integer holding the amount of breaths that are to be completed in each set
-        /// </param>  
-        public Session(int setCount, int breathCount)
-        {
-
-            this.setCount = setCount;
-            this.breathCount = breathCount;
-
-            DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
-            TimeSpan diff = DateTime.UtcNow - origin;
-            this.startTime = (int)Math.Floor(diff.TotalSeconds);
-
-        }
-
-        /// <summary>
-        /// Used to upload a session and achievements gained within this session. 
-        /// </summary>
-        /// <param name="goodBreathCount"> 
-        /// Integer holding the amount of good breaths completed in this session
-        /// </param>  
-        /// <param name="badBreathCount"> 
-        /// Integer holding the amount of bad breaths completed in this session
-        /// </param>  
-        /// /// <param name="score"> 
-        /// Integer holding the score for this session
-        /// </param>  
-        public bool SessionUpload(int goodBreathCount, int badBreathCount, int score)
-        {
-
-            //return Data.Upload.Session(goodBreathCount, badBreathCount, score, startTime, setCount, breathCount);
-            return true;
-        }
-    }
-
+    
     /// <summary>
     /// Provides data about the current breath to the receiver when the ExhalationComplete event fires
     /// </summary>
@@ -69,6 +17,8 @@ namespace Fizzyo
         private bool isBreathFull = false;
         private float breathPercentage = 0;
         private int breathQuality = 0;
+        
+
 
         public ExhalationCompleteEventArgs(float breathLength, int breathCount, float exhaledVolume, bool isBreathFull, float breathPercentage, int breathQuality)
         {
@@ -81,7 +31,9 @@ namespace Fizzyo
 
         }
 
+        ///<summary>
         /// The length of the exhaled breath in seconds
+        /// </summary>
         public float Breathlength
         {
             get
@@ -90,7 +42,9 @@ namespace Fizzyo
             }
         }
 
+        ///<summary>
         /// The total number of exhaled breaths this session
+        ///</summary>
         public int BreathCount
         {
             get
@@ -99,7 +53,9 @@ namespace Fizzyo
             }
         }
 
+        /// <summary>
         /// The total exhaled volume of this breath
+        /// </summary>
         public float ExhaledVolume
         {
             get
@@ -107,8 +63,9 @@ namespace Fizzyo
                 return exhaledVolume;
             }
         }
-
+        ///<summary>
         /// Returns true if the breath was 100% completed
+        ///</summary>
         public bool IsBreathFull
         {
             get
@@ -117,7 +74,9 @@ namespace Fizzyo
             }
         }
 
-        /// Returns true if the breath was 100% completed
+        ///<summary>
+        ///Returns int indicating breath quality.
+        /// </summary>
         public int BreathQuality
         {
             get
@@ -126,7 +85,6 @@ namespace Fizzyo
             }
         }
 
-        /// Returns true if the breath was 100% completed
         public float BreathPercentage
         {
             get
@@ -162,6 +120,8 @@ namespace Fizzyo
     ///    d) IsExhaling
     ///    e) MaxPressure
     ///    f) MaxBreathLength
+    ///    g) GoodBreaths
+    ///    h) BadBreaths 
     /// 
     /// The algorithm for determining whether a breath is fully completed is encapsulated in the method IsBreathFull()
     /// and currently returns true if the average breath pressure and breath length is within 80% of the max.
@@ -170,6 +130,8 @@ namespace Fizzyo
     {
         private float breathLength = 0;
         private int breathCount = 0;
+        private int goodBreaths = 0;
+        private int badBreaths = 0;
         private float exhaledVolume = 0;
         private bool isExhaling = false;
         private float maxPressure = 0;
@@ -177,6 +139,7 @@ namespace Fizzyo
         private const float kTollerance = 0.80f;
         private float minBreathThreshold = .05f;
         private float breathPercentage = 0;
+        
 
         public event ExhalationCompleteEventHandler BreathComplete;
         public event ExhalationStartedEventHandler BreathStarted;
@@ -185,7 +148,6 @@ namespace Fizzyo
 
         public BreathRecogniser()
         {
-
 
         }
 
@@ -206,6 +168,24 @@ namespace Fizzyo
             get
             {
                 return this.breathCount;
+            }
+        }
+        
+        /// The total number of good breaths this session
+        public int GoodBreaths
+        {
+            get
+            {
+                return this.goodBreaths;
+            }
+        }
+        
+        /// The total number of bad breaths this session
+        public int BadBreaths
+        {
+            get
+            {
+                return this.badBreaths;
             }
         }
 
@@ -307,6 +287,7 @@ namespace Fizzyo
 
         ///<summary>
         /// Returns true if the breath was within the threshold of a 'good breath'
+        /// Updates the good and bad breath counts. 
         ///</summary>
         
         public bool IsBreathFull(float breathLength, float maxBreathLength, float exhaledVolume, float maxPressure)
@@ -322,6 +303,14 @@ namespace Fizzyo
                 isBreathFull = isBreathFull && ((exhaledVolume / breathLength) > BreathRecogniser.kTollerance * maxPressure);
             }
 
+            if (isBreathFull == true)
+            {
+                goodBreaths++;
+            }
+            else
+            {
+                badBreaths++;
+            }
             return isBreathFull;
         }
 

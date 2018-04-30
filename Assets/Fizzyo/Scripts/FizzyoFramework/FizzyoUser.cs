@@ -321,10 +321,10 @@ namespace Fizzyo
 
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
 
-            string getTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId");
+            string getTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + PlayerPrefs.GetString("accessToken"));
+            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
             WWW sendGetTag = new WWW(getTag, null, headers);
 
             while (!sendGetTag.isDone) { }
@@ -374,12 +374,12 @@ namespace Fizzyo
                 return UserTagReturnType.BANNED_TAG;
             }
 
-            string uploadTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/gamer-tag";
+            string uploadTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
 
             WWWForm form = new WWWForm();
             form.AddField("gamerTag", tag);
             Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 
             byte[] rawData = form.data;
 
@@ -408,10 +408,10 @@ namespace Fizzyo
         {
             //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
 
-            string getCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/calibration";
+            string getCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + PlayerPrefs.GetString("accessToken"));
+            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
             WWW sendGetCal = new WWW(getCal, null, headers);
 
             while (!sendGetCal.isDone) { }
@@ -466,7 +466,7 @@ namespace Fizzyo
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-            string uploadCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + PlayerPrefs.GetString("userId") + "/calibration";
+            string uploadCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
 
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             TimeSpan diff = DateTime.UtcNow - origin;
@@ -477,7 +477,7 @@ namespace Fizzyo
             form.AddField("pressure", pressure.ToString());
             form.AddField("time", time.ToString());
             Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 
             byte[] rawData = form.data;
 
@@ -541,9 +541,9 @@ namespace Fizzyo
 
             WWWForm form = new WWWForm();
 
-            form.AddField("id", PlayerPrefs.GetString("gameId"));
-            form.AddField("secret", PlayerPrefs.GetString("gameSecret"));
-            form.AddField("userId", PlayerPrefs.GetString("userId"));
+            form.AddField("id", FizzyoFramework.Instance.gameID);
+            form.AddField("secret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("setCount", setCount);
             form.AddField("breathCount", breathCount);
             form.AddField("goodBreathCount", goodBreathCount);
@@ -553,7 +553,7 @@ namespace Fizzyo
             form.AddField("endTime", endTime);
 
             Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + PlayerPrefs.GetString("accessToken");
+            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 
             byte[] rawData = form.data;
 
