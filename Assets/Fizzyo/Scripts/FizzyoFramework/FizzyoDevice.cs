@@ -1,5 +1,4 @@
-﻿using System;
-
+﻿
 #if UNITY_EDITOR
 using System.IO;
 using System.Timers;
@@ -10,45 +9,49 @@ using UnityEngine;
 
 namespace Fizzyo
 {
-		/// <summary>
-        /// Class responsible for parsing data from the Fizzyo device
-        /// </summary> 
-    public class FizzyoDevice 
+    /// <summary>
+    /// Class responsible for parsing data from the Fizzyo device
+    /// </summary> 
+    public class FizzyoDevice
     {
-		/// <summary>
+        /// <summary>
         /// True if pulling data from an internal file. Useful for testing. 
         /// </summary> 
         public bool useRecordedData = false;
 
-		/// <summary>
+        /// <summary>
         /// True if looping through recorded data. Useful for testing
         /// </summary> 
         public bool loop = true;
 
-		/// <summary>
+        /// <summary>
         /// Path of the recorded data 
         /// </summary> 
-         public string recordedDataPath = "Fizzyo/Data/FizzyoData_3min.fiz";
+        public string recordedDataPath = "Fizzyo/Data/FizzyoData_3min.fiz";
 
-		/// <summary>
-        /// This is the maxmimun pressure to expect from the device, all incomming values will be mapped to it. 
+        /// <summary>
+        /// This is the maximum pressure to expect from the device, all incoming values will be mapped to it. 
         /// </summary>        
         public float maxPressureCalibrated = 1.0f;
 
-        //private static object threadLock = new System.Object();
+        /// <summary>
+        /// This is the maximum breath length to expect from the device, all incoming values will be mapped to it. 
+        /// </summary>        
+        public float maxBreathCalibrated = 1.0f;
+
 
         //protected
         // protected StreamReader fileReader = null;
         protected string text = " "; // assigned to allow first line to be read below
                                      // System.Timers.Timer pollTimer = new System.Timers.Timer();
         float pressure = 0;
-    
+
 #if UNITY_EDITOR
         private StreamReader fileReader = null;
         private Timer pollTimer;
 #endif
 
-		/// <summary>
+        /// <summary>
         /// If true, indicates the device has been already calibrated. 
         /// </summary>    
         public bool Calibrated = false;
@@ -64,14 +67,14 @@ namespace Fizzyo
 #if UNITY_EDITOR
             //Close file pointer 
             if (fileReader != null)
-            fileReader.Close();
+                fileReader.Close();
 
             //Stop Timer 
             pollTimer.Stop();
 #endif
         }
-        
-        
+
+
         /// <summary>
         /// If useRecordedData is set to false pressure data is streamed from the device or streamed from a log file if set to true.
         /// </summary>
@@ -95,7 +98,7 @@ namespace Fizzyo
             }
         }
 
-		/// <summary>
+        /// <summary>
         /// Checks if the button in the fizzyo device is being pushed down.  
         /// </summary>    
         public bool ButtonDown()
@@ -149,14 +152,14 @@ namespace Fizzyo
         }
 #endif
 
-		/// <summary>
-        /// Changes the maximum callibrated pressure to the specified value. Will set the Calibrated boolean to true.  
+        /// <summary>
+        /// Changes the maximum calibrated breath pressure and length to the specified values. Will set the Calibrated boolean to true.  
         /// </summary>    
-        public void SetCalibrationPressure(float maxPressure)
+        public void SetCalibrationLimits(float maxPressure = 1, float maxBreath = 1)
         {
             maxPressureCalibrated = maxPressure;
+            maxBreathCalibrated = maxBreath;
             Calibrated = true;
         }
-       
     }
 }

@@ -1,9 +1,8 @@
-﻿using System.Collections;
+﻿using Fizzyo;
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UI;
 using UnityEngine.SceneManagement;
-using Fizzyo;
+using UnityEngine.UI;
 
 public class CalibrateScene : MonoBehaviour {
 
@@ -11,16 +10,17 @@ public class CalibrateScene : MonoBehaviour {
     public ProgressEllipse progressEllipse;
     public float minExhaleTime = 3.0f;
     public int requiredBreaths = 1;
-    public bool waitForEndOfBreath = false;
     public Text countdown;
     float startTime = 0;
     bool exhaling = false;
     int breathCount = 0;
     List<float> pressureVals = new List<float>();
+    List<float> breathLengthVals = new List<float>();
+
 
     // Use this for initialization
     void Start () {
-        //Hoockup the breath recognizer
+        //Hookup the breath recognizer
         FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
 
@@ -37,20 +37,10 @@ public class CalibrateScene : MonoBehaviour {
 
             progressEllipse.SetProgress(Mathf.Min(progress,1.0f));
             countdown.text = "" + Mathf.Max(Mathf.Ceil((minExhaleTime - exhaleTime)), 0) ;
-
-
-            if (!waitForEndOfBreath && exhaleTime >= minExhaleTime && breathCount+1 >= requiredBreaths)
-            {
-                Calibrate();
-                NextScene();
-            }
         }
 
         pressureVals.Add(FizzyoFramework.Instance.Device.Pressure());
-
-
     }
-
 
     void OnBreathStarted(object sender)
     {
@@ -60,15 +50,16 @@ public class CalibrateScene : MonoBehaviour {
 
     void OnBreathEnded(object sender, ExhalationCompleteEventArgs e)
     {
-        float exhaleTime = (Time.realtimeSinceStartup - startTime);
+        float exhaleTime = FizzyoFramework.Instance.Recogniser.BreathLength;
         exhaling = false;
 
         if(exhaleTime >= minExhaleTime)
         {
             breathCount++;
+            breathLengthVals.Add(exhaleTime);
         }
 
-        if (waitForEndOfBreath && breathCount  >= requiredBreaths)
+        if (breathCount >= requiredBreaths)
         {
             Calibrate();
             NextScene();
@@ -77,31 +68,35 @@ public class CalibrateScene : MonoBehaviour {
 
     void Calibrate()
     {
-
-        float max = 0;
-        float min = 0;
-        float average = 0;
-        float total = 0;
+        float maxPressure = 0;
+        float minPressure = 0;
+        float averagePressure = 0;
+        float totalPressure = 0;
         for(int i = 0; i < pressureVals.Count; i++)
         {
             float v = pressureVals[i];
 
-            total += v;
-            max = Mathf.Max(v, max);
-            min = Mathf.Min(v, min);
+            totalPressure += v;
+            maxPressure = Mathf.Max(v, maxPressure);
+            minPressure = Mathf.Min(v, minPressure);
 
         }
-        average = total / pressureVals.Count;
+        averagePressure = totalPressure / pressureVals.Count;
 
-        FizzyoFramework.Instance.Device.SetCalibrationPressure(max);
+        float maxBreath = 0;
+        for (int i = 0; i < breathLengthVals.Count; i++)
+        {
+            if (breathLengthVals[i] > maxBreath)
+            {
+                maxBreath = breathLengthVals[i];
+            }
+        }
 
+        FizzyoFramework.Instance.Device.SetCalibrationLimits(maxPressure, maxBreath);
     }
-
 
     void NextScene()
     {
         SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }
-
-
 }

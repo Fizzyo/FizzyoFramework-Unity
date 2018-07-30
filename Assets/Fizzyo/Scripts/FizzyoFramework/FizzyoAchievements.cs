@@ -152,7 +152,7 @@ namespace Fizzyo
             }
 
             string topScoresJSONData = sendGetHighscores.text;
-            highscores = JsonUtility.FromJson<HighscoreData>(topScoresJSONData).highscores;
+            highscores = JsonUtility.FromJson<AllHighscoreData>(topScoresJSONData).highscores;
 
             return FizzyoRequestReturnType.SUCCESS;
         }
