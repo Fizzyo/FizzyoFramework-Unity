@@ -86,7 +86,7 @@ namespace Fizzyo
         private static object _lock = new object();
         private static bool applicationIsQuitting = false;
         public string CallbackScenePath { get; set; }
-        public string ClientVersion = "aBcDeFf";
+        public string ClientVersion;
 
 
         //Singleton instance
@@ -167,6 +167,10 @@ namespace Fizzyo
 
             if (_instance != null)
                 return;
+
+#if UNITY_UWP
+            ClientVersion = SystemInfo.deviceUniqueIdentifier;
+#endif
 
             DontDestroyOnLoad(gameObject);
 
