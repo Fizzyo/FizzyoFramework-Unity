@@ -1,6 +1,6 @@
 ﻿using UnityEngine;
 using UnityEngine.UI;
-
+using Fizzyo;
 
 public class LeaderboardManager : MonoBehaviour
 {
@@ -28,7 +28,9 @@ public class LeaderboardManager : MonoBehaviour
     void Start()
     {
 
-        string highscores = "";// Load.GetHighscores();
+        string highscores = "";
+        FizzyoFramework.Instance.Achievements.GetHighscores();
+
 
         if (highscores == "Highscore Load Failed")
         {
@@ -39,8 +41,8 @@ public class LeaderboardManager : MonoBehaviour
         {
 
             //AllHighscoreData allDataLead = JsonUtility.FromJson<AllHighscoreData>(highscores);
-            /*
-            for (int i = 0; i < allDataLead.highscores.Length; i++)
+            
+            for (int i = 0; i < FizzyoFramework.Instance.Achievements.highscores.Length; i++)
             {
                 switch (i)
                 {
@@ -58,9 +60,10 @@ public class LeaderboardManager : MonoBehaviour
                         break;
                 }
                 
-               // CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
+               //CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
+                CreateLead(position, FizzyoFramework.Instance.Achievements.highscores[i].tag, FizzyoFramework.Instance.Achievements.highscores[i].score);
             }
-            */
+            
         }
     }
 

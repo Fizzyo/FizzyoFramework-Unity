@@ -68,11 +68,11 @@ namespace Fizzyo
         {
             if (focus)
             {
- 
+                ResetData();
             }
             else
             {
- 
+                PostOnQuit();
             }
         }
 		
@@ -106,25 +106,34 @@ namespace Fizzyo
             Debug.Log("Time in Unix epoch: " + endTime);
 
         }
+        public void ResetData()
+        {
+            FizzyoFramework.Instance.Recogniser.UnMinimise();
+            this.Score = 0;
+            this.SetCount = 0;
+            Start();
+            Debug.Log("looks like alt tabbing works eh");
 
-       ///<summary>
-       ///Once the game shuts down, information from the session is sent to the server. 
-       ///
-       ///It will send: 
-       /// 1. Amount of sets in this session
-       /// 2. Amounts of breaths in this session 
-       /// 3. Amount of good breaths in this session
-       /// 4. Amount of bad breaths in this session
-       /// 5. User-s highest score for this session
-       /// 6. Start time of the session
-       /// 7. End time of the session. 
-       /// Note: Time represented as Unix Epoch time.
-       /// </summary>
+        }
+
+        ///<summary>
+        ///Once the game shuts down, information from the session is sent to the server. 
+        ///
+        ///It will send: 
+        /// 1. Amount of sets in this session
+        /// 2. Amounts of breaths in this session 
+        /// 3. Amount of good breaths in this session
+        /// 4. Amount of bad breaths in this session
+        /// 5. User-s highest score for this session
+        /// 6. Start time of the session
+        /// 7. End time of the session. 
+        /// Note: Time represented as Unix Epoch time.
+        /// </summary>
 
         public FizzyoRequestReturnType PostAnalytics()
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/sessions";
+            string postAnalytics = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/sessions";
 
             WWWForm form = new WWWForm();
             form.AddField("secret", FizzyoFramework.Instance.gameSecret);
@@ -138,7 +147,7 @@ namespace Fizzyo
             form.AddField("endTime", endTime);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
             byte[] rawData = form.data;
             
             WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);

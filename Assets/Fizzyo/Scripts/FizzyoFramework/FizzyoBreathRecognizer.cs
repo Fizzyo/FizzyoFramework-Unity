@@ -355,6 +355,13 @@ namespace Fizzyo
             this.isExhaling = false;
             this.breathPercentage = 0;
         }
+        public void UnMinimise()
+        {
+            this.breathCount = 0;
+            this.goodBreaths = 0;
+            this.badBreaths = 0;
+        }
+
 
         ///<summary>
         /// Invoke the event - called whenever exhalation finishes

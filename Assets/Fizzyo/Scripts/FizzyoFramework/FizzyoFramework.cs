@@ -44,13 +44,13 @@ namespace Fizzyo
         ///<summary>
         ///The game ID given by the Fizzyo API
         ///</summary>
-        public string gameID = "87f2ae03-d34f-4045-a308-feb746e857b2";
+        public string gameID = "20bc89e9-0c04-44c5-ba21-ab8a755eb4cd";//TinyTest
 
         [Tooltip("Game secret given by Fizzyo API.")]
         ///<summary>
         ///The game secret given by the Fizzyo API
         ///</summary>
-        public string gameSecret = "7BErm0wMvbmXMpq6ANBNLnAaYAlO1nqVqM15wNJAPdRom7lYyKKOEzqeGyOXpZKn";
+        public string gameSecret = "ml8rVoJX7axkEDXnnXqGnPleyv4Ek36W7BErm0wMvbm2V70pyXQWZOpdYAlO1nqV";
 
         [Header("Test Harness")]
 
@@ -70,7 +70,8 @@ namespace Fizzyo
         ///<summary>
         ///API http path
         ///</summary>
-        public string apiPath = "https://api.fizzyo-ucl.co.uk/";
+        //public string apiPath = "https://api.fizzyo-ucl.co.uk/";
+        public string apiPath = "https://api-staging.fizzyo-ucl.co.uk/";
 
         ///<summary>
         ///The singleton instance of the Fizzyo Framework
@@ -84,7 +85,8 @@ namespace Fizzyo
 
         private static object _lock = new object();
         private static bool applicationIsQuitting = false;
-        public string CallbackScenePath { get; private set; }
+        public string CallbackScenePath { get; set; }
+        public string ClientVersion = "aBcDeFf";
 
 
         //Singleton instance
@@ -159,7 +161,7 @@ namespace Fizzyo
 
 
 
-        void Start()
+        void Awake()
         {
             Debug.Log("[FizzyoFramework] Start.");
 
@@ -188,6 +190,26 @@ namespace Fizzyo
 
 
 
+        }
+
+        void OnApplicationFocus(bool focus)
+        {
+           bool isPaused = focus;
+
+           if (isPaused == true)
+           {
+                FizzyoFramework.Instance.Analytics.ResetData();
+                Debug.Log(FizzyoFramework.Instance.Recogniser.BreathCount + "and" + FizzyoFramework.Instance.Recogniser.GoodBreaths + "and 1 more");
+                Debug.Log(FizzyoFramework.Instance.Analytics.startTime + "time");
+                Debug.Log("Game HAs Focus");
+                Debug.Log("Did the time change?" + FizzyoFramework.Instance.Analytics.startTime);
+           }
+            else
+           {
+                Debug.Log("Game paused");
+                FizzyoFramework.Instance.Analytics.PostOnQuit();
+                Debug.Log("endTime: " + FizzyoFramework.Instance.Analytics.endTime);
+           }
         }
 
         void OnApplicationQuit()
@@ -268,7 +290,7 @@ namespace Fizzyo
 
             if (showLoginAutomatically)
             {
-                LoginReturnType loginResult = User.Login();
+                LoginReturnType loginResult = FizzyoFramework.Instance.User.Login();
 
 
                 if (loginResult != LoginReturnType.SUCCESS)

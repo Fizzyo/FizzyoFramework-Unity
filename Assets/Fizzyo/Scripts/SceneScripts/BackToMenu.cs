@@ -2,6 +2,7 @@
 using System.Collections.Generic;
 using UnityEngine.SceneManagement;
 using UnityEngine;
+using Fizzyo;
 using UnityEngine.UI;
 
 public class BackToMenu : MonoBehaviour {
@@ -17,6 +18,6 @@ public class BackToMenu : MonoBehaviour {
 
     void BackClick()
     {
-        SceneManager.LoadScene("Menu");
+        SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }
 }
