@@ -147,7 +147,9 @@ namespace Fizzyo
             form.AddField("endTime", endTime);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+#if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
             
             WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);

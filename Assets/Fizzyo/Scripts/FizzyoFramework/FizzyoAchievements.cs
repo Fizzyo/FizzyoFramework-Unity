@@ -95,7 +95,9 @@ namespace Fizzyo
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+#if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             WWW sendGetAchievements = new WWW(getAchievements, null, headers);
 
             while (!sendGetAchievements.isDone) { }
@@ -108,7 +110,9 @@ namespace Fizzyo
 
             headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+#if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             WWW sendGetUnlock = new WWW(getUnlock, null, headers);
 
             while (!sendGetUnlock.isDone) { }
@@ -146,7 +150,7 @@ namespace Fizzyo
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
 #if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
-#endif 
+#endif
             WWW sendGetHighscores = new WWW(getHighscores, null, headers);
             while (!sendGetHighscores.isDone) { }
 
@@ -182,7 +186,9 @@ namespace Fizzyo
             form.AddField("score", score);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+#if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
 
             WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
@@ -216,7 +222,9 @@ namespace Fizzyo
             form.AddField("achievementId", achievementId);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+#if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
 
             WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
@@ -264,7 +272,9 @@ namespace Fizzyo
 
                         Dictionary<string, string> headers = form.headers;
                         headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-                        headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
                         byte[] rawData = form.data;
 
                         WWW sendPostUnlock = new WWW(postUnlock, rawData, headers);
