@@ -1,4 +1,4 @@
-﻿	using System;
+﻿using System;
 using System.Collections.Generic;
 using System.Linq;
 using System.Text;
@@ -327,6 +327,9 @@ namespace Fizzyo
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif
             WWW sendGetTag = new WWW(getTag, null, headers);
 
             while (!sendGetTag.isDone) { }
@@ -382,7 +385,9 @@ namespace Fizzyo
             form.AddField("gamerTag", tag);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
 
             WWW sendPostUnlock = new WWW(uploadTag, rawData, headers);
@@ -414,6 +419,9 @@ namespace Fizzyo
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif
             WWW sendGetCal = new WWW(getCal, null, headers);
 
             while (!sendGetCal.isDone) { }
@@ -480,7 +488,9 @@ namespace Fizzyo
             form.AddField("time", time.ToString());
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
 
             WWW sendPostUnlock = new WWW(uploadCal, rawData, headers);
@@ -556,7 +566,9 @@ namespace Fizzyo
 
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-
+#if UNITY_UWP
+            headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
+#endif 
             byte[] rawData = form.data;
 
             WWW sendPostSession = new WWW(postSession, rawData, headers);

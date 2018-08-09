@@ -16,6 +16,7 @@ public class CalibrateScene : MonoBehaviour {
     int breathCount = 0;
     List<float> pressureVals = new List<float>();
     List<float> breathLengthVals = new List<float>();
+    bool isCalibrating = false;
 
 
     // Use this for initialization
@@ -23,8 +24,9 @@ public class CalibrateScene : MonoBehaviour {
         //Hookup the breath recognizer
         FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
-
+        Debug.Log("should only see this once!");
         progressEllipse.SetProgress(0);
+        isCalibrating = true;
     }
 	
 	// Update is called once per frame
@@ -44,6 +46,7 @@ public class CalibrateScene : MonoBehaviour {
 
     void OnBreathStarted(object sender)
     {
+        Debug.Log("also started breathing");
         startTime = Time.realtimeSinceStartup;
         exhaling = true;
     }
@@ -62,7 +65,12 @@ public class CalibrateScene : MonoBehaviour {
         if (breathCount >= requiredBreaths)
         {
             Calibrate();
-            NextScene();
+            Debug.Log("this shouldnt be called");
+            if (isCalibrating)
+            {
+                isCalibrating = false;
+                NextScene();
+            }
         }
     }
 
@@ -95,7 +103,7 @@ public class CalibrateScene : MonoBehaviour {
         FizzyoFramework.Instance.Device.SetCalibrationLimits(maxPressure, maxBreath);
     }
 
-    void NextScene()
+    private void NextScene()
     {
         SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }

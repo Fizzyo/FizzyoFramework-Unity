@@ -18,6 +18,6 @@ public class BackToMenu : MonoBehaviour {
 
     void BackClick()
     {
-        SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
+      SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }
 }

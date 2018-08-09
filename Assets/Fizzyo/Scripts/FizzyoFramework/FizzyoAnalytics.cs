@@ -64,7 +64,7 @@ namespace Fizzyo
           System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
           startTime = (int)(System.DateTime.UtcNow - epochStart).TotalSeconds;
         }
-        private void OnApplicationFocus(bool focus)
+       /**  private void OnApplicationFocus(bool focus) //moved to FizzyoFramework.cs
         {
             if (focus)
             {
@@ -74,7 +74,7 @@ namespace Fizzyo
             {
                 PostOnQuit();
             }
-        }
+        } */
 		
 		///<summary>
 		///Add this to the logic which manages quitting the application to Create and Post sessions.
@@ -112,7 +112,7 @@ namespace Fizzyo
             this.Score = 0;
             this.SetCount = 0;
             Start();
-            Debug.Log("looks like alt tabbing works eh");
+            Debug.Log("inside ResetData()");
 
         }
 

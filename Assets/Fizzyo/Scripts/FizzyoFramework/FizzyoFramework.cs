@@ -72,11 +72,11 @@ namespace Fizzyo
         ///</summary>
         //public string apiPath = "https://api.fizzyo-ucl.co.uk/";
         public string apiPath = "https://api-staging.fizzyo-ucl.co.uk/";
-
+        int count = 0;
         ///<summary>
         ///The singleton instance of the Fizzyo Framework
         ///</summary>
-        public static FizzyoFramework _instance = null;
+        private static FizzyoFramework _instance = null;
         public FizzyoUser User { get; set; }
         public FizzyoDevice Device { get; set; }
         public FizzyoAchievements Achievements { get; set; }
@@ -103,12 +103,11 @@ namespace Fizzyo
                     //     return null;
                 }
 
-                // lock (_lock)
+                lock (_lock)
                 {
                     if (_instance == null)
                     {
                         _instance = (FizzyoFramework)FindObjectOfType(typeof(FizzyoFramework));
-
                         if (FindObjectsOfType(typeof(FizzyoFramework)).Length > 1)
                         {
                             Debug.LogError("[Singleton] Something went really wrong " +
@@ -135,7 +134,7 @@ namespace Fizzyo
                                 _instance.gameObject.name);
                         }
                     }
-
+                    //Debug.Log("returning instance");
                     return _instance;
                 }
             }
@@ -147,82 +146,100 @@ namespace Fizzyo
         {
 
             if (_instance != null)
+            {
+                Debug.Log("fizzprob: ");
                 return;
+            }
+            else
+            {
+                Debug.Log("[FizzyoFramework] Instantiate.");
 
-            Debug.Log("[FizzyoFramework] Instantiate.");
 
-
-            User = new FizzyoUser();
-            Device = new FizzyoDevice();
-            Recogniser = new BreathRecogniser();
-            Achievements = new FizzyoAchievements();
-            Analytics = new FizzyoAnalytics();
+                User = new FizzyoUser();
+                Device = new FizzyoDevice();
+                Recogniser = new BreathRecogniser();
+                Achievements = new FizzyoAchievements();
+                Analytics = new FizzyoAnalytics();
+            }
         }
 
 
 
         void Awake()
         {
+            Debug.Log("Awake is calleds");
             Debug.Log("[FizzyoFramework] Start.");
-
             if (_instance != null)
-                return;
-
-#if UNITY_UWP
-            ClientVersion = SystemInfo.deviceUniqueIdentifier;
-#endif
-
-            DontDestroyOnLoad(gameObject);
-
-            Load();
-
-
-            if (useTestHarnessData)
             {
+                Debug.Log("in Awake but not null");
+                return;
+            }
+            else
+            {
+                Debug.Log("just the offchance: ");
+                DontDestroyOnLoad(gameObject);
+
+                FizzyoFramework.Instance.Load();
+
+                if (useTestHarnessData)
+                {
 #if UNITY_EDITOR
                 Device.StartPreRecordedData("Fizzyo/Data/" + testHarnessDataFile.ToString() + ".fiz");
 #endif
-            }
+                }
 
 
-            if (showCalibrateAutomatically && !Device.Calibrated)
-            {
-                Scene scene = SceneManager.GetActiveScene();
-                CallbackScenePath = scene.path;
-                SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
+                if (showCalibrateAutomatically && !Device.Calibrated)
+                {
+                    Scene scene = SceneManager.GetActiveScene();
+                    CallbackScenePath = scene.path;
+                    SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
+                }
             }
 
 
 
         }
-
-        void OnApplicationFocus(bool focus)
+        
+       void OnApplicationFocus(bool focus)
         {
-           bool isPaused = focus;
+           bool isFocus = focus;
 
-           if (isPaused == true)
+           if (isFocus == true)
            {
                 FizzyoFramework.Instance.Analytics.ResetData();
                 Debug.Log(FizzyoFramework.Instance.Recogniser.BreathCount + "and" + FizzyoFramework.Instance.Recogniser.GoodBreaths + "and 1 more");
+                Debug.Log("Game Has Focus and count:  " + this.count);
                 Debug.Log(FizzyoFramework.Instance.Analytics.startTime + "time");
-                Debug.Log("Game HAs Focus");
                 Debug.Log("Did the time change?" + FizzyoFramework.Instance.Analytics.startTime);
+                this.count = this.count + 1;
            }
             else
            {
-                Debug.Log("Game paused");
-                FizzyoFramework.Instance.Analytics.PostOnQuit();
-                Debug.Log("endTime: " + FizzyoFramework.Instance.Analytics.endTime);
-           }
-        }
+                Debug.Log("Game paused  and count: " + this.count);
+                if (Analytics != null)
+                {
+                    FizzyoFramework.Instance.Analytics.PostOnQuit();
+                 //  Debug.Log("endTime: " + FizzyoFramework.Instance.Analytics.endTime);
+                }
+                else
+                {
+                    Debug.Log("[FizzyoFramework] Analytics is Null (inside the pause.");
+                }
+                this.count = this.count + 1; 
+            }
+            
+        } 
 
         void OnApplicationQuit()
         {
-            if(Analytics != null) 
+            if (Analytics != null)
             {
                 Analytics.PostOnQuit();
+                Debug.Log("game quit and the count = " + this.count);
             }
-            Debug.Log("[FizzyoFramework] Analytics is Null.");
+            else { Debug.Log("Upon Quit [FizzyoFramework] Analytics is Null."); }
+            Debug.Log("count = " + this.count);
         }
 
 
@@ -291,7 +308,9 @@ namespace Fizzyo
         public bool Load()
         {
             //Login to server
-
+#if UNITY_UWP
+            ClientVersion = SystemInfo.deviceUniqueIdentifier;
+#endif
             if (showLoginAutomatically)
             {
                 LoginReturnType loginResult = FizzyoFramework.Instance.User.Login();
@@ -309,8 +328,8 @@ namespace Fizzyo
                 return false;
             }
 
-            User.Load();
-            Achievements.Load();
+            FizzyoFramework.Instance.User.Load();
+            FizzyoFramework.Instance.Achievements.Load();
 
 
 
