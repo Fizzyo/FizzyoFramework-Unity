@@ -178,29 +178,35 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType PostScore(int score)
         {
-            string uploadScore = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/highscores";
+            try
+            {
+                string uploadScore = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/highscores";
 
-            WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("score", score);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+                WWWForm form = new WWWForm();
+                form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
+                form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                form.AddField("score", score);
+                Dictionary<string, string> headers = form.headers;
+                headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 #if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
-#endif 
-            byte[] rawData = form.data;
+#endif
+                byte[] rawData = form.data;
 
-            WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
+                WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
 
-            while (!sendPostUnlock.isDone) { };
+                while (!sendPostUnlock.isDone) { };
 
-            if (sendPostUnlock.error != null)
+                if (sendPostUnlock.error != null)
+                {
+                    return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                }
+
+                return FizzyoRequestReturnType.SUCCESS;
+            } catch (System.ArgumentNullException e)
             {
-               return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
-
-            return FizzyoRequestReturnType.SUCCESS;
         }
 
 
@@ -214,29 +220,41 @@ namespace Fizzyo
         /// 
         public FizzyoRequestReturnType UnlockAchievement(string achievementId)
         {
-            string unlockAchievement = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/achievements/" + achievementId + "/unlock" ;
 
-            WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("achievementId", achievementId);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            string unlockAchievement = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/achievements/" + achievementId + "/unlock" ;
+            try
+            {
+                WWWForm form = new WWWForm();
+                form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
+                form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                form.AddField("achievementId", achievementId);
+                form.AddField("gameId", FizzyoFramework.Instance.gameID);
+                Dictionary<string, string> headers = form.headers;
+                headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
 #if UNITY_UWP
             headers.Add("User-Agent", " FizzyoClient " + FizzyoFramework.Instance.ClientVersion);
-#endif 
-            byte[] rawData = form.data;
+#endif
+                byte[] rawData = form.data;
 
-            WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
+                WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
 
-            while (!sendPostUnlock.isDone) { };
+                while (!sendPostUnlock.isDone) { };
 
-            if (sendPostUnlock.error != null)
+                if (sendPostUnlock.error != null)
+                {
+                    Debug.Log("upload achie error - should add to queue");
+                    //TODO add upload que here
+                    string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
+                    PlayerPrefs.SetString("achievementsToUpload", achievementsToUpload + achievementId + ",");
+                    return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                }
+                Debug.Log("achievement has been unlocked!");
+                return FizzyoRequestReturnType.SUCCESS;
+            } catch (System.ArgumentNullException e)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
-                //TODO add upload que here
             }
-            return FizzyoRequestReturnType.SUCCESS;
+
         }
 
         /// <summary>
@@ -246,7 +264,7 @@ namespace Fizzyo
         /// FizzyoRequestReturnType.SUCCESS is upload is successful.  
         /// FizzyoRequestReturnType.FAILED_TO_CONNECT if connection failed.  
         /// </returns>
-        private FizzyoRequestReturnType PostAchievements()
+        private FizzyoRequestReturnType PostAchievements() //is this method necessary!?
         {
             string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
 
@@ -289,6 +307,7 @@ namespace Fizzyo
                     }
 
                 }
+                PlayerPrefs.SetString("achievementsToUpload", ""); //once uploaded, reset the queue
 
             }
 

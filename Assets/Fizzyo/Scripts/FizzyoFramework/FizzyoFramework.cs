@@ -32,7 +32,7 @@ namespace Fizzyo
         ///<summary>
         ///Set to true, shows login screen at start of the game
         ///</summary>
-        public bool showSetGamerTagAutomatically = false;
+        public bool showSetGamerTagAutomatically = true;
 
         [Tooltip("Automatically show calibration screen if never calibratd by user.")]
         ///<summary>
@@ -44,14 +44,15 @@ namespace Fizzyo
         ///<summary>
         ///The game ID given by the Fizzyo API
         ///</summary>
-        public string gameID = "20bc89e9-0c04-44c5-ba21-ab8a755eb4cd";//TinyTest
+        //public string gameID = "20bc89e9-0c04-44c5-ba21-ab8a755eb4cd";//TinyTest
+        public string gameID = "713b8f13-ed6d-4fe7-9c28-244e459eed31"; //test the time
 
         [Tooltip("Game secret given by Fizzyo API.")]
         ///<summary>
         ///The game secret given by the Fizzyo API
         ///</summary>
-        public string gameSecret = "ml8rVoJX7axkEDXnnXqGnPleyv4Ek36W7BErm0wMvbm2V70pyXQWZOpdYAlO1nqV";
-
+       // public string gameSecret = "ml8rVoJX7axkEDXnnXqGnPleyv4Ek36W7BErm0wMvbm2V70pyXQWZOpdYAlO1nqV";
+        public string gameSecret = "NR8M7Vl4zbqMXonnEgoX0RybprOZqEgLomRy83X46dB1m56rzErRoXob79jAkGxv";
         [Header("Test Harness")]
 
         [Tooltip("Use test harness data.")]
@@ -76,7 +77,7 @@ namespace Fizzyo
         ///<summary>
         ///The singleton instance of the Fizzyo Framework
         ///</summary>
-        private static FizzyoFramework _instance = null;
+        private static FizzyoFramework _instance;
         public FizzyoUser User { get; set; }
         public FizzyoDevice Device { get; set; }
         public FizzyoAchievements Achievements { get; set; }
@@ -87,7 +88,7 @@ namespace Fizzyo
         private static bool applicationIsQuitting = false;
         public string CallbackScenePath { get; set; }
         public string ClientVersion;
-
+        public int cacheSession;
 
         //Singleton instance
         public static FizzyoFramework Instance
@@ -122,7 +123,7 @@ namespace Fizzyo
                             _instance = singleton.AddComponent<FizzyoFramework>();
                             singleton.name = "(singleton) " + typeof(FizzyoFramework).ToString();
 
-                            DontDestroyOnLoad(singleton);
+                            DontDestroyOnLoad(singleton); 
 
                             Debug.Log("[Singleton] An instance of " + typeof(FizzyoFramework) +
                                 " is needed in the scene, so '" + singleton +
@@ -167,7 +168,7 @@ namespace Fizzyo
 
         void Awake()
         {
-            Debug.Log("Awake is calleds");
+            Debug.Log("Awake is calleds: object: " + gameObject.name);
             Debug.Log("[FizzyoFramework] Start.");
             if (_instance != null)
             {
@@ -178,8 +179,8 @@ namespace Fizzyo
             {
                 Debug.Log("just the offchance: ");
                 DontDestroyOnLoad(gameObject);
-
-                FizzyoFramework.Instance.Load();
+                Debug.Log("loading tag placement 0");
+               FizzyoFramework.Instance.Load();
 
                 if (useTestHarnessData)
                 {
@@ -191,23 +192,30 @@ namespace Fizzyo
 
                 if (showCalibrateAutomatically && !Device.Calibrated)
                 {
+                    SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
                     Scene scene = SceneManager.GetActiveScene();
                     CallbackScenePath = scene.path;
-                    SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
+                }
+                if (showSetGamerTagAutomatically)
+                {
+                    if (CallbackScenePath == null) {
+                        Scene scene = SceneManager.GetActiveScene();
+                        CallbackScenePath = scene.path;
+                    }
+                    SceneManager.LoadScene("Fizzyo/Scenes/InitialDataLoad");
                 }
             }
 
 
 
         }
-        
-       void OnApplicationFocus(bool focus)
+
+        void OnApplicationFocus(bool focus)
         {
            bool isFocus = focus;
 
            if (isFocus == true)
            {
-                FizzyoFramework.Instance.Analytics.ResetData();
                 Debug.Log(FizzyoFramework.Instance.Recogniser.BreathCount + "and" + FizzyoFramework.Instance.Recogniser.GoodBreaths + "and 1 more");
                 Debug.Log("Game Has Focus and count:  " + this.count);
                 Debug.Log(FizzyoFramework.Instance.Analytics.startTime + "time");
@@ -220,6 +228,7 @@ namespace Fizzyo
                 if (Analytics != null)
                 {
                     FizzyoFramework.Instance.Analytics.PostOnQuit();
+                    FizzyoFramework.Instance.Analytics.ResetData();
                  //  Debug.Log("endTime: " + FizzyoFramework.Instance.Analytics.endTime);
                 }
                 else
@@ -227,7 +236,7 @@ namespace Fizzyo
                     Debug.Log("[FizzyoFramework] Analytics is Null (inside the pause.");
                 }
                 this.count = this.count + 1; 
-            }
+            } 
             
         } 
 
@@ -330,6 +339,8 @@ namespace Fizzyo
 
             FizzyoFramework.Instance.User.Load();
             FizzyoFramework.Instance.Achievements.Load();
+            FizzyoFramework.Instance.Analytics.Start();
+            FizzyoFramework.Instance.Analytics.UploadCache();
 
 
 
@@ -347,6 +358,7 @@ namespace Fizzyo
         private static void PlayOffline()
         {
             // ResetPlayerPrefs();
+            FizzyoFramework.Instance.Analytics.Start();
         }
 
         /// <summary>

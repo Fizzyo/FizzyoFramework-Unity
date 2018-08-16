@@ -41,27 +41,32 @@ public class LeaderboardManager : MonoBehaviour
         {
 
             //AllHighscoreData allDataLead = JsonUtility.FromJson<AllHighscoreData>(highscores);
-            
-            for (int i = 0; i < FizzyoFramework.Instance.Achievements.highscores.Length; i++)
+            try
             {
-                switch (i)
+                for (int i = 0; i < FizzyoFramework.Instance.Achievements.highscores.Length; i++)
                 {
-                    case 0:
-                        position = "1st";
-                        break;
-                    case 1:
-                        position = "2nd";
-                        break;
-                    case 2:
-                        position = "3rd";
-                        break;
-                    default:
-                        position = (i + 1) + "th";
-                        break;
+                    switch (i)
+                    {
+                        case 0:
+                            position = "1st";
+                            break;
+                        case 1:
+                            position = "2nd";
+                            break;
+                        case 2:
+                            position = "3rd";
+                            break;
+                        default:
+                            position = (i + 1) + "th";
+                            break;
+                    }
+
+                    //CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
+                    CreateLead(position, FizzyoFramework.Instance.Achievements.highscores[i].tag, FizzyoFramework.Instance.Achievements.highscores[i].score);
                 }
-                
-               //CreateLead(position, allDataLead.highscores[i].tag, allDataLead.highscores[i].score);
-                CreateLead(position, FizzyoFramework.Instance.Achievements.highscores[i].tag, FizzyoFramework.Instance.Achievements.highscores[i].score);
+            } catch (System.NullReferenceException e)
+            {
+                Debug.Log("must be offline");
             }
             
         }

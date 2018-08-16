@@ -2,13 +2,16 @@
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
+using Fizzyo;
 
 public class InitialDataLoad : MonoBehaviour
 {
 
     // gameId and gameSecret are used to load data via the Fizzyo API, these values must be assigned by the game developer
-    string gameId = "40eaf651-5721-4092-81fc-5f631b8b1a97";
-    string gameSecret = "70cb56007a46e26d47edae1679d2e9a0";
+    //string gameId = "40eaf651-5721-4092-81fc-5f631b8b1a97";
+    //string gameSecret = "70cb56007a46e26d47edae1679d2e9a0";
+    string gameId;
+    string gameSecret;
 
     // Game Objects used withing the scene - assigned through unity script component
     public GameObject loadingData;
@@ -29,7 +32,8 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     void Start()
     {
-
+        this.gameId = FizzyoFramework.Instance.gameID;
+        this.gameSecret = FizzyoFramework.Instance.gameSecret;
         SceneSetup();
 
         StartCoroutine("LoadUserData");
@@ -87,8 +91,8 @@ public class InitialDataLoad : MonoBehaviour
 
         yield return new WaitForSeconds(0.5f);
 
-        bool dataLoaded = false;// Load.LoadUserData(gameId, gameSecret);
-        
+        bool dataLoaded = true;//Load.LoadUserData(gameId, gameSecret);
+
         if (!dataLoaded)
         {
 
@@ -101,10 +105,10 @@ public class InitialDataLoad : MonoBehaviour
             loadingDataText.text = "User Data Loaded";
             loadingDataText.color = Color.green;
 
-            if (PlayerPrefs.GetInt("tagDone") == 0)
+            if (PlayerPrefs.GetInt("tagDone") != 1)
             {
-                loadingData.SetActive(false);
-                tagChange.SetActive(true);
+            loadingData.SetActive(false);
+            tagChange.SetActive(true);
             }
             else
             {
@@ -125,7 +129,7 @@ public class InitialDataLoad : MonoBehaviour
 
         if (PlayerPrefs.GetInt("calDone") == 1)
         {
-            SceneManager.LoadScene("Menu");
+            SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
         } else
         {
             SceneManager.LoadScene("Calibration");
@@ -206,18 +210,18 @@ public class InitialDataLoad : MonoBehaviour
 
         string fullTag = tag1.text + tag2.text + tag3.text;
 
-        string tagUpload = "";// Upload.UserTag(fullTag);
-
-        if (tagUpload != "Tag Upload Complete")
+        UserTagReturnType tagUpload = FizzyoFramework.Instance.User.PostUserTag(fullTag);
+        if (tagUpload != UserTagReturnType.SUCCESS)
         {
-            tagError.GetComponent<Text>().text = tagUpload;
-            tagError.SetActive(true);
+            //tagError.GetComponent<Text>().text = tagUpload;
+            //tagError.SetActive(true);
+            Debug.Log("post failed :(");
         }
         else
         {
-            tagError.SetActive(false);
-            loadingData.SetActive(true);
-            tagChange.SetActive(false);
+           // tagError.SetActive(false);
+            //loadingData.SetActive(true);
+           // tagChange.SetActive(false);
 
             StartCoroutine("EndLoad");
         }

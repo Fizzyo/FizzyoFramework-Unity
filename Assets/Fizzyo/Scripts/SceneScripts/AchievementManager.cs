@@ -54,37 +54,40 @@ public class AchievementManager : MonoBehaviour
         GameObject text = GameObject.Find("Total");
         Text total = text.GetComponent<Text>();
 
-        
-
-        for (int i = 0; i < FizzyoFramework.Instance.Achievements.allAchievements.Length; i++)
+        try
         {
-            AchievementData achievment = FizzyoFramework.Instance.Achievements.allAchievements[i];
 
-            if (!(catagories.Contains(achievment.category)))
+            for (int i = 0; i < FizzyoFramework.Instance.Achievements.allAchievements.Length; i++)
             {
-                Createcategory(achievment.category);
+                AchievementData achievment = FizzyoFramework.Instance.Achievements.allAchievements[i];
+
+                if (!(catagories.Contains(achievment.category)))
+                {
+                    Createcategory(achievment.category);
+                }
+
+                if (achievment.unlock == 1)
+                {
+                    totalPoints += achievment.points;
+                }
+
+                CreateAch(achievment.category, achievment.title, achievment.description, achievment.points, achievment.unlock, achievment.unlockProgress, achievment.unlockRequirement);
+
             }
 
-            if (achievment.unlock == 1)
+            foreach (GameObject achList in GameObject.FindGameObjectsWithTag("AchList"))
             {
-                totalPoints += achievment.points;
+                achList.SetActive(false);
             }
 
-            CreateAch(achievment.category, achievment.title, achievment.description, achievment.points, achievment.unlock, achievment.unlockProgress, achievment.unlockRequirement);            
+            if (active != null)
+            {
+                active.Click();
+            }
 
+            total.text = "Total Achievment Points: " + totalPoints;
         }
-
-        foreach (GameObject achList in GameObject.FindGameObjectsWithTag("AchList"))
-        {
-            achList.SetActive(false);
-        }
-
-        if(active != null)
-        {
-            active.Click();
-        }
-
-        total.text = "Total Achievment Points: " + totalPoints;
+        catch { return; }
     }
 
     /// <summary>

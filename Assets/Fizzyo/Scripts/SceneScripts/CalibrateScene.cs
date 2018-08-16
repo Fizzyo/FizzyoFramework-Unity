@@ -99,7 +99,7 @@ public class CalibrateScene : MonoBehaviour {
                 maxBreath = breathLengthVals[i];
             }
         }
-
+        Debug.Log(maxPressure + "<-- presure, now breath --> " + maxBreath);
         FizzyoFramework.Instance.Device.SetCalibrationLimits(maxPressure, maxBreath);
     }
 

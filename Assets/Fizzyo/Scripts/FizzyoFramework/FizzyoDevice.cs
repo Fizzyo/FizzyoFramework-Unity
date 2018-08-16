@@ -156,11 +156,14 @@ namespace Fizzyo
         /// <summary>
         /// Changes the maximum calibrated breath pressure and length to the specified values. Will set the Calibrated boolean to true.  
         /// </summary>    
-        public void SetCalibrationLimits(float maxPressure = 1, float maxBreath = 1)
+        public void SetCalibrationLimits(float maxPressure, float maxBreath)
         {
             maxPressureCalibrated = maxPressure;
             maxBreathCalibrated = maxBreath;
+            Debug.Log("MaxPressure: " + maxPressure + "MaxBreath: " + maxBreath);
             Calibrated = true;
+            FizzyoFramework.Instance.Recogniser.MaxPressure = maxPressureCalibrated;
+            FizzyoFramework.Instance.Recogniser.MaxBreathLength = maxBreathCalibrated;
         }
     }
 }

@@ -85,7 +85,7 @@ namespace Fizzyo
 
         public string UserID { get; internal set; }
         public string AccessToken { get; internal set; }
-
+        public string userTag;
 
         private bool loginInProgress = false;
         private LoginReturnType loginResult = LoginReturnType.FAILED_TO_CONNECT;
@@ -291,7 +291,7 @@ namespace Fizzyo
         /// </summary>
         public void Load()
         {
-         
+            Debug.Log("loading tag placement 1");
             switch (LoadUserTag())
             {
                 case UserTagReturnType.NOT_SET | UserTagReturnType.FAILED_TO_CONNECT:
@@ -299,6 +299,7 @@ namespace Fizzyo
                     break;
                 case UserTagReturnType.SUCCESS:
                     userTagSet = true;
+ 
                     break;
             }
 
@@ -307,6 +308,7 @@ namespace Fizzyo
             {
                 case CalibrationReturnType.NOT_SET | CalibrationReturnType.FAILED_TO_CONNECT:
                     calibrationSet = false;
+
                     break;
                 case CalibrationReturnType.SUCCESS:
                     calibrationSet = true;
@@ -320,7 +322,7 @@ namespace Fizzyo
         /// </summary>
         public UserTagReturnType LoadUserTag()
         {
-
+            Debug.Log("loading tag placement 2");
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
 
             string getTag = FizzyoFramework.Instance.apiPath + "api/v1/users/" + FizzyoFramework.Instance.User.UserID;
@@ -344,12 +346,16 @@ namespace Fizzyo
 
             if (Regex.IsMatch(allData.gamerTag, "^[A-Z]{3}$"))
             {
-                PlayerPrefs.SetInt("tagDone", 1);
+                PlayerPrefs.SetInt("tagDone", 0);
+                Debug.Log("loading tag placement 3");
+                Debug.Log(allData.gamerTag + "did it change?");
+                this.userTag = allData.gamerTag;
                 return UserTagReturnType.SUCCESS;
             }
             else
             {
                 return UserTagReturnType.NOT_SET;
+                Debug.Log("loading tag placement 4");
             }
 
 
@@ -366,10 +372,11 @@ namespace Fizzyo
         /// </returns> 
         public UserTagReturnType PostUserTag(string tag)
         {
+            Debug.Log("GOT HERE AT LEAST! the tag is: " + tag);
 
-            if (PlayerPrefs.GetInt("online") == 0)
+            if (loggedIn == false)
             {
-                return UserTagReturnType.FAILED_TO_CONNECT;
+                return UserTagReturnType.FAILED_TO_CONNECT;;
             }
 
             string[] tagFilter = { "ASS", "FUC", "FUK", "FUQ", "FUX", "FCK", "COC", "COK", "COQ", "KOX", "KOC", "KOK", "KOQ", "CAC", "CAK", "CAQ", "KAC", "KAK", "KAQ", "DIC", "DIK", "DIQ", "DIX", "DCK", "PNS", "PSY", "FAG", "FGT", "NGR", "NIG", "CNT", "KNT", "SHT", "DSH", "TWT", "BCH", "CUM", "CLT", "KUM", "KLT", "SUC", "SUK", "SUQ", "SCK", "LIC", "LIK", "LIQ", "LCK", "JIZ", "JZZ", "GAY", "GEY", "GEI", "GAI", "VAG", "VGN", "SJV", "FAP", "PRN", "LOL", "JEW", "JOO", "GVR", "PUS", "PIS", "PSS", "SNM", "TIT", "FKU", "FCU", "FQU", "HOR", "SLT", "JAP", "WOP", "KIK", "KYK", "KYC", "KYQ", "DYK", "DYQ", "DYC", "KKK", "JYZ", "PRK", "PRC", "PRQ", "MIC", "MIK", "MIQ", "MYC", "MYK", "MYQ", "GUC", "GUK", "GUQ", "GIZ", "GZZ", "SEX", "SXX", "SXI", "SXE", "SXY", "XXX", "WAC", "WAK", "WAQ", "WCK", "POT", "THC", "VAJ", "VJN", "NUT", "STD", "LSD", "POO", "AZN", "PCP", "DMN", "ORL", "ANL", "ANS", "MUF", "MFF", "PHK", "PHC", "PHQ", "XTC", "TOK", "TOC", "TOQ", "MLF", "RAC", "RAK", "RAQ", "RCK", "SAC", "SAK", "SAQ", "PMS", "NAD", "NDZ", "NDS", "WTF", "SOL", "SOB", "FOB", "SFU", "PEE", "DIE", "BUM", "BUT", "IRA" };
@@ -377,6 +384,7 @@ namespace Fizzyo
             if (tagFilter.Contains(tag) || !Regex.IsMatch(tag, "^[A-Z]{3}$"))
             {
                 return UserTagReturnType.BANNED_TAG;
+                Debug.Log("banned");
             }
 
             string uploadTag = FizzyoFramework.Instance.apiPath + "api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
@@ -391,18 +399,19 @@ namespace Fizzyo
             byte[] rawData = form.data;
 
             WWW sendPostUnlock = new WWW(uploadTag, rawData, headers);
-
+            
             while (!sendPostUnlock.isDone) { }
 
             if (sendPostUnlock.error != null)
             {
+                Debug.Log("connection error2 though");
                 return UserTagReturnType.FAILED_TO_CONNECT;
             }
-
+            Debug.Log("shoulda posted");
             PlayerPrefs.SetInt("tagDone", 1);
             PlayerPrefs.SetString("userTag", tag);
 
-                return UserTagReturnType.SUCCESS;
+            return UserTagReturnType.SUCCESS;
 
 
         }
@@ -507,6 +516,7 @@ namespace Fizzyo
         }
 
 
+
         /// <summary>
         /// Uploads a players session data and achievements
         /// </summary>
@@ -537,7 +547,7 @@ namespace Fizzyo
 		///
         /// String - "Session Upload Failed /nAchievement Upload Failed" - If session upload fails and achievement upload fails
         /// </returns>
-        public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
+       /**  public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
         {
 
             if (PlayerPrefs.GetInt("online") == 0)
@@ -585,7 +595,7 @@ namespace Fizzyo
 
             return status;
 
-        }
+        } */
 
 
     }

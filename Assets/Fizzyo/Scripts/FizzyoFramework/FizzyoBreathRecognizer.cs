@@ -254,6 +254,7 @@ namespace Fizzyo
             {
                 // Notify the delegate that the exhaled breath is complete
                 bool isBreathFull = this.IsBreathFull(this.breathLength, this.maxBreathLength, this.exhaledVolume, this.maxPressure);
+                Debug.Log("values: " + this.maxBreathLength + " was length, now maxPressure: " + this.maxPressure + "and now vol: " + this.exhaledVolume);
                 int breathQuality = GetBreathQuality(this.breathPercentage);
                 ExhalationCompleteEventArgs eventArgs = new ExhalationCompleteEventArgs(
                     this.breathLength,
