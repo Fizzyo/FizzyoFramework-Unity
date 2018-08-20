@@ -179,7 +179,7 @@ namespace Fizzyo
             return FizzyoRequestReturnType.SUCCESS;
         }
 
-       public void StoreOffline()
+       private void StoreOffline()
         {
             Debug.Log("in storeoffline");
             OfflineStorageSessions sessionToStore = new OfflineStorageSessions();
@@ -203,7 +203,7 @@ namespace Fizzyo
 
         }
 
-        public void SaveToFile(OfflineStorageSessions sessionToStore)
+        private void SaveToFile(OfflineStorageSessions sessionToStore)
         {
             AllStorageSessions loadedSessions;
             string getSessions = PlayerPrefs.GetString("offlineSessions", "");
@@ -239,7 +239,7 @@ namespace Fizzyo
         }
 
         [Serializable]
-        public class AllStorageSessions
+        private class AllStorageSessions
         {
             public List<OfflineStorageSessions> allSessions = new List<OfflineStorageSessions>();
         }
@@ -267,7 +267,9 @@ namespace Fizzyo
                         //remove from queue -- maybe unnecessary
                         loadedSessions.allSessions.RemoveAt(i);
                     } else
-                    {
+                    {  //send the whole array and store it again
+                        string jsonSessions = JsonUtility.ToJson(loadedSessions); //this MAY need to be redone for AllStorageSessions?
+                        PlayerPrefs.SetString("offlineSessions", jsonSessions);
                         return;
                     }
                   
@@ -277,7 +279,7 @@ namespace Fizzyo
             } Debug.Log("player prefs should now be null " + PlayerPrefs.GetString("offlineSessions", "") + "?");
         }
 
-        public FizzyoRequestReturnType UploadSession(OfflineStorageSessions session)
+        private FizzyoRequestReturnType UploadSession(OfflineStorageSessions session)
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
             string postAnalytics = FizzyoFramework.Instance.apiPath + "api/v1/games/" + FizzyoFramework.Instance.gameID + "/sessions";

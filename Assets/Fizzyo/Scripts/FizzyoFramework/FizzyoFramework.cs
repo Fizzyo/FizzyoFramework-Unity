@@ -32,7 +32,7 @@ namespace Fizzyo
         ///<summary>
         ///Set to true, shows login screen at start of the game
         ///</summary>
-        public bool showSetGamerTagAutomatically = true;
+        public bool showSetGamerTagAutomatically = false;
 
         [Tooltip("Automatically show calibration screen if never calibratd by user.")]
         ///<summary>
