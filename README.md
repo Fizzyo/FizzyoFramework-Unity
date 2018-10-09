@@ -78,7 +78,6 @@ The value returned are calibrated. A value of 1.0 corresponds to the maximum pre
 FizzyoFramework.Instance.Device.Pressure()
 ```
 
-
 ### Fizzyo Breath Recognizer
 Events can be used to listen for the start or end of a breath.
 
@@ -122,13 +121,6 @@ If you would like to show a login window at a specific point in your game you ca
 ```csharp
 FizzyoFramework.Instance.User.Login();
 ```
-### Calibrate 
-
-
-## Fizzyo Game UID
-In order to use game achievements, high scores and analytics your game will need to be registed on the (Fizzyo Portal) see https://github.com/Fizzyo/Creating-Games-for-Fizzyo for further details on how to build and share your game.
-
-
 ## Creating a Game for Fizzyo
 
 ### Registering your game 
@@ -166,6 +158,10 @@ Go to Game Achievements or High Scores, Click the relevant button
 To go back to the game dashboard or to the high scores click on the relevant button
 The Achievement Dashboard - All actions performed on games can be preformed on achievements
 The High Score Dashboard - At the moment you can only view the top 20 scores in your game there 
+
+## Fizzyo Game UID
+In order to use game achievements, high scores and analytics your game will need to be registed on the (Fizzyo Portal) see https://github.com/Fizzyo/Creating-Games-for-Fizzyo for further details on how to build and share your game.
+
 
 ### Deleting Games
 
