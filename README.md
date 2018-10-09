@@ -184,7 +184,7 @@ The FizzyoFramework script can be attached to a Unity GameObject to configure th
 At present Unity doesnt allows you to specific VID & PID's so to you need to have to manuually add the following to Package.appxmanifest after exporting to ensure the game will support the Fizzyo Device. 
 
 
-
+```csharp
 <Capabilities> 
 <Capability Name="internetClient" /> 
 <uap:Capability Name="userAccountInformation" /> 
@@ -196,4 +196,4 @@ At present Unity doesnt allows you to specific VID & PID's so to you need to hav
 </Device> 
 </DeviceCapability> 
 </Capabilities> 
- 
+```
