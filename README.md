@@ -68,8 +68,6 @@ void OnBreathEnded(object sender, ExhalationCompleteEventArgs e)
 }
 ```
 
-
-
 ### Pressure data 
 
 Returns the pressure returned by the Fizzyo device as a user exhales through it. 
@@ -171,6 +169,32 @@ Be suire you have selected the right game and confirm
 ### Configuration. 
 The FizzyoFramework script can be attached to a Unity GameObject to configure though the Unity Editor.
 
+## Testing your game 
+
+This example https://github.com/Fizzyo/Creating-Games-for-Fizzyo/tree/master/Sample%20Games/Fizzyo-Unity-Example includes a test harness and test data that allows you to load and playback breath data saved from a fizzyo device. There is a selection of good and bad breadths available at https://github.com/Fizzyo/Creating-Games-for-Fizzyo/tree/master/Sample%20Games/Fizzyo-Unity-Example/Assets/Data 
+
+To use this a singleton class is provided FizzyoDevice.Instance() that can be used at any point in your code if FizzyoDevice.cs is present in your project.
+
+By default FizzyoDevice plays back pre-recorded data but can also be used to gather data directly from the device if the bool useRecordedData is set to false.
+This can be done through the editor or programmatically in your code.
+
+This allows you to program your game completely against pre-recoreded pressure values if desired and switched over to live values at a later stage.
+
+```
+FizzyoDevice.cs
+
+/* (float) Return the current pressure value, either from the device or streamed from a log file.
+*   range: -1.0f - 1.0f
+*   comment: if useRecordedData is set pressure data is streamed from the specified data file instead of the device.
+*/
+Fizzyo.FizzyoDevice.Instance().Pressure();
+
+
+/* (bool) Return if the fizzyo device button is pressed */
+Fizzyo.FizzyoDevice.Instance().ButtonDown();
+
+```
+
 ## Building UWP application 
 
 ### Deployment: 
@@ -180,7 +204,7 @@ The FizzyoFramework script can be attached to a Unity GameObject to configure th
 At present Unity doesnt allows you to specific VID & PID's so to you need to have to manuually add the following to Package.appxmanifest after exporting to ensure the game will support the Fizzyo Device. 
 
 
-```csharp
+```
 <Capabilities> 
 <Capability Name="internetClient" /> 
 <uap:Capability Name="userAccountInformation" /> 
