@@ -1,7 +1,8 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine.SceneManagement;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 using UnityEngine;
+using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class MenuButtons : MonoBehaviour {
@@ -28,7 +29,6 @@ public class MenuButtons : MonoBehaviour {
 
         Button exitBtn = exit.GetComponent<Button>();
         exitBtn.onClick.AddListener(ExitClick);
-
     }
 
     void PlayClick()
@@ -55,5 +55,4 @@ public class MenuButtons : MonoBehaviour {
     {
         Application.Quit();
     }
-
 }

@@ -1,6 +1,8 @@
-﻿using UnityEngine;
-using UnityEngine.UI;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using UnityEngine;
+using UnityEngine.UI;
 
 public class LeaderboardManager : MonoBehaviour
 {
@@ -23,7 +25,7 @@ public class LeaderboardManager : MonoBehaviour
     string pathUsers;
 
     /// <summary>
-    /// Loads the highscores using the Fizzyo API and dispays them. If playing offline a message is displayed and the highscores are not
+    /// Loads the high scores using the Fizzyo API and displays them. If playing offline a message is displayed and the highscores are not
     /// </summary>
     void Start()
     {
@@ -65,7 +67,7 @@ public class LeaderboardManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Instatiates a game object for a high score and assigns it the correct values
+    /// Instantiates a game object for a high score and assigns it the correct values
     /// </summary>
     /// /// <param name="position"> 
     /// String that contains the position for that highscore
@@ -84,7 +86,7 @@ public class LeaderboardManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets all relevent information to be shown in a highscore
+    /// Sets all relevant information to be shown in a highscore
     /// </summary>
     /// /// <param name="position"> 
     /// String that contains the position for that highscore
@@ -96,7 +98,7 @@ public class LeaderboardManager : MonoBehaviour
     /// Integer that contains the score associated with that highscore
     /// </param>  
     /// /// <param name="lead"> 
-    /// GameObject that contains the instatiated prefab for that highscore
+    /// GameObject that contains the instantiated prefab for that highscore
     /// </param>  
     public void SetInfoLead(GameObject lead, string position, string name, int score)
     {
@@ -110,8 +112,6 @@ public class LeaderboardManager : MonoBehaviour
         } else
         {
             lead.transform.GetChild(2).GetComponent<Text>().text = score.ToString();
-        }
-        
+        }        
     }
 }
-
