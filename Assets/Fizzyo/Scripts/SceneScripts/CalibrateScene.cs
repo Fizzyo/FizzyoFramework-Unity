@@ -98,6 +98,8 @@ public class CalibrateScene : MonoBehaviour {
 
     void NextScene()
     {
+        FizzyoFramework.Instance.Recogniser.BreathStarted -= OnBreathStarted;
+        FizzyoFramework.Instance.Recogniser.BreathComplete -= OnBreathEnded;
         SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }
 }
