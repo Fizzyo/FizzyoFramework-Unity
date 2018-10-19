@@ -1,9 +1,11 @@
-﻿	using System;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System;
 using System.Collections.Generic;
 using System.Linq;
-using System.Text;
-using UnityEngine;
 using System.Text.RegularExpressions;
+using UnityEngine;
 
 //https://docs.unity3d.com/Manual/PlatformDependentCompilation.html
 #if UNITY_UWP
@@ -11,12 +13,10 @@ using Windows.Security.Authentication.Web;
 using Windows.Data.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
-
 #endif
 
 namespace Fizzyo
 {
-
     // Serializable that holds user data, access token and expiry
     [System.Serializable]
     public class AllUserData
@@ -42,19 +42,15 @@ namespace Fizzyo
         public string gamerTag;
     }
 
-
-
-
     public enum LoginReturnType { SUCCESS, INCORRECT, FAILED_TO_CONNECT }
     public enum UserTagReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT, BANNED_TAG }
-    public enum CalibrationReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT}
+    public enum CalibrationReturnType { SUCCESS, NOT_SET, FAILED_TO_CONNECT }
 
-	/// <summary>
-	/// Class that handles correct identification of each user, thanks to the use of Windows Live authentication
-	/// </summary>
-    public class FizzyoUser 
+    /// <summary>
+    /// Class that handles correct identification of each user, thanks to the use of Windows Live authentication
+    /// </summary>
+    public class FizzyoUser
     {
-
         //Client ID refers to the Fizzyo app ID, which is used to get the Windows Live auth code
         const string clientID = "65973b85-c34f-41a8-a4ad-00529d1fc23c"; //ce680d1e-27dc-4ffa-bc74-200d79a9e702
         const string scopes = "wl.offline_access wl.signin wl.phone_numbers wl.emails";
@@ -66,40 +62,69 @@ namespace Fizzyo
         private string patientRecordId;
         private string token;
 
-		/// <summary>
-		/// Indicates whether someone is logged in or not 
-		/// </summary>
+        /// <summary>
+        /// Indicates whether someone is logged in or not 
+        /// </summary>
         public bool loggedIn = false;
-		/// <summary>
-		/// String holding the username of the account logging in
-		/// </summary>
+        /// <summary>
+        /// String holding the username of the account logging in
+        /// </summary>
         public string username;
-		/// <summary>
-		/// Testing variables, by default, username should be : test-patient
-		/// </summary>
+        /// <summary>
+        /// Testing variables, by default, username should be : test-patient
+        /// </summary>
         public string testUsername = "test-patient";
-		/// <summary>
-		/// Testing variables, by default, password should be : FizzyoTesting2017
-		/// </summary>
+        /// <summary>
+        /// Testing variables, by default, password should be : FizzyoTesting2017
+        /// </summary>
         public string testPassword = "FizzyoTesting2017";
 
         public string UserID { get; internal set; }
         public string AccessToken { get; internal set; }
 
+        private bool userTagSet = false;
 
+        public bool UserTagSet
+        {
+            get
+            {
+                return userTagSet;
+            }
+
+            set
+            {
+                userTagSet = value;
+            }
+        }
+
+        private bool calibrationSet = false;
+
+        public bool CalibrationSet
+        {
+            get
+            {
+                return calibrationSet;
+            }
+
+            set
+            {
+                calibrationSet = value;
+            }
+        }
+
+#if !UNITY_EDITOR
         private bool loginInProgress = false;
         private LoginReturnType loginResult = LoginReturnType.FAILED_TO_CONNECT;
-        private bool userTagSet;
-        private bool calibrationSet;
+#endif
 
-		/// <summary>
+        /// <summary>
         /// Method that begins the login process.
         /// </summary>
         public LoginReturnType Login()
         {
-
 #if UNITY_UWP
             loginInProgress = true;
+
              UnityEngine.WSA.Application.InvokeOnUIThread(
             async () =>
             {
@@ -108,18 +133,16 @@ namespace Fizzyo
 
             while(loginInProgress){}
             return loginResult;
-            
 
 #elif UNITY_EDITOR
             return PostAuthentication(testUsername, testPassword);
 #else
-       return loginResult;
+            return loginResult;
 
 #endif
-
         }
 
-		/// <summary>
+        /// <summary>
         /// Logs out the user. TO BE IMPLEMENTED
         /// </summary>
         public void Logout()
@@ -127,17 +150,13 @@ namespace Fizzyo
 
         }
 
-
-
         /// <summary>
         /// Uses a username and password to access the Fizzyo API and load in the users access token and user Id
         /// This is currently incomplete as it does not use Windows live authorization
         /// </summary>
         private LoginReturnType PostAuthentication(string username, string password)
         {
-
             string postAuth = "https://api.fizzyo-ucl.co.uk/api/v1/auth/test-token";
-
 
             WWWForm form = new WWWForm();
             form.AddField("username", username);
@@ -150,30 +169,18 @@ namespace Fizzyo
             {
                 return LoginReturnType.INCORRECT;
             }
-            
 
             AllUserData allData = JsonUtility.FromJson<AllUserData>(sendPostAuth.text);
             UserID = allData.user.id;
             AccessToken = allData.accessToken;
 
-            
             return LoginReturnType.SUCCESS;
-            
-
-
         }
-
-
-
 
 #if UNITY_UWP
 
-
-
-
         public async Task LoginAsync()
         {
-
             string authorizationRequest = String.Format("{0}?client_id={1}&scope={2}&response_type=code&redirect_uri={3}",
                 authorizationEndpoint,
                 clientID,
@@ -183,10 +190,6 @@ namespace Fizzyo
 
             Uri StartUri = new Uri(authorizationRequest);
             Uri EndUri = new Uri(redirectURI);
-
-
-
-
 
             WebAuthenticationResult WebAuthenticationResult = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, StartUri, EndUri);
 
@@ -202,9 +205,6 @@ namespace Fizzyo
                 String code = queryStringParams["code"];
 
                 // Authorization Code is now ready to use!
-
-
-
                 bool tokenExhanged = await RequestAccessToken(code);
 
                 if (tokenExhanged == true)
@@ -224,10 +224,8 @@ namespace Fizzyo
             loginResult =  LoginReturnType.FAILED_TO_CONNECT;
             loginInProgress = false;
             return;
-
         }
-
-
+        
         //TODO: look at adding Password vault : https://docs.microsoft.com/en-us/windows/uwp/security/credential-locker
         //https://www.wintellect.com/single-sign-on-with-oauth-in-windows-store-apps/
 
@@ -277,48 +275,41 @@ namespace Fizzyo
                 //accessToken = tokens.GetNamedString("accessToken");
                 loggedIn = true;
                 return true;
-
             }
-
         }
 #endif
 
-
-		/// <summary>
+        /// <summary>
         /// Function that runs the methods responsible for loading user tags and calibration data. 
         /// </summary>
         public void Load()
         {
-         
             switch (LoadUserTag())
             {
                 case UserTagReturnType.NOT_SET | UserTagReturnType.FAILED_TO_CONNECT:
-                    userTagSet = false;
+                    UserTagSet = false;
                     break;
                 case UserTagReturnType.SUCCESS:
-                    userTagSet = true;
+                    UserTagSet = true;
                     break;
             }
-
 
             switch (LoadCalibrationData())
             {
                 case CalibrationReturnType.NOT_SET | CalibrationReturnType.FAILED_TO_CONNECT:
-                    calibrationSet = false;
+                    CalibrationSet = false;
                     break;
                 case CalibrationReturnType.SUCCESS:
-                    calibrationSet = true;
+                    CalibrationSet = true;
                     break;
             }
-
-
         }
+
         /// <summary>
         /// Loads in the users tag
         /// </summary>
         public UserTagReturnType LoadUserTag()
         {
-
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
 
             string getTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
@@ -346,10 +337,7 @@ namespace Fizzyo
             {
                 return UserTagReturnType.NOT_SET;
             }
-
-
         }
-
 
         /// <summary>
         /// Uploads a player tag to the Fizzyo API
@@ -361,7 +349,6 @@ namespace Fizzyo
         /// </returns> 
         public UserTagReturnType PostUserTag(string tag)
         {
-
             if (PlayerPrefs.GetInt("online") == 0)
             {
                 return UserTagReturnType.FAILED_TO_CONNECT;
@@ -395,11 +382,8 @@ namespace Fizzyo
             PlayerPrefs.SetInt("tagDone", 1);
             PlayerPrefs.SetString("userTag", tag);
 
-                return UserTagReturnType.SUCCESS;
-
-
+            return UserTagReturnType.SUCCESS;
         }
-
 
         /// <summary>
         /// Loads in the users calibration data
@@ -441,11 +425,8 @@ namespace Fizzyo
                 PlayerPrefs.SetFloat("calTime", allData.time);
 
                 return CalibrationReturnType.SUCCESS;
-
             }
-
         }
-
 
         /// <summary>
         /// Uploads a players calibration data and also sets the values in player prefs
@@ -456,7 +437,6 @@ namespace Fizzyo
         /// </returns> 
         public CalibrationReturnType Calibration(float pressure, float time)
         {
-
             PlayerPrefs.SetFloat("calPressure", pressure);
             PlayerPrefs.SetFloat("calTime", time);
             PlayerPrefs.SetInt("calDone", 1);
@@ -490,10 +470,8 @@ namespace Fizzyo
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-                return CalibrationReturnType.SUCCESS;
-
+            return CalibrationReturnType.SUCCESS;
         }
-
 
         /// <summary>
         /// Uploads a players session data and achievements
@@ -527,7 +505,6 @@ namespace Fizzyo
         /// </returns>
         public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
         {
-
             if (PlayerPrefs.GetInt("online") == 0)
             {
                 return "Session Upload Failed";
@@ -568,11 +545,7 @@ namespace Fizzyo
                 status = "Session Upload Failed";
             }
 
-
             return status;
-
         }
-
-
     }
 }

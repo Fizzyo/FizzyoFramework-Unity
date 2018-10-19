@@ -1,11 +1,13 @@
-﻿using System.Collections;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.UI;
 using Fizzyo;
 
 public class FizzyoOverlay : MonoBehaviour
 {
-    
     // Session Data Saved popup that appears on-screen
     public GameObject sessionPrefab;
 
@@ -32,7 +34,6 @@ public class FizzyoOverlay : MonoBehaviour
         uploadingPopup.transform.SetParent(GameObject.Find("LeadUnlock").transform);
         uploadingPopup.transform.localScale = new Vector3(1, 1, 1);
         StartCoroutine(FadePopup(uploadingPopup, false));
-
     }
 
     /// <summary>
@@ -61,16 +62,15 @@ public class FizzyoOverlay : MonoBehaviour
         sessionPopup.transform.localScale = new Vector3(1, 1, 1);
         sessionPopup.transform.GetChild(0).GetComponent<Text>().text = status;
         StartCoroutine(FadePopup(sessionPopup, false));
-
     }
 
     /// <summary>
     /// Unlocks / adds progress to an achievement. Data is saved in player preferences and uploaded when a session is uploaded.
-    /// When an achievment is unlocked it shows onscreen
+    /// When an achievement is unlocked it shows on screen
     /// </summary>
     /// <remarks>
     /// Using this achievement system:
-    /// Use requires that the FizzyoOverlay Object be placed in a scene and the popup prefab be added in the inspector
+    /// Use requires that the FizzyoOverlay Object be placed in a scene and the pop-up prefab be added in the inspector
     /// Then, within the game code the following can be used to unlock / add progress to an achievement:
     /// private FizzyoOverlay FizzyoOverlay; - Used as a variable in the class
     /// FizzyoOverlay = GameObject.Find("FizzyoOverlay").GetComponent<FizzyoOverlay>(); - Used in the Start()/Awake() functions in a class
@@ -111,10 +111,8 @@ public class FizzyoOverlay : MonoBehaviour
 
                     if (allData.achievements[i].unlock == 0)
                     {
-                        // Set that an achievement variables has been changed and that this achievment will have to be uploaded on session end
+                        // Set that an achievement variables has been changed and that this achievement will have to be uploaded on session end
                         allData.achievements[i].unlockProgress += progress;
-
-                        
 
                         bool chaining = true;
                         bool dependencyFound;
@@ -128,13 +126,12 @@ public class FizzyoOverlay : MonoBehaviour
                             if (allData.achievements[currentAchievement].unlockProgress >= allData.achievements[currentAchievement].unlockRequirement)
                             {
 
-                                
+
                                 ShowAchievement("AchUnlock", allData.achievements[currentAchievement].title, allData.achievements[currentAchievement].description, allData.achievements[currentAchievement].points, allData.achievements[currentAchievement].unlock);
 
                                 allData.achievements[currentAchievement].unlock = 1;
 
                                 string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
-                                string achievementsToProgress = PlayerPrefs.GetString("achievementsToProgress");
 
                                 // Add achievement into set that need to be uploaded at the end of a session
                                 if (!achievementsToUpload.Contains(allData.achievements[i].id))
@@ -163,7 +160,6 @@ public class FizzyoOverlay : MonoBehaviour
                                                 chaining = false;
                                             }
                                             break;
-
                                         }
                                     }
 
@@ -171,7 +167,6 @@ public class FizzyoOverlay : MonoBehaviour
                                     {
                                         break;
                                     }
-
                                 }
                                 else
                                 {
@@ -217,7 +212,6 @@ public class FizzyoOverlay : MonoBehaviour
             {
                 break;
             }
-
         }
     }
 
@@ -225,7 +219,7 @@ public class FizzyoOverlay : MonoBehaviour
     /// Used to show in the scene that a achievement has been unlocked
     /// </summary>
     /// <param name="parentCat"> 
-    /// String holding the achievements catagory
+    /// String holding the achievements category
     /// </param> 
     /// <param name="title"> 
     /// String holding the achievements title
@@ -255,7 +249,7 @@ public class FizzyoOverlay : MonoBehaviour
     /// </summary>
     /// <remarks>
     /// Using this achievement system:
-    /// Use requires that the FizzyoOverlay Object be placed in a scene and the popup prefab be added in the inspector
+    /// Use requires that the FizzyoOverlay Object be placed in a scene and the pop-up prefab be added in the inspector
     /// Then, within the game code the following can be used to attempt to upload a score:
     /// private FizzyoOverlay FizzyoOverlay; - Used as a variable in the class
     /// FizzyoOverlay = GameObject.Find("FizzyoOverlay").GetComponent<FizzyoOverlay>(); - Used in the Start()/Awake() functions in a class
@@ -283,34 +277,35 @@ public class FizzyoOverlay : MonoBehaviour
             scorePopup.transform.localScale = new Vector3(1, 1, 1);
             scorePopup.transform.GetChild(0).GetComponent<Text>().text = status;
             StartCoroutine(FadePopup(scorePopup, false));
-            
+
             return complete;
 
         }
 
         return complete;
-
     }
 
     /// <summary>
-    /// Moves the achievement, score and session messages offscreen and destroys them
+    /// Moves the achievement, score and session messages off screen and destroys them
     /// </summary>
     /// <param name="popup"> 
-    /// Game Object that is to be moved offscreen
+    /// Game Object that is to be moved off screen
     /// </param> 
     /// <param name="direction"> 
     /// Boolean which if false will move the message to the left and it true will move the message to the right
     /// </param> 
     private IEnumerator FadePopup(GameObject popup, bool direction)
     {
-
         yield return new WaitForSeconds(5);
 
         Vector3 startPos = popup.transform.position;
         Vector3 endPos;
-        if (!direction) {
+        if (!direction)
+        {
             endPos = popup.transform.position - new Vector3(600, 0, 0);
-        } else {
+        }
+        else
+        {
             endPos = popup.transform.position + new Vector3(600, 0, 0);
         }
         float counter = 0;
@@ -324,7 +319,5 @@ public class FizzyoOverlay : MonoBehaviour
         }
 
         Destroy(popup);
-
     }
-
 }

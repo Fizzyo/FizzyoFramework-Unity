@@ -1,4 +1,7 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using UnityEngine;
 using UnityEngine.UI;
 using System.Collections.Generic;
 using Fizzyo;
@@ -32,9 +35,6 @@ public class AchievementManager : MonoBehaviour
 
     // Holds the name of each category
     List<string> catagories = new List<string>();
-
-    // Used to acurately display the progress of dependency achievements
-    Dictionary<string,int> dependencyProgress = new Dictionary<string, int>();
 
     // category Button Prefab
     public GameObject catPre;
@@ -84,11 +84,11 @@ public class AchievementManager : MonoBehaviour
             active.Click();
         }
 
-        total.text = "Total Achievment Points: " + totalPoints;
+        total.text = "Total Achievement Points: " + totalPoints;
     }
 
     /// <summary>
-    /// Instatiates a game object for an achievement and assigns it the correct values
+    /// Instantiates a game object for an achievement and assigns it the correct values
     /// </summary>
     /// /// <param name="parentCat"> 
     /// String that contains the category for that achievement
@@ -119,7 +119,7 @@ public class AchievementManager : MonoBehaviour
     }
 
     /// <summary>
-    /// Sets the parent, scale and all relevent information to be shown in an achievement
+    /// Sets the parent, scale and all relevant information to be shown in an achievement
     /// </summary>
     /// /// <param name="parentCat"> 
     /// String that contains the category for that achievement
@@ -143,7 +143,7 @@ public class AchievementManager : MonoBehaviour
     /// Integer that contains the achievements unlock requirement
     /// </param>  
     /// <param name="ach"> 
-    /// GameObject that contains the instatiated prefab for this achievement
+    /// GameObject that contains the instantiated prefab for this achievement
     /// </param>  
     public void SetInfoAch(string parentCat, GameObject ach, string title, string desc, int points, int unlock, int unlockProgress, int unlockRequirement)
     {
@@ -204,7 +204,7 @@ public class AchievementManager : MonoBehaviour
     {
         AchievementButton achButton = button.GetComponent<AchievementButton>();
 
-        // Changes scroll content on the main mask. Allows for scrolling of all catagories
+        // Changes scroll content on the main mask. Allows for scrolling of all categories
         scroll.content = achButton.achList.GetComponent<RectTransform>();
 
         // Sets the active to false and the new button to true
@@ -212,6 +212,4 @@ public class AchievementManager : MonoBehaviour
         active.Click();
         active = achButton;
     }
-
 }
-

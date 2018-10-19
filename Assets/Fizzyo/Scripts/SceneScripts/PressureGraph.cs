@@ -1,11 +1,12 @@
-﻿using System.Collections;
-using System.Collections.Generic;
-using UnityEngine;
-using Fizzyo;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using Fizzyo;
+using UnityEngine;
 
 [ExecuteInEditMode]
-public class PressureGraph : MonoBehaviour {
+public class PressureGraph : MonoBehaviour
+{
 
 
     public float maxTime = 3.0f;
@@ -15,11 +16,9 @@ public class PressureGraph : MonoBehaviour {
     public GameObject graphBar = null;
 
     private GraphBar[] graphBars;
-    float currentSecond = 0.0f;
     float startTime = 0;
-   
-    private bool exhaling;
 
+    private bool exhaling;
 
     void Awake()
     {
@@ -27,17 +26,17 @@ public class PressureGraph : MonoBehaviour {
     }
 
     // Use this for initialization
-    void Start () {
-
-        //Hoockup the breath recognizer
+    void Start()
+    {
+        //Hookup the breath recognizer
         FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
 
         //setup default height of graph
         float spacing = width / dataPoints;
         graphBars = new GraphBar[dataPoints];
-        int xPos = 0;
-        for(int i = 0; i < graphBars.Length; i++)
+
+        for (int i = 0; i < graphBars.Length; i++)
         {
             GameObject gameObject = Object.Instantiate(graphBar);
             gameObject.transform.SetParent(this.transform);
@@ -46,15 +45,17 @@ public class PressureGraph : MonoBehaviour {
             graphBars[i].transform.localPosition = new Vector3(x, graphBar.transform.localPosition.y, graphBar.transform.localPosition.z);
             graphBars[i].transform.localScale = new Vector3(graphBars[i].transform.localScale.x, 0.1f, graphBars[i].transform.localScale.z);
             graphBars[i].GetComponent<Renderer>().enabled = true;
-
         }
+
         ZeroGraph();
-        //hide template oject
+
+        //hide template object
         graphBar.GetComponent<Renderer>().enabled = false;
     }
 
     // Update is called once per frame
-    void Update () {
+    void Update()
+    {
         if (exhaling)
         {
             float realtimeSinceStartup = Time.realtimeSinceStartup;
@@ -68,8 +69,6 @@ public class PressureGraph : MonoBehaviour {
             g.TweenToScale(FizzyoFramework.Instance.Device.Pressure() * 50.0f);
         }
     }
-
-
 
     void OnBreathStarted(object sender)
     {

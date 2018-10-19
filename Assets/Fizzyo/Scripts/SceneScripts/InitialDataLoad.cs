@@ -1,15 +1,13 @@
-﻿using System.Collections;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using System.Collections;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 using UnityEngine.UI;
 
 public class InitialDataLoad : MonoBehaviour
 {
-
-    // gameId and gameSecret are used to load data via the Fizzyo API, these values must be assigned by the game developer
-    string gameId = "40eaf651-5721-4092-81fc-5f631b8b1a97";
-    string gameSecret = "70cb56007a46e26d47edae1679d2e9a0";
-
     // Game Objects used withing the scene - assigned through unity script component
     public GameObject loadingData;
     public GameObject tagChange;
@@ -29,11 +27,9 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     void Start()
     {
-
         SceneSetup();
 
         StartCoroutine("LoadUserData");
-
     }
 
     /// <summary>
@@ -41,7 +37,6 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     private void SceneSetup()
     {
-
         Screen.SetResolution(1280, 800, false);
 
         loadingData.SetActive(true);
@@ -68,7 +63,6 @@ public class InitialDataLoad : MonoBehaviour
 
         tagChange.SetActive(false);
         offline.SetActive(false);
-
     }
 
     /// <summary>
@@ -79,23 +73,22 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     private IEnumerator LoadUserData()
     {
-
-
         loadingDataText.text = "Loading User Data...";
 
         offline.SetActive(false);
 
         yield return new WaitForSeconds(0.5f);
 
-        bool dataLoaded = false;// Load.LoadUserData(gameId, gameSecret);
-        
+        bool dataLoaded = false;
+
         if (!dataLoaded)
         {
 
             loadingDataText.text = "Log In Failed / Playing Offline (Achievements, High Scores, Calibration Data and Session Data Will Not Be Uploaded)";
             offline.SetActive(true);
 
-        } else
+        }
+        else
         {
 
             loadingDataText.text = "User Data Loaded";
@@ -112,7 +105,6 @@ public class InitialDataLoad : MonoBehaviour
                 StartCoroutine("EndLoad");
             }
         }
-
     }
 
     /// <summary>
@@ -126,11 +118,12 @@ public class InitialDataLoad : MonoBehaviour
         if (PlayerPrefs.GetInt("calDone") == 1)
         {
             SceneManager.LoadScene("Menu");
-        } else
+        }
+        else
         {
             SceneManager.LoadScene("Calibration");
         }
-        
+
     }
 
     // Tag methods used to change the tag on screen with arrow buttons
@@ -203,9 +196,6 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     void ContinueClick()
     {
-
-        string fullTag = tag1.text + tag2.text + tag3.text;
-
         string tagUpload = "";// Upload.UserTag(fullTag);
 
         if (tagUpload != "Tag Upload Complete")
@@ -221,7 +211,6 @@ public class InitialDataLoad : MonoBehaviour
 
             StartCoroutine("EndLoad");
         }
-
     }
 
     /// <summary>
@@ -256,10 +245,7 @@ public class InitialDataLoad : MonoBehaviour
     /// </summary>
     void RetryClick()
     {
-
         offline.SetActive(false);
         StartCoroutine("LoadUserData");
-        
     }
-
 }

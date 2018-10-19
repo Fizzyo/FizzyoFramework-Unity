@@ -1,4 +1,7 @@
-﻿using Fizzyo;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Fizzyo;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -70,7 +73,6 @@ public class CalibrateScene : MonoBehaviour {
     {
         float maxPressure = 0;
         float minPressure = 0;
-        float averagePressure = 0;
         float totalPressure = 0;
         for(int i = 0; i < pressureVals.Count; i++)
         {
@@ -81,7 +83,6 @@ public class CalibrateScene : MonoBehaviour {
             minPressure = Mathf.Min(v, minPressure);
 
         }
-        averagePressure = totalPressure / pressureVals.Count;
 
         float maxBreath = 0;
         for (int i = 0; i < breathLengthVals.Count; i++)
@@ -97,6 +98,8 @@ public class CalibrateScene : MonoBehaviour {
 
     void NextScene()
     {
+        FizzyoFramework.Instance.Recogniser.BreathStarted -= OnBreathStarted;
+        FizzyoFramework.Instance.Recogniser.BreathComplete -= OnBreathEnded;
         SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
     }
 }
