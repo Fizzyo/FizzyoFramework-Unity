@@ -19,56 +19,7 @@ namespace Fizzyo
 
     public class FizzyoFramework : MonoBehaviour
     {
-        [Header("Script Behaviour")]
-        [Tooltip("Automatically show login screen at start of game.")]
-        ///<summary>
-        ///Set to true, shows login screen at start of the game
-        ///</summary>
-        public bool showLoginAutomatically = true;
-
-        [Tooltip("Automatically show gamer tag editor if user does not have this set.")]
-        ///<summary>
-        ///Set to true, shows login screen at start of the game
-        ///</summary>
-        public bool showSetGamerTagAutomatically = false;
-
-        [Tooltip("Automatically show calibration screen if never calibrated by user.")]
-        ///<summary>
-        ///Set to true, shows calibration screen if there has never been a calibration
-        ///</summary>
-        public bool showCalibrateAutomatically = true;
-
-        [Tooltip("Game ID given by Fizzyo API.")]
-        ///<summary>
-        ///The game ID given by the Fizzyo API
-        ///</summary>
-        public string gameID = "87f2ae03-d34f-4045-a308-feb746e857b2";
-
-        [Tooltip("Game secret given by Fizzyo API.")]
-        ///<summary>
-        ///The game secret given by the Fizzyo API
-        ///</summary>
-        public string gameSecret = "7BErm0wMvbmXMpq6ANBNLnAaYAlO1nqVqM15wNJAPdRom7lYyKKOEzqeGyOXpZKn";
-
-        [Header("Test Harness")]
-
-        [Tooltip("Use test harness data.")]
-        ///<summary>
-        ///Set false, enables use of test data instead of live data
-        ///</summary>
-        public bool useTestHarnessData = false;
-
-        //Use test harness instead of live data
-        public enum TestHarnessData { p1_acapella, p1_pep, p2_acapella };
-        ///<summary>
-        ///The type of data used for testing
-        ///</summary>
-        public TestHarnessData testHarnessDataFile = TestHarnessData.p1_acapella;
-
-        ///<summary>
-        ///API http path
-        ///</summary>
-        public string apiPath = "https://api.fizzyo-ucl.co.uk/";
+        public FizzyoConfigurationProfile FizzyoConfigurationProfile;
 
         ///<summary>
         ///The singleton instance of the Fizzyo Framework
@@ -156,14 +107,14 @@ namespace Fizzyo
 
             Load();
 
-            if (useTestHarnessData)
+            if (FizzyoConfigurationProfile.UseTestHarnessData)
             {
 #if UNITY_EDITOR
-                Device.StartPreRecordedData("Fizzyo/Data/" + testHarnessDataFile.ToString() + ".fiz");
+                Device.StartPreRecordedData("Fizzyo/Data/" + FizzyoConfigurationProfile.TestHarnessDataFile.ToString() + ".fiz");
 #endif
             }
 
-            if (showCalibrateAutomatically && !Device.Calibrated)
+            if (FizzyoConfigurationProfile.ShowCalibrateAutomatically && !Device.Calibrated)
             {
                 Scene scene = SceneManager.GetActiveScene();
                 CallbackScenePath = scene.path;
@@ -241,7 +192,7 @@ namespace Fizzyo
         public bool Load()
         {
             //Login to server
-            if (showLoginAutomatically)
+            if (FizzyoConfigurationProfile.ShowLoginAutomatically)
             {
                 LoginReturnType loginResult = User.Login();
 

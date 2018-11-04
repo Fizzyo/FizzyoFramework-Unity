@@ -86,7 +86,7 @@ namespace Fizzyo
         public FizzyoRequestReturnType LoadAchievements()
         {
             //Get all achievements from server
-            string getAchievements = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/achievements"; 
+            string getAchievements = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements"; 
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
@@ -98,7 +98,7 @@ namespace Fizzyo
             allAchievements = JsonUtility.FromJson<AllAchievementData>(achievementsJSONData).achievements;
              
             //get unlocked achievements
-            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.gameID;
+            string getUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID;
 
             headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
@@ -131,7 +131,7 @@ namespace Fizzyo
         /// </returns> 
         public FizzyoRequestReturnType GetHighscores()
         {
-            string getHighscores = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/highscores";
+            string getHighscores = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
@@ -159,10 +159,10 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType PostScore(int score)
         {
-            string uploadScore = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/highscores";
+            string uploadScore = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
 
             WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
             form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("score", score);
             Dictionary<string, string> headers = form.headers;
@@ -192,10 +192,10 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType UnlockAchievement(string achievementId)
         {
-            string unlockAchievement = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/achievements/" + achievementId + "/unlock" ;
+            string unlockAchievement = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock" ;
 
             WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
             form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("achievementId", achievementId);
             Dictionary<string, string> headers = form.headers;
@@ -236,11 +236,11 @@ namespace Fizzyo
                     {
                         string postUnlock;
 
-                        postUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/game/" + FizzyoFramework.Instance.gameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock";
+                        postUnlock = "https://api.fizzyo-ucl.co.uk/api/v1/game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock";
 
                         WWWForm form = new WWWForm();
 
-                        form.AddField("gameSecret", FizzyoFramework.Instance.gameSecret);
+                        form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
                         form.AddField("userId", FizzyoFramework.Instance.User.UserID);
 
                         Dictionary<string, string> headers = form.headers;

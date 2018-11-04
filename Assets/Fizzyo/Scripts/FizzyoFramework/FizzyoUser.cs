@@ -518,8 +518,8 @@ namespace Fizzyo
 
             WWWForm form = new WWWForm();
 
-            form.AddField("id", FizzyoFramework.Instance.gameID);
-            form.AddField("secret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("id", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
+            form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
             form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("setCount", setCount);
             form.AddField("breathCount", breathCount);

@@ -86,12 +86,8 @@ namespace Fizzyo
         /// <returns>pressure data reported from device or log file with a range of -1 - 1.</returns>
         public float Pressure()
         {
-            if (useRecordedData)
-            {
-                return pressure / maxPressureCalibrated;
-            }
-            else
-            {
+            if (!useRecordedData)
+            { 
                 if (Input.GetKey(KeyCode.Z))
                 {
                     return 1f;
@@ -99,12 +95,20 @@ namespace Fizzyo
                 else
                 {
 #if WINDOWS_UWP
-                    return (float)fizzyoHID.CurrentPressureValue / maxPressureCalibrated;
+                    pressure = (float)fizzyoHID.CurrentPressureValue;
 #else
-                    return Input.GetAxisRaw("Horizontal") / maxPressureCalibrated;
+                    pressure = Input.GetAxisRaw("Horizontal");
 #endif
+                    Debug.Log("Pressure recorded at: " + pressure);
+                    //Check if pressure value is beyond the 0..1 range
+                    if (pressure > 1)
+                    {
+                        pressure = (pressure -127) / 128;
+                    }
                 }
             }
+
+            return pressure / maxPressureCalibrated;
         }
 
         /// <summary>

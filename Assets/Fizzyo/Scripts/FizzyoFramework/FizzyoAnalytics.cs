@@ -125,10 +125,10 @@ namespace Fizzyo
         public FizzyoRequestReturnType PostAnalytics()
         {
             ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.gameID + "/sessions";
+            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
 
             WWWForm form = new WWWForm();
-            form.AddField("secret", FizzyoFramework.Instance.gameSecret);
+            form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
             form.AddField("userId", FizzyoFramework.Instance.User.UserID);
             form.AddField("setCount", _setCount);
             form.AddField("breathCount", breathCount);

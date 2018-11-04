@@ -1,11 +1,9 @@
 fileFormatVersion: 2
-guid: bc2c607f2ff22354b9193ee107173be7
+guid: f867855b2339e4b4c9cba2dcf9f8a10c
 MonoImporter:
   externalObjects: {}
   serializedVersion: 2
-  defaultReferences:
-  - FizzyoConfigurationProfile: {fileID: 11400000, guid: 804b07ba32e234d47bcbd1b43fec6d89,
-      type: 2}
+  defaultReferences: []
   executionOrder: 0
   icon: {instanceID: 0}
   userData: 

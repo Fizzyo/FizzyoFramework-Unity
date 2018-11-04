@@ -81,9 +81,7 @@ public class FizzyoHID
     {
         try
         {
-            var pressureVal = args.Report.GetNumericControl(0x01, 0x30).Value;
-            pressureVal -= 127;
-            _currentPressureValue = pressureVal;
+            _currentPressureValue = args.Report.GetNumericControl(0x01, 0x30).Value;
         }
         catch
         {
