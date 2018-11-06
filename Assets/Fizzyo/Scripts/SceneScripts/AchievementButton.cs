@@ -1,8 +1,11 @@
-﻿using UnityEngine;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using UnityEngine;
 using UnityEngine.UI;
 
 /// <summary>
-/// Class for catagory button data
+/// Class for category button data
 /// </summary>
 public class AchievementButton : MonoBehaviour
 {

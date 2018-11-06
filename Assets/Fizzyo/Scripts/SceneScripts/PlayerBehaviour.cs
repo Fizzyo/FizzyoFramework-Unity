@@ -1,4 +1,7 @@
-﻿using Fizzyo;
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
+using Fizzyo;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -7,13 +10,12 @@ public class PlayerBehaviour : MonoBehaviour {
     //Speed to move character at
     public float speed = 0.04f;
     public float flyHeight = 3.0f;
-    Vector3 destPos;
     BreathRecogniser br = new BreathRecogniser();
+
     // Use this for initialization
     void Start () {
         br.BreathStarted += Br_BreathStarted;
         br.BreathComplete += Br_BreathComplete;
-        destPos = transform.position;
     }
 
     private void Br_BreathStarted(object sender)

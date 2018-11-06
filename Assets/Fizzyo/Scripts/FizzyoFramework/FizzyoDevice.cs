@@ -1,10 +1,11 @@
-﻿
+﻿// Copyright (c) Microsoft Corporation. All rights reserved.
+// Licensed under the MIT License. See LICENSE in the project root for license information.
+
 #if UNITY_EDITOR
 using System.IO;
 using System.Timers;
 #endif
 
-// using System.Timers;
 using UnityEngine;
 
 namespace Fizzyo
@@ -39,12 +40,15 @@ namespace Fizzyo
         /// </summary>        
         public float maxBreathCalibrated = 1.0f;
 
-
         //protected
         // protected StreamReader fileReader = null;
         protected string text = " "; // assigned to allow first line to be read below
                                      // System.Timers.Timer pollTimer = new System.Timers.Timer();
         float pressure = 0;
+
+#if WINDOWS_UWP
+        private FizzyoHID fizzyoHID;
+#endif
 
 #if UNITY_EDITOR
         private StreamReader fileReader = null;
@@ -58,7 +62,9 @@ namespace Fizzyo
 
         public FizzyoDevice()
         {
-
+#if WINDOWS_UWP
+            fizzyoHID = FizzyoHID.Instance();
+#endif
         }
 
         //Cleanup  
@@ -73,7 +79,6 @@ namespace Fizzyo
             pollTimer.Stop();
 #endif
         }
-
 
         /// <summary>
         /// If useRecordedData is set to false pressure data is streamed from the device or streamed from a log file if set to true.
@@ -93,7 +98,11 @@ namespace Fizzyo
                 }
                 else
                 {
+#if WINDOWS_UWP
+                    return (float)fizzyoHID.CurrentPressureValue / maxPressureCalibrated;
+#else
                     return Input.GetAxisRaw("Horizontal") / maxPressureCalibrated;
+#endif
                 }
             }
         }
