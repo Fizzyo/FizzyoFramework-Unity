@@ -85,11 +85,13 @@ namespace Fizzyo
         ///</summary>
         public void PostOnQuit()
         {
+#if !UNITY_EDITOR
             Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
             Debug.Log("[FizzyoAnalytics] Session creation Finished.");
             Debug.Log("[FizzyoAnalytics] Posting Analytics...");
             PostAnalytics();
+#endif
         }
 
         ///<summary>
@@ -124,36 +126,41 @@ namespace Fizzyo
         /// </summary>
         public FizzyoRequestReturnType PostAnalytics()
         {
-            ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-            string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
-
-            WWWForm form = new WWWForm();
-            form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("setCount", _setCount);
-            form.AddField("breathCount", breathCount);
-            form.AddField("goodBreathCount", goodBreathCount);
-            form.AddField("badBreathCount", badBreathCount);
-            form.AddField("score", _score);
-            form.AddField("startTime", startTime);
-            form.AddField("endTime", endTime);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-
-            byte[] rawData = form.data;
-
-            WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
-
-            while (!sendPostAnalytics.isDone) { };
-
-            if (sendPostAnalytics.error != null)
+            if (FizzyoFramework.Instance != null && FizzyoFramework.Instance.FizzyoConfigurationProfile != null)
             {
-                Debug.Log("[FizzyoAnalytics] Posting analytics failed. ");
-                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
+                string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
 
+                WWWForm form = new WWWForm();
+                form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+                form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                form.AddField("setCount", _setCount);
+                form.AddField("breathCount", breathCount);
+                form.AddField("goodBreathCount", goodBreathCount);
+                form.AddField("badBreathCount", badBreathCount);
+                form.AddField("score", _score);
+                form.AddField("startTime", startTime);
+                form.AddField("endTime", endTime);
+                Dictionary<string, string> headers = form.headers;
+                headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+
+                byte[] rawData = form.data;
+
+                WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
+
+                while (!sendPostAnalytics.isDone) { };
+
+                if (sendPostAnalytics.error != null)
+                {
+                    Debug.Log("[FizzyoAnalytics] Posting analytics failed. ");
+                    return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+
+                }
+                Debug.Log("[FizzyoAnalytics] Posting analytics successful.");
+                return FizzyoRequestReturnType.SUCCESS;
             }
-            Debug.Log("[FizzyoAnalytics] Posting analytics successful.");
-            return FizzyoRequestReturnType.SUCCESS;
+
+            return FizzyoRequestReturnType.FAILED_TO_CONNECT;
         }
     }
 }

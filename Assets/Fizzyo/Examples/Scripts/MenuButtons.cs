@@ -33,7 +33,7 @@ public class MenuButtons : MonoBehaviour {
 
     void PlayClick()
     {
-        SceneManager.LoadScene("MapTest");
+        SceneManager.LoadScene("ExampleLevel");
     }
 
     void CalClick()

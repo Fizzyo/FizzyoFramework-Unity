@@ -49,6 +49,11 @@ public class AchievementManager : MonoBehaviour
     {
         FizzyoFramework.Instance.Load();
 
+        if(FizzyoFramework.Instance.Achievements == null || FizzyoFramework.Instance.Achievements.allAchievements == null)
+        {
+            return;
+        }
+
         totalPoints = 0;
 
         GameObject text = GameObject.Find("Total");

@@ -110,7 +110,7 @@ namespace Fizzyo
             if (FizzyoConfigurationProfile.UseTestHarnessData)
             {
 #if UNITY_EDITOR
-                Device.StartPreRecordedData("Fizzyo/Data/" + FizzyoConfigurationProfile.TestHarnessDataFile.ToString() + ".fiz");
+                Device.StartPreRecordedData("Fizzyo/Examples/Data/" + FizzyoConfigurationProfile.TestHarnessDataFile.ToString() + ".fiz");
 #endif
             }
 
@@ -118,7 +118,7 @@ namespace Fizzyo
             {
                 Scene scene = SceneManager.GetActiveScene();
                 CallbackScenePath = scene.path;
-                SceneManager.LoadScene("Fizzyo/Scenes/Calibration");
+                SceneManager.LoadScene("Calibration");
             }
         }
 
@@ -192,7 +192,7 @@ namespace Fizzyo
         public bool Load()
         {
             //Login to server
-            if (FizzyoConfigurationProfile.ShowLoginAutomatically)
+            if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically)
             {
                 LoginReturnType loginResult = User.Login();
 

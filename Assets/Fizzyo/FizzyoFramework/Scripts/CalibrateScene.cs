@@ -10,7 +10,7 @@ using UnityEngine.UI;
 public class CalibrateScene : MonoBehaviour {
 
     public PressureGraph pressureGraph;
-    public ProgressEllipse progressEllipse;
+    public Image progressEllipse;
     public float minExhaleTime = 3.0f;
     public int requiredBreaths = 1;
     public Text countdown;
@@ -27,7 +27,7 @@ public class CalibrateScene : MonoBehaviour {
         FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
 
-        progressEllipse.SetProgress(0);
+        progressEllipse.fillAmount = 0;
     }
 	
 	// Update is called once per frame
@@ -38,7 +38,7 @@ public class CalibrateScene : MonoBehaviour {
             float exhaleTime = (Time.realtimeSinceStartup -startTime);
             float progress = exhaleTime / minExhaleTime;
 
-            progressEllipse.SetProgress(Mathf.Min(progress,1.0f));
+            progressEllipse.fillAmount = Mathf.Min(progress,1.0f);
             countdown.text = "" + Mathf.Max(Mathf.Ceil((minExhaleTime - exhaleTime)), 0) ;
         }
 
@@ -100,6 +100,13 @@ public class CalibrateScene : MonoBehaviour {
     {
         FizzyoFramework.Instance.Recogniser.BreathStarted -= OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete -= OnBreathEnded;
-        SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
+        if (string.IsNullOrEmpty(FizzyoFramework.Instance.CallbackScenePath))
+        {
+            SceneManager.LoadScene(0);
+        }
+        else
+        {
+            SceneManager.LoadScene(FizzyoFramework.Instance.CallbackScenePath);
+        }
     }
 }
