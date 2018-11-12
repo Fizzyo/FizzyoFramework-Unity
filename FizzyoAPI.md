@@ -1,11 +1,11 @@
 # Usage
 
 After importing the Fizzyo Framework you will have a new Folder called Fizzyo located in your Assets directory.
-This Folder contatins everything you will need to use the Fizzyo device and services, you should not need to modify anything in the folder it's self as the framework is accessed through singletons.
+This Folder contains everything you will need to use the Fizzyo device and services, you should not need to modify anything in the folder it's self as the framework is accessed through singletons.
 
 ## Framework
 
-The Fizzyo Framework is accessed though singletons. This means that one FizzyoFramework class is used throughout the lifetime of your application and can be accessed from any script using FizzyoFrameework.Instance
+The Fizzyo Framework is accessed though singletons. This means that one FizzyoFramework class is used throughout the lifetime of your application and can be accessed from any script using FizzyoFramework.Instance
 
 # Fizzyo Classes
 

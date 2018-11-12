@@ -1,22 +1,95 @@
 # Building UWP application
 
-From Unity **select File** > **Build Setting** > **Universial Windows Platform**
-- Set the build configuration = master
+Once your project is built / tested and ready to go, you need to package your solution to the Windows 10 Universal platform.
 
-### Export game from Unity as a UWP app and make sure the following is added to the Package.appxmanifest file
+## Building your Unity project
 
-At present Unity doesnt allows you to specific VID & PID's so to you need to have to manuually add the following to Package.appxmanifest after exporting to ensure the game will support the Fizzyo Device. See <https://docs.microsoft.com/en-gb/windows/uwp/packaging/packaging-uwp-apps>
+Building your Unity project for the Universal Windows Platform (Windows 10 is fairly easy, to do this:
 
-- Open the build solution in Visual Studio
+- From Unity **select File** > **Build Settings**
+
+![](/Images/BuildSetingsBuild.png)
+
+> If the Universal Windows Platform selection is "greyed out" you do not have the Unity option for that platform installed, simply run the Unity setup again and ensure the WSA / Universal Windows platform options are included in your install.
+
+- Ensure the project is set to the Universal Windows Platform (as indicated by the Unity logo located next to the name, if not, select it and click "Switch Platform")
+- Set the build configuration to **master)) (as highlighted in the Image above)
+- Click on **Build** and Choose / create a folder to export the project to.
+
+## Building the Windows Store project in Visual Studio
+
+Once your project is built, you need to open the project that Unity generated in Visual studio (recommended, Visual Studio 2017) and then create a package for the Windows Store.
+You also need to do some project customisation to set the artwork and prepare it for submission.
+
+- Open the exported solution in Visual Studio by  going to the exported folder from the previous step and double clicking on the ".sln" file.
+- Double click on **Package.appxmanifest** file in the Solution Explorer.
+- Check the game details are correct and select the correct orientation options for your project.
+- on the Visual Assets tab, you need to define all your artwork.  Alternatively, create a 400x400 image and use the "Tile Generator" options on the screen
+- Double check the Capabilities tab and validate the "Bluetooth, Internet (Client) & UserAccountinformation" capabilities are checked.  If not, follow the instructions in the **Manually configuring your "Package.appxmanifest"** section below.
+- Select the Declarations tab - Select "Protocol" in the **Available Declarations** drop down and click **Add**
+![](/Images/ProtocolSettings.png)
+
+- Set the **Name** to the name of your game as entered on the Fizzyo-UCL site (prefixed with "fizzyo" and only using lowercase letters, no spaces)
+
+> for example, the game "Qubi" would be registered with a protocol name of "fizzyoqubi"
+> ![](/Images/ProtocolDeclarationsExample.png)
+
+- Save everything and close the Package.appxmanifest window.
+
+## Testing your game
+
+With everything configured, it's recommended you test your build on your local machine, to do this:
+
+![](/Images/VSBuildSettings.png)
+
+- Open the exported solution open in Visual Studio
+- Select Solution Configurations to Master in the Menu toolbar (as shown above)
+- Select Solution Platform to x86
+- Select Run on "Local Machine"
+
+So long as everything is ok, you can then proceed to package your project.
+
+> Any issues, return to the Unity build to ensure your game is running as expected and re-export the solution if necessary.  All the settings done previously in Visual Studio will be retained.
+
+## Packaging your Solution
+
+With everything tested, its time to package up your build project so it can be installed on to the Fizzyo laptops for use by the kids.
+
+![](/Images/BuildVSProject.png)
+
+- Open the exported solution open in Visual Studio
+- Right click on the Project (Not the Solution)
+- Select **Store** -> **Create App Package**
+- Select **I want to create packages for sideloading**
+- Leave version information untouched (Visual Studio manages this for you)
+- Ensure **Master** Build is selected in the build configuration mappings and uncheck the **ARM** option (as shown below)
+- Uncheck the **Include full PDB symbol files** checkbox
+- Click on **Create**
+
+![](/Images/VSPackagingWindow.png)
+
+Once the solution is built (which may take some time), you can package up the folder that is output to the "AppPackages" folder for submission.
+
+# Additional Information
+
+## Manually configuring your "Package.appxmanifest"
+
+If you either forgot or didn't configure the project capabilities in Unity, you also then need to manually edit the "Package.appxmanifest" file in visual studio to ensure it has all the Windows 10 "Capabilities" enabled, else **the project simply will not run**
+
+- Open the Windows 10 Visual Studio output solution (not the Unity project)
 - Double click on Package.appxmanifest to open the file
-- Check the game details to ensure correct oritentation
-- Visual Assets tab - Add Game Logo
-- Capabilities tab - Select Bluetooth, Internet (Client), UserAccountinformation
-- Declarations tab - Add "Protocol", set name to your game (prefixed with "fizzyo" and only using lowercase letters, no spaces)
+- Select the Capabilities tab and ensure the following options are checked:
 
-To Edit the package.manifest to add the capbiliies simply have to right-click on the "Package.appxmanifest" and click "View Code" to see the xml
+    * Select Bluetooth
+    * Internet (Client)
+    * UserAccountinformation
 
-Then manually update the capabilities section if your interested in available capabilities with the details below for more details see <https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/how-to-specify-device-capabilities-in-a-package-manifest>
+- Save and close the GUI editor (close the tab)
+- Right-click on the "Package.appxmanifest" and click "View Code" to see the xml
+
+> Then manually update the capabilities section if your interested in available capabilities with the details below for more details see <https://docs.microsoft.com/en-us/uwp/schemas/appxpackage/how-to-specify-device-capabilities-in-a-package-manifest>
+
+Ensure that the "Capabilities section" looks as it does below, if not, copy this XML and paste it in to the correct place (replacing the current Capabilities section, if one doesn't exist, repeat the steps above, save and return)
 
 
 ``` XML
@@ -34,22 +107,3 @@ Then manually update the capabilities section if your interested in available ca
 </Capabilities>
 
 ```
-
-## Testing your game
-
-- Open the Build Solution in Visual Studio
-- Select Solution Configurations to Master
-- Select Solution Platform to x86
-- Select Run on Local Machine
-
-
-## Packaging your Solution
-
-Open the Build Solution Visual Studio
-Right click on the Project (Not the Solution)
-Select **Store** **Create App Package**
-Select **I want to create packages for sideloading**
-Leave version information
-Ensure your on Master Build and uncheck ARM
-uncheck the PDB checkbox
-Select **create**
