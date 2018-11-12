@@ -29,6 +29,7 @@ To get started, you can follow these guides:
 
 * [Register your Game with the Fizzyo cloud services](/RegisteringyourGame.md) - Used to integrate your game with the Fizzyo backend.
 * [Downloading the Fizzyo Framework and integrating it with your project](/InstallingFizzyoFramework.md)
+* [Adding the Fizzyo Framework to your Scene](/ConfiguringYourGameScene.md)
 * [Building your Project for UWP](/BuildingYourProject.md)
 
 Once your Windows 10 UWP package is created, it's read for submitting to the Fizzyo project.

@@ -58,4 +58,4 @@ Now your project is configured and ready to start building your Fizzyo Project.
 
 ## Next Steps
 
-* [Building your Project for UWP](/BuildingYourProject.md)
+* [Adding the Fizzyo Framework to your Scene](/ConfiguringYourGameScene.md)
