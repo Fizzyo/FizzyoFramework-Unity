@@ -28,14 +28,11 @@ In relation to output of the games from Health Hack we would like to implement a
 
 ![Airway Clearance Devices](/Images/Airway.jpg)
 
-
-- We will be making available 3 x Fizzyo PEP Engineering devices to hacker for testing of game content
-
-- We will be making available 3 x Fizzyo Acepella Engineering devices to hacker for testing of game content
+Fizzyo has engineered an "add-on" device for most of the popular airway clearance devices, which is made available to patients under going treatment.  This device measures the air pressure from the Acapella and also provides a single button as input.
 
 ### Test Data from devices + Sample Unity Game
 
-- We have provided a Unity Sample Game which shows the input methods - see [Fizzyo-Unity-Example](https://github.com/ichealthhack/fizzyo-challenge/tree/master/Fizzyo-Unity-Example) Folder which contains pre calibration information, a sample game and test harness + test data
+- We have provided a Unity Sample Game which shows the input methods - see [Fizzyo-Unity-Example](/Fizzyo_Example_Game.zip) which contains pre calibration information, a sample game and test harness + test data
 
 - We have provided a Unity Test Harness and sample data. The data data set of captured results from the devices are for games testing. This includes an example that allows you to load and playback breath data saved from a Fizzyo device.
 
