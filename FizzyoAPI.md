@@ -17,7 +17,7 @@ By default FizzyoDevice plays back pre-recorded data but can also be used to gat
 
 This can be done through the editor or programmatically in your code.
 
-This allows you to program your game completely against pre-recoreded pressure values if desired and switched over to live values at a later stage.
+This allows you to program your game completely against pre-recorded pressure values if desired and switched over to live values at a later stage.
 
 ``` C#
 

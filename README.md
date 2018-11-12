@@ -32,7 +32,3 @@ To get started, you can follow these guides:
 Once your Windows 10 UWP package is created, it's read for submitting to the Fizzyo project.
 
 > For additional information, the [Fizzyo Framework API](/FizzyoAPI.md) is also documented here.
-
-
-
-(Blurb)

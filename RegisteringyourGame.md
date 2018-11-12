@@ -68,3 +68,7 @@ Additionally, from the edit screen you can both see the current high scores that
 If you no longer need a project or created it in error, Click on the game you want to delete from the game list, scroll down and click on the red **Delete** button.
 
 > **Be sure** you have selected the right game and confirm. once deleted a game cannot be retrieved and you will have to create it manually again.
+
+## Next Steps
+
+* [Downloading the Fizzyo Framework and integrating it with your project](/InstallingFizzyoFramework.md)

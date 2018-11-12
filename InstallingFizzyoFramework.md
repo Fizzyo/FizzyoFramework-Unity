@@ -1,6 +1,6 @@
 # Installation
 
-once you have [Registered your game](/RegisteringyourGame.md) on the Fizzyo Hub, you can download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo/FizzyoFramework-Unity/releases)
+Once you have [Registered your game](/RegisteringyourGame.md) on the Fizzyo Hub, you can download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo/FizzyoFramework-Unity/releases)
 
 Once downloaded, importing the asset in to your project is simple:
 
@@ -53,3 +53,7 @@ With Fizzyo configured, you then need to update your project settings for Window
 Now your project is configured and ready to start building your Fizzyo Project.
 
 > Check the details in the [Fizzyo API](/FizzyoAPI.md) documentation for consuming the Fizzyo Framework in your project.
+
+## Next Steps
+
+* [Building your Project for UWP](/BuildingYourProject.md)

@@ -24,7 +24,7 @@ In relation to output of the games from Health Hack we would like to implement a
 
 ### Airway Clearance Physio Devices
 
-![Airway Clearance Devices](Airway.jpg)
+![Airway Clearance Devices](/Images/Airway.jpg)
 
 
 - We will be making available 3 x Fizzyo PEP Engineering devices to hacker for testing of game content
@@ -35,7 +35,7 @@ In relation to output of the games from Health Hack we would like to implement a
 
 - We have provided a Unity Sample Game which shows the input methods - see [Fizzyo-Unity-Example](https://github.com/ichealthhack/fizzyo-challenge/tree/master/Fizzyo-Unity-Example) Folder which contains pre calibration information, a sample game and test harness + test data
 
-- We have provided a Unity Test Harness and sample data. The data data set of captured results from the devices are for games testing. This includes an example that allows you to load and playback breath data saved from a fizzyo device.
+- We have provided a Unity Test Harness and sample data. The data data set of captured results from the devices are for games testing. This includes an example that allows you to load and playback breath data saved from a Fizzyo device.
 
 ## How the Devices are used by Patients and how this should be related to game play
 
@@ -44,7 +44,7 @@ In relation to output of the games from Health Hack we would like to implement a
 - Inspiration is ‘free’ and un-resisted in all three techniques – while all 3 devices provide resistance against expiratory airflow 
 (providing ‘positive expiratory pressure’ or PEP)
 
-- PEP provides a consistent and measureable resistance against expiration
+- PEP provides a consistent and measurable resistance against expiration
 
 - Acapella and Flutter provide oscillatory resistance (Acapella with a magnetic lever and Flutter with a ball valve)
 
@@ -56,7 +56,7 @@ In relation to output of the games from Health Hack we would like to implement a
 
 ## Physio Routine for children
 
-![Physio Routine](Routine.jpg)
+![Physio Routine](/Images/Routine.jpg)
 
 - Treatments usually consistent of a series of ‘cycles’ – One cycle might typically include say 8-10 breaths through device (PEP & Acapella & Flutter ) as described above, followed by fewer but more forceful huffs (often not through the device- although some will huff through their PEP) and coughing as needed. The cycles are repeated until the chest feels clear. 
 

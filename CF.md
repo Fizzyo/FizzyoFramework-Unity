@@ -1,6 +1,6 @@
 # Cystic Fibrosis 101
 
-![Cystic Fibrosis Trust Logo](https://github.com/ichealthhack/fizzyo-challenge/blob/master/CFT.png)
+![Cystic Fibrosis Trust Logo](/Images/CFT.png)
 
 5 babies are born with cystic fibrosis each week in the UK.
 
@@ -31,7 +31,7 @@ everyone living with CF can look forward to a long, healthy life.
 Cross-infection poses a particular threat to people with cystic fibrosis, so they should never meet each
 other in person. The following policy lays out the rules for people with cystic fibrosis attending the hackathon.
 
-[Cross-infection policy: guidance for people with cystic fibrosis] (https://www.cysticfibrosis.org.uk/~/media/documents/get-involved/fundraising/crossinfection-policy-2015.ashx?la=en)
+### [Cross-infection policy: guidance for people with cystic fibrosis](https://www.cysticfibrosis.org.uk/~/media/documents/get-involved/fundraising/crossinfection-policy-2015.ashx?la=en)
 
 ## Useful videos
 
@@ -41,6 +41,6 @@ other in person. The following policy lays out the rules for people with cystic 
 
 ## Find out more
 
-www.cysticfibrosis.org.uk
+[www.cysticfibrosis.org.uk](www.cysticfibrosis.org.uk)
 
-enquiries@cysticfibrosis.org.uk
+[enquiries@cysticfibrosis.org.uk](mailto://enquiries@cysticfibrosis.org.uk)
