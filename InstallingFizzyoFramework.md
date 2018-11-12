@@ -1,3 +1,5 @@
+![](/Images/FizzyoFrameworkLogo.png)
+
 # Installation
 
 Once you have [Registered your game](/RegisteringyourGame.md) on the Fizzyo Hub, you can download the latest Fizzyo Framework unity package from [here](https://github.com/Fizzyo/FizzyoFramework-Unity/releases)

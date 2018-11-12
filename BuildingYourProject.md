@@ -1,3 +1,5 @@
+![](/Images/FizzyoFrameworkLogo.png)
+
 # Building UWP application
 
 Once your project is built / tested and ready to go, you need to package your solution to the Windows 10 Universal platform.

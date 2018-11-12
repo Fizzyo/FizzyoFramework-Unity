@@ -1,5 +1,7 @@
 # Fizzyo Framework
 
+![](/Images/FizzyoFrameworkLogo.png)
+
 A Unity package for Fizzyo game development .
 You can view more detailed documentation in the official documentation [website](http://dev.fizzyo-ucl.co.uk/).
 

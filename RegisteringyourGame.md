@@ -1,3 +1,5 @@
+![](/Images/FizzyoFrameworkLogo.png)
+
 # Registering your game
  In order to get started with your new Fizzyo project, you need to register on the Fizzyo-ucl site in order to properly wire up your games to the Fizzyo health cloud.
 
