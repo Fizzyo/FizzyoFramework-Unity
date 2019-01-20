@@ -1,6 +1,7 @@
 ﻿// Copyright (c) Microsoft Corporation. All rights reserved.
 // Licensed under the MIT License. See LICENSE in the project root for license information.
 
+using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.SceneManagement;
 
@@ -94,6 +95,8 @@ namespace Fizzyo
             Recogniser = new BreathRecogniser();
             Achievements = new FizzyoAchievements();
             Analytics = new FizzyoAnalytics();
+
+
         }
 
         void Start()
@@ -105,7 +108,53 @@ namespace Fizzyo
 
             DontDestroyOnLoad(gameObject);
 
+#if ENABLE_WINMD_SUPPORT || UNITY_UWP
+            //Pass credentials from hub
+            string launchArguments = UnityEngine.WSA.Application.arguments;
+            Dictionary<string, string> arguments = new Dictionary<string, string>();
+
+            if (!string.IsNullOrEmpty(launchArguments))
+            {
+                string[] firstParam = launchArguments.Split("?"[0]);
+                if (firstParam.Length >= 2)
+                {
+                    string[] argumentsArray = firstParam[1].Split("&"[0]);
+                    foreach (string argumentStr in argumentsArray)
+                    {
+                        if (!string.IsNullOrEmpty(argumentStr))
+                        {
+                            string[] argumentArray = argumentStr.Split('=');
+                            if (argumentArray.Length >= 2)
+                            {
+                                arguments.Add(argumentArray[0], argumentArray[1]);
+                            }
+                        }
+                    }
+                }
+            }
+                    //allow api endpoint override
+                    if (arguments.ContainsKey("apiPath"))
+                    {
+                        FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath = arguments["apiPath"];
+                    }
+
+                    if(arguments.ContainsKey("accessToken") && arguments.ContainsKey("userId"))
+                    {
+                        User.Login(arguments["userId"], arguments["accessToken"]);
+                    }
+                    else
+                    {
+                        if (FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
+                        {
+                            SceneManager.LoadScene("Error");
+                            return;
+                        }
+            }
+            
+#endif
             Load();
+
+
 
             if (FizzyoConfigurationProfile.UseTestHarnessData)
             {
@@ -130,8 +179,16 @@ namespace Fizzyo
             }
             Debug.Log("[FizzyoFramework] Analytics is Null.");
         }
+        private void OnApplicationFocus(bool focus)
+        {
+            if (focus == false && Analytics != null)
+            {
+                Analytics.OnApplicationFocus(focus);
+            }
 
-        private void Update()
+
+        }
+            private void Update()
         {
             //update the breath recoginiser
             if (Device != null)
@@ -192,7 +249,7 @@ namespace Fizzyo
         public bool Load()
         {
             //Login to server
-            if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically)
+            if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically && !User.LoggedIn)
             {
                 LoginReturnType loginResult = User.Login();
 
