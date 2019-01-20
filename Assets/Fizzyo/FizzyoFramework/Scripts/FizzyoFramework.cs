@@ -181,7 +181,7 @@ namespace Fizzyo
         }
         private void OnApplicationFocus(bool focus)
         {
-            if (focus == false && Analytics != null)
+            if (Analytics != null)
             {
                 Analytics.OnApplicationFocus(focus);
             }

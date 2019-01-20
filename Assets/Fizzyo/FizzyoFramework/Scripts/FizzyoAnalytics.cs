@@ -25,8 +25,8 @@ namespace Fizzyo
         public int BreathCount;
         public int GoodBreathCount;
         public int BadBreathCount;
-        public DateTime StartTime;
-        public DateTime EndTime;
+        public double StartTime;
+        public double EndTime;
         public System.Guid SessionId;
 
         private int _score;
@@ -65,7 +65,7 @@ namespace Fizzyo
         public FizzyoAnalytics()
         {
             //Set start time
-            StartTime = DateTime.UtcNow;
+            StartTime = (long)(((TimeSpan)(DateTime.UtcNow - new DateTime(1970, 1, 1))).TotalSeconds * 1000);
             SessionId = System.Guid.NewGuid();
 
         }
@@ -74,7 +74,7 @@ namespace Fizzyo
         {
             if (focus)
             {
-                StartTime = DateTime.UtcNow;
+                StartTime = (long)(((TimeSpan)(DateTime.UtcNow - new DateTime(1970, 1, 1))).TotalSeconds * 1000);
             }
             else
             {
@@ -105,7 +105,7 @@ namespace Fizzyo
             GoodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths;
             BreathCount = FizzyoFramework.Instance.Recogniser.BreathCount;
             BadBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
-            EndTime = DateTime.UtcNow;
+            EndTime = (long)(((TimeSpan)(DateTime.UtcNow - new DateTime(1970, 1, 1))).TotalSeconds * 1000);
             Debug.Log("Good breath count = " + GoodBreathCount);
             Debug.Log("Breath count = " + BreathCount);
             Debug.Log("Bad breath count = " + BadBreathCount);
@@ -142,8 +142,8 @@ namespace Fizzyo
                 form.AddField("goodBreathCount", GoodBreathCount);
                 form.AddField("badBreathCount", BadBreathCount);
                 form.AddField("score", _score);
-                form.AddField("startTime", StartTime.ToString("yyyy-MM-dd HH:mm:ss"));
-                form.AddField("endTime", EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                form.AddField("startTime", StartTime.ToString());
+                form.AddField("endTime", EndTime.ToString());
                 Dictionary<string, string> headers = form.headers;
                 headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
                 headers["User-Agent"] = " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
