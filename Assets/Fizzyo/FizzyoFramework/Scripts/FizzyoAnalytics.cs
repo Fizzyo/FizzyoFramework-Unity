@@ -22,13 +22,15 @@ namespace Fizzyo
     public class FizzyoAnalytics
     {
         // Various session parameters
-        public int breathCount;
-        public int goodBreathCount;
-        public int badBreathCount;
-        public int startTime;
-        public int endTime;
+        public int BreathCount;
+        public int GoodBreathCount;
+        public int BadBreathCount;
+        public DateTime StartTime;
+        public DateTime EndTime;
+        public System.Guid SessionId;
 
         private int _score;
+
         /// <summary>
         /// Add this to your game to update the score to send in the session. 
         /// </summary>
@@ -60,23 +62,23 @@ namespace Fizzyo
         /// <param name="breathCount"> 
         /// Integer holding the amount of breaths that are to be completed in each set
         /// </param>  
-        private void Start()
+        public FizzyoAnalytics()
         {
             //Set start time
-            ///
-            System.DateTime epochStart = new System.DateTime(1970, 1, 1, 0, 0, 0, System.DateTimeKind.Utc);
-            startTime = (int)(System.DateTime.UtcNow - epochStart).TotalSeconds;
+            StartTime = DateTime.UtcNow;
+            SessionId = System.Guid.NewGuid();
+
         }
 
-        private void OnApplicationFocus(bool focus)
+        public void OnApplicationFocus(bool focus)
         {
             if (focus)
             {
-
+                StartTime = DateTime.UtcNow;
             }
             else
             {
-
+                PostOnQuit();
             }
         }
 
@@ -85,13 +87,13 @@ namespace Fizzyo
         ///</summary>
         public void PostOnQuit()
         {
-#if !UNITY_EDITOR
+//#if !UNITY_EDITOR
             Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
             Debug.Log("[FizzyoAnalytics] Session creation Finished.");
             Debug.Log("[FizzyoAnalytics] Posting Analytics...");
             PostAnalytics();
-#endif
+//#endif
         }
 
         ///<summary>
@@ -100,15 +102,15 @@ namespace Fizzyo
         void CreateSession()
         {
             //All of the stats comes from the Breath Recognizer
-            goodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths;
-            breathCount = FizzyoFramework.Instance.Recogniser.BreathCount;
-            badBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
-            endTime = (Int32)(DateTime.UtcNow.Subtract(new DateTime(1970, 1, 1))).TotalSeconds;
-            Debug.Log("Good breath count = " + goodBreathCount);
-            Debug.Log("Breath count = " + breathCount);
-            Debug.Log("Bad breath count = " + badBreathCount);
+            GoodBreathCount = FizzyoFramework.Instance.Recogniser.GoodBreaths;
+            BreathCount = FizzyoFramework.Instance.Recogniser.BreathCount;
+            BadBreathCount = FizzyoFramework.Instance.Recogniser.BadBreaths;
+            EndTime = DateTime.UtcNow;
+            Debug.Log("Good breath count = " + GoodBreathCount);
+            Debug.Log("Breath count = " + BreathCount);
+            Debug.Log("Bad breath count = " + BadBreathCount);
             Debug.Log("Highest score =  " + _score);
-            Debug.Log("Time in Unix epoch: " + endTime);
+            Debug.Log("Time in Unix epoch: " + EndTime);
         }
 
         ///<summary>
@@ -129,20 +131,22 @@ namespace Fizzyo
             if (FizzyoFramework.Instance != null && FizzyoFramework.Instance.FizzyoConfigurationProfile != null)
             {
                 ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-                string postAnalytics = "https://api.fizzyo-ucl.co.uk/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
+                string postAnalytics = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
 
                 WWWForm form = new WWWForm();
                 form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
                 form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                form.AddField("sessionId", SessionId.ToString());
                 form.AddField("setCount", _setCount);
-                form.AddField("breathCount", breathCount);
-                form.AddField("goodBreathCount", goodBreathCount);
-                form.AddField("badBreathCount", badBreathCount);
+                form.AddField("breathCount", BreathCount);
+                form.AddField("goodBreathCount", GoodBreathCount);
+                form.AddField("badBreathCount", BadBreathCount);
                 form.AddField("score", _score);
-                form.AddField("startTime", startTime);
-                form.AddField("endTime", endTime);
+                form.AddField("startTime", StartTime.ToString("yyyy-MM-dd HH:mm:ss"));
+                form.AddField("endTime", EndTime.ToString("yyyy-MM-dd HH:mm:ss"));
                 Dictionary<string, string> headers = form.headers;
                 headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+                headers["User-Agent"] = " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
                 byte[] rawData = form.data;
 

@@ -6,6 +6,7 @@ using System.Collections.Generic;
 using System.Linq;
 using System.Text.RegularExpressions;
 using UnityEngine;
+using System.Text;
 
 //https://docs.unity3d.com/Manual/PlatformDependentCompilation.html
 #if UNITY_UWP
@@ -14,6 +15,8 @@ using Windows.Data.Json;
 using System.Net.Http;
 using System.Threading.Tasks;
 #endif
+using System.Web;
+
 
 namespace Fizzyo
 {
@@ -55,8 +58,8 @@ namespace Fizzyo
         const string clientID = "65973b85-c34f-41a8-a4ad-00529d1fc23c"; //ce680d1e-27dc-4ffa-bc74-200d79a9e702
         const string scopes = "wl.offline_access wl.signin wl.phone_numbers wl.emails";
         const string authorizationEndpoint = "https://login.live.com/oauth20_authorize.srf";
-        const string redirectURI = "https://api.fizzyo-ucl.co.uk/auth-example";
-        const string tokenEndpoint = "https://api.fizzyo-ucl.co.uk/api/v1/auth/token";
+        const string redirectURI = "https://api-staging.fizzyo-ucl.co.uk/auth-example";
+        const string tokenEndpoint = "https://api-staging.fizzyo-ucl.co.uk/api/v1/auth/token";
 
         private string userID;
         private string patientRecordId;
@@ -65,7 +68,7 @@ namespace Fizzyo
         /// <summary>
         /// Indicates whether someone is logged in or not 
         /// </summary>
-        public bool loggedIn = false;
+        public bool LoggedIn { get; internal set; }
         /// <summary>
         /// String holding the username of the account logging in
         /// </summary>
@@ -122,6 +125,7 @@ namespace Fizzyo
         /// </summary>
         public LoginReturnType Login()
         {
+
 #if UNITY_UWP
             loginInProgress = true;
 
@@ -142,12 +146,21 @@ namespace Fizzyo
 #endif
         }
 
+        public void Login(string userId,string accessToken)
+        {
+            UserID = userId;
+            AccessToken = accessToken;
+            LoggedIn = true;
+        }
+
         /// <summary>
         /// Logs out the user. TO BE IMPLEMENTED
         /// </summary>
         public void Logout()
         {
-
+            LoggedIn = false;
+            UserID = "";
+            AccessToken = "";
         }
 
         /// <summary>
@@ -156,7 +169,7 @@ namespace Fizzyo
         /// </summary>
         private LoginReturnType PostAuthentication(string username, string password)
         {
-            string postAuth = "https://api.fizzyo-ucl.co.uk/api/v1/auth/test-token";
+            string postAuth = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/auth/test-token";
 
             WWWForm form = new WWWForm();
             form.AddField("username", username);
@@ -273,6 +286,8 @@ namespace Fizzyo
                 // Sets the Authentication header of our HTTP client using the acquired access token.
                 //JsonObject tokens = JsonObject.Parse(responseString);
                 //accessToken = tokens.GetNamedString("accessToken");
+                UserID = userID;
+                AccessToken = token;
                 loggedIn = true;
                 return true;
             }
@@ -312,10 +327,12 @@ namespace Fizzyo
         {
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
 
-            string getTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
+            string getTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+
             WWW sendGetTag = new WWW(getTag, null, headers);
 
             while (!sendGetTag.isDone) { }
@@ -361,12 +378,13 @@ namespace Fizzyo
                 return UserTagReturnType.BANNED_TAG;
             }
 
-            string uploadTag = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
+            string uploadTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
 
             WWWForm form = new WWWForm();
             form.AddField("gamerTag", tag);
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
             byte[] rawData = form.data;
 
@@ -392,10 +410,12 @@ namespace Fizzyo
         {
             //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
 
-            string getCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
+            string getCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
 
             Dictionary<string, string> headers = new Dictionary<string, string>();
             headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+
             WWW sendGetCal = new WWW(getCal, null, headers);
 
             while (!sendGetCal.isDone) { }
@@ -446,7 +466,7 @@ namespace Fizzyo
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-            string uploadCal = "https://api.fizzyo-ucl.co.uk/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
+            string uploadCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
 
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             TimeSpan diff = DateTime.UtcNow - origin;
@@ -458,6 +478,7 @@ namespace Fizzyo
             form.AddField("time", time.ToString());
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
             byte[] rawData = form.data;
 
@@ -514,7 +535,7 @@ namespace Fizzyo
             TimeSpan diff = DateTime.UtcNow - origin;
             int endTime = (int)Math.Floor(diff.TotalSeconds);
 
-            string postSession = "https://api.fizzyo-ucl.co.uk/api/v1/game/:id/sessions";
+            string postSession = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/:id/sessions";
 
             WWWForm form = new WWWForm();
 
@@ -531,6 +552,7 @@ namespace Fizzyo
 
             Dictionary<string, string> headers = form.headers;
             headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
             byte[] rawData = form.data;
 

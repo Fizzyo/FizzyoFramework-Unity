@@ -31,6 +31,27 @@ namespace Fizzyo
             }
         }
 
+        [Tooltip("Require that the game is launched from the Fizzy Hub.")]
+        [SerializeField]
+        private bool requireLaunchFromHub = true;
+
+        /// <summary>
+        /// Require launch from Fizzyo Hub to run, also passes along login credentials. 
+        /// </summary>
+        public bool RequireLaunchFromHub
+        {
+            get
+            {
+                return requireLaunchFromHub;
+            }
+
+            set
+            {
+                requireLaunchFromHub = value;
+            }
+        }
+
+
 
         [Tooltip("Automatically show gamer tag editor if user does not have this set.")]
         [SerializeField]
@@ -114,7 +135,7 @@ namespace Fizzyo
 
 
         [SerializeField]
-        private string apiPath = "https://api.fizzyo-ucl.co.uk/";
+        private string apiPath = "https://api-staging.fizzyo-ucl.co.uk";
 
         ///<summary>
         ///API http path
