@@ -15,8 +15,8 @@ MonoBehaviour:
   requireLaunchFromHub: 1
   showSetGamerTagAutomatically: 0
   showCalibrateAutomatically: 1
-  gameID: f24b940a-5f56-4b77-9103-aa1df6dadf52
-  gameSecret: JOyLkQWjnegkP7JrGA4w8G3ewZ1p0GDXqM15wNJAPdR1JEKGM42B9EKbGyOXpZKn
-  apiPath: https://api-staging.fizzyo-ucl.co.uk
-  useTestHarnessData: 1
+  gameID: <Enter GameID here/>
+  gameSecret: <Enter Game Secret here/>
+  apiPath: https://api.fizzyo-ucl.co.uk/
+  useTestHarnessData: 0
   testHarnessDataFile: 0
