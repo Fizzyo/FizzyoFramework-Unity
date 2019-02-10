@@ -251,9 +251,9 @@ namespace Fizzyo
             //Login to server
             if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically && !User.LoggedIn)
             {
-                LoginReturnType loginResult = User.Login();
+                FizzyoNetworking.loginResult = User.Login();
 
-                if (loginResult != LoginReturnType.SUCCESS)
+                if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
                 {
                     PlayOffline();
                     return false;

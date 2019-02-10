@@ -144,6 +144,10 @@ namespace Fizzyo
         {
             get
             {
+                if (!apiPath.EndsWith("/"))
+                {
+                    apiPath = apiPath + "/";
+                }
                 return apiPath;
             }
 

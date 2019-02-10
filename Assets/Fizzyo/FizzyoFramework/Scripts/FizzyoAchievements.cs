@@ -85,36 +85,47 @@ namespace Fizzyo
         /// </returns> 
         public FizzyoRequestReturnType LoadAchievements()
         {
-            //Get all achievements from server
-            string getAchievements = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements"; 
-
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-
-            WWW sendGetAchievements = new WWW(getAchievements, null, headers);
-
-            while (!sendGetAchievements.isDone) { }
-
-            string achievementsJSONData = sendGetAchievements.text;
-            allAchievements = JsonUtility.FromJson<AllAchievementData>(achievementsJSONData).achievements;
-             
-            //get unlocked achievements
-            string getUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID;
-
-            headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-            WWW sendGetUnlock = new WWW(getUnlock, null, headers);
-
-            while (!sendGetUnlock.isDone) { }
-
-            if(sendGetUnlock.error != null)
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
-            string unlockedJSONData = sendGetUnlock.text;
+            //Get all achievements from server
+            var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements");
+            webRequest.SendWebRequest();
+
+            //string getAchievements = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements"; 
+
+            //Dictionary<string, string> headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+
+            //WWW sendGetAchievements = new WWW(getAchievements, null, headers);
+
+            while (!webRequest.isDone) { }
+
+            string achievementsJSONData = webRequest.downloadHandler.text;
+            allAchievements = JsonUtility.FromJson<AllAchievementData>(achievementsJSONData).achievements;
+
+            //get unlocked achievements
+            webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
+            webRequest.SendWebRequest();
+
+            //string getUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID;
+
+            //headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+            //WWW sendGetUnlock = new WWW(getUnlock, null, headers);
+
+            while (!webRequest.isDone) { }
+
+            if(webRequest.error != null)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+
+            string unlockedJSONData = webRequest.downloadHandler.text;
             unlockedAchievements = JsonUtility.FromJson<AllAchievementData>(unlockedJSONData).unlockedAchievements;
 
 
@@ -134,21 +145,28 @@ namespace Fizzyo
         /// </returns> 
         public FizzyoRequestReturnType GetHighscores()
         {
-            string getHighscores = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+                var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores");
+            webRequest.SendWebRequest();
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-            WWW sendGetHighscores = new WWW(getHighscores, null, headers);
+            //string getHighscores = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
 
-            while (!sendGetHighscores.isDone) { }
+            //Dictionary<string, string> headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+            //WWW sendGetHighscores = new WWW(getHighscores, null, headers);
 
-            if (sendGetHighscores.error != null)
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
-            string topScoresJSONData = sendGetHighscores.text;
+            string topScoresJSONData = webRequest.downloadHandler.text;
             highscores = JsonUtility.FromJson<AllHighscoreData>(topScoresJSONData).highscores;
 
             return FizzyoRequestReturnType.SUCCESS;
@@ -163,24 +181,37 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType PostScore(int score)
         {
-            string uploadScore = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
 
-            WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("score", score);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            headers["User-Agent"] =  "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            formData.Add("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            formData.Add("userId", FizzyoFramework.Instance.User.UserID);
+            formData.Add("score", score.ToString());
+
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores", formData);
+            webRequest.SendWebRequest();
+
+            //string uploadScore = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
+
+            //WWWForm form = new WWWForm();
+            //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+            //form.AddField("score", score);
+            //Dictionary<string, string> headers = form.headers;
+            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            //headers["User-Agent"] =  "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
 
-            byte[] rawData = form.data;
+            //byte[] rawData = form.data;
 
-            WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
+            //WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
 
-            while (!sendPostUnlock.isDone) { };
+            while (!webRequest.isDone) { };
 
-            if (sendPostUnlock.error != null)
+            if (webRequest.error != null)
             {
                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
@@ -198,23 +229,36 @@ namespace Fizzyo
         /// </returns>
         public FizzyoRequestReturnType UnlockAchievement(string achievementId)
         {
-            string unlockAchievement = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock" ;
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
 
-            WWWForm form = new WWWForm();
-            form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("achievementId", achievementId);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            formData.Add("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            formData.Add("userId", FizzyoFramework.Instance.User.UserID);
+            formData.Add("achievementId", achievementId);
 
-            byte[] rawData = form.data;
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock", formData);
+            webRequest.SendWebRequest();
 
-            WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
+            //string unlockAchievement = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock" ;
 
-            while (!sendPostUnlock.isDone) { };
+            //WWWForm form = new WWWForm();
+            //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+            //form.AddField("achievementId", achievementId);
+            //Dictionary<string, string> headers = form.headers;
+            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
-            if (sendPostUnlock.error != null)
+            //byte[] rawData = form.data;
+
+            //WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
+
+            while (!webRequest.isDone) { };
+
+            if (webRequest.error != null)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
@@ -231,6 +275,11 @@ namespace Fizzyo
         /// </returns>
         private FizzyoRequestReturnType PostAchievements()
         {
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+
             string achievementsToUpload = PlayerPrefs.GetString("achievementsToUpload");
 
             if (achievementsToUpload != "")
@@ -241,26 +290,33 @@ namespace Fizzyo
                 {
                     if (achievementsToUploadArray[i] != "")
                     {
-                        string postUnlock;
+                        Dictionary<string, string> formData = new Dictionary<string, string>();
+                        formData.Add("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+                        formData.Add("userId", FizzyoFramework.Instance.User.UserID);
 
-                        postUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock";
+                        var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock", formData);
+                        webRequest.SendWebRequest();
 
-                        WWWForm form = new WWWForm();
+                        //string postUnlock;
 
-                        form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-                        form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                        //postUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock";
 
-                        Dictionary<string, string> headers = form.headers;
-                        headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-                        headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+                        //WWWForm form = new WWWForm();
 
-                        byte[] rawData = form.data;
+                        //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+                        //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
 
-                        WWW sendPostUnlock = new WWW(postUnlock, rawData, headers);
+                        //Dictionary<string, string> headers = form.headers;
+                        //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+                        //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
-                        while (!sendPostUnlock.isDone) { }
+                        //byte[] rawData = form.data;
 
-                        if (sendPostUnlock.error != null)
+                        //WWW sendPostUnlock = new WWW(postUnlock, rawData, headers);
+
+                        while (!webRequest.isDone) { }
+
+                        if (webRequest.error != null)
                         {
                             return FizzyoRequestReturnType.FAILED_TO_CONNECT;
                         }

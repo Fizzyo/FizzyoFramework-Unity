@@ -55,11 +55,8 @@ namespace Fizzyo
     public class FizzyoUser
     {
         //Client ID refers to the Fizzyo app ID, which is used to get the Windows Live auth code
-        const string clientID = "65973b85-c34f-41a8-a4ad-00529d1fc23c"; //ce680d1e-27dc-4ffa-bc74-200d79a9e702
         const string scopes = "wl.offline_access wl.signin wl.phone_numbers wl.emails";
         const string authorizationEndpoint = "https://login.live.com/oauth20_authorize.srf";
-        const string redirectURI = "https://api-staging.fizzyo-ucl.co.uk/auth-example";
-        const string tokenEndpoint = "https://api-staging.fizzyo-ucl.co.uk/api/v1/auth/token";
 
         private string userID;
         private string patientRecordId;
@@ -169,21 +166,28 @@ namespace Fizzyo
         /// </summary>
         private LoginReturnType PostAuthentication(string username, string password)
         {
-            string postAuth = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/auth/test-token";
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            formData.Add("username", username);
+            formData.Add("password", password);
 
-            WWWForm form = new WWWForm();
-            form.AddField("username", username);
-            form.AddField("password", password);
-            WWW sendPostAuth = new WWW(postAuth, form);
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "auth/test-token", formData);
+            webRequest.SendWebRequest();
 
-            while (!sendPostAuth.isDone) { }
+            //string postAuth = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "api/v1/auth/test-token";
 
-            if (sendPostAuth.error != null)
+            //WWWForm form = new WWWForm();
+            //form.AddField("username", username);
+            //form.AddField("password", password);
+            //WWW sendPostAuth = new WWW(postAuth, form);
+
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
             {
                 return LoginReturnType.INCORRECT;
             }
 
-            AllUserData allData = JsonUtility.FromJson<AllUserData>(sendPostAuth.text);
+            AllUserData allData = JsonUtility.FromJson<AllUserData>(webRequest.downloadHandler.text);
             UserID = allData.user.id;
             AccessToken = allData.accessToken;
 
@@ -196,13 +200,13 @@ namespace Fizzyo
         {
             string authorizationRequest = String.Format("{0}?client_id={1}&scope={2}&response_type=code&redirect_uri={3}",
                 authorizationEndpoint,
-                clientID,
+                FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID,
                 //state,
                 scopes,
-                System.Uri.EscapeDataString(redirectURI));
+                System.Uri.EscapeDataString(FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "auth-example"));
 
             Uri StartUri = new Uri(authorizationRequest);
-            Uri EndUri = new Uri(redirectURI);
+            Uri EndUri = new Uri(FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "auth-example");
 
             WebAuthenticationResult WebAuthenticationResult = await WebAuthenticationBroker.AuthenticateAsync(WebAuthenticationOptions.None, StartUri, EndUri);
 
@@ -247,7 +251,7 @@ namespace Fizzyo
             // Builds the Token request
             string tokenRequestBody = string.Format("authCode={0}&redirectUri={1}",
                     code,
-                Uri.EscapeDataString(redirectURI)
+                Uri.EscapeDataString(FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "auth-example")
                 );
 
             StringContent content = new StringContent(tokenRequestBody, Encoding.UTF8, "application/x-www-form-urlencoded");
@@ -258,7 +262,7 @@ namespace Fizzyo
             HttpClient client = new HttpClient(handler);
             client.DefaultRequestHeaders.Add("User-Agent", " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
 
-            HttpResponseMessage response = await client.PostAsync(tokenEndpoint, content);
+            HttpResponseMessage response = await client.PostAsync(FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + FizzyoNetworking.ApiEndpoint + "auth/token", content);
             string responseString = await response.Content.ReadAsStringAsync();
 
             try
@@ -325,25 +329,33 @@ namespace Fizzyo
         /// </summary>
         public UserTagReturnType LoadUserTag()
         {
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return UserTagReturnType.FAILED_TO_CONNECT;
+            }
+
             //https://api.fizzyo-ucl.co.uk/api/v1/users/:id
 
-            string getTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
+            var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID);
+            webRequest.SendWebRequest();
 
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+            //string getTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
 
-            WWW sendGetTag = new WWW(getTag, null, headers);
+            //Dictionary<string, string> headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
 
-            while (!sendGetTag.isDone) { }
+            //WWW sendGetTag = new WWW(getTag, null, headers);
 
-            if (sendGetTag.error != null)
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
             {
                 return UserTagReturnType.FAILED_TO_CONNECT;
             }
 
 
-            UserTag allData = JsonUtility.FromJson<UserTag>(sendGetTag.text);
+            UserTag allData = JsonUtility.FromJson<UserTag>(webRequest.downloadHandler.text);
 
             if (Regex.IsMatch(allData.gamerTag, "^[A-Z]{3}$"))
             {
@@ -378,21 +390,29 @@ namespace Fizzyo
                 return UserTagReturnType.BANNED_TAG;
             }
 
-            string uploadTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return UserTagReturnType.FAILED_TO_CONNECT;
+            }
 
-            WWWForm form = new WWWForm();
-            form.AddField("gamerTag", tag);
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag", null);
+            webRequest.SendWebRequest();
 
-            byte[] rawData = form.data;
+            //string uploadTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
 
-            WWW sendPostUnlock = new WWW(uploadTag, rawData, headers);
+            //WWWForm form = new WWWForm();
+            //form.AddField("gamerTag", tag);
+            //Dictionary<string, string> headers = form.headers;
+            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
-            while (!sendPostUnlock.isDone) { }
+            //byte[] rawData = form.data;
 
-            if (sendPostUnlock.error != null)
+            //WWW sendPostUnlock = new WWW(uploadTag, rawData, headers);
+
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
             {
                 return UserTagReturnType.FAILED_TO_CONNECT;
             }
@@ -408,24 +428,31 @@ namespace Fizzyo
         /// </summary>
         private CalibrationReturnType LoadCalibrationData()
         {
-            //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
-
-            string getCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
-
-            Dictionary<string, string> headers = new Dictionary<string, string>();
-            headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-
-            WWW sendGetCal = new WWW(getCal, null, headers);
-
-            while (!sendGetCal.isDone) { }
-
-            if (sendGetCal.error != null)
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
             {
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-            CalibrationData allData = JsonUtility.FromJson<CalibrationData>(sendGetCal.text);
+            //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
+            var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/calibration");
+            webRequest.SendWebRequest();
+
+            //string getCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
+
+            //Dictionary<string, string> headers = new Dictionary<string, string>();
+            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
+            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
+
+            //WWW sendGetCal = new WWW(getCal, null, headers);
+
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
+            {
+                return CalibrationReturnType.FAILED_TO_CONNECT;
+            }
+
+            CalibrationData allData = JsonUtility.FromJson<CalibrationData>(webRequest.downloadHandler.text);
             Debug.Log(JsonUtility.ToJson(allData));
 
             PlayerPrefs.SetInt("calLoaded", 1);
@@ -466,27 +493,40 @@ namespace Fizzyo
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
 
-            string uploadCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
+            //string uploadCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
 
             DateTime origin = new DateTime(1970, 1, 1, 0, 0, 0, 0, System.DateTimeKind.Utc);
             TimeSpan diff = DateTime.UtcNow - origin;
             int calibratedOn = (int)Math.Floor(diff.TotalSeconds);
 
-            WWWForm form = new WWWForm();
-            form.AddField("calibratedOn", calibratedOn);
-            form.AddField("pressure", pressure.ToString());
-            form.AddField("time", time.ToString());
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return CalibrationReturnType.FAILED_TO_CONNECT;
+            }
 
-            byte[] rawData = form.data;
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            formData.Add("calibratedOn", calibratedOn.ToString());
+            formData.Add("pressure", pressure.ToString());
+            formData.Add("time", time.ToString());
 
-            WWW sendPostUnlock = new WWW(uploadCal, rawData, headers);
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/calibration", formData);
+            webRequest.SendWebRequest();
 
-            while (!sendPostUnlock.isDone) { }
+            //WWWForm form = new WWWForm();
+            //form.AddField("calibratedOn", calibratedOn);
+            //form.AddField("pressure", pressure.ToString());
+            //form.AddField("time", time.ToString());
+            //Dictionary<string, string> headers = form.headers;
+            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
-            if (sendPostUnlock.error != null)
+            //byte[] rawData = form.data;
+
+            //WWW sendPostUnlock = new WWW(uploadCal, rawData, headers);
+
+            while (!webRequest.isDone) { }
+
+            if (webRequest.error != null)
             {
                 return CalibrationReturnType.FAILED_TO_CONNECT;
             }
@@ -526,7 +566,7 @@ namespace Fizzyo
         /// </returns>
         public static string Session(int goodBreathCount, int badBreathCount, int score, int startTime, int setCount, int breathCount)
         {
-            if (PlayerPrefs.GetInt("online") == 0)
+            if (PlayerPrefs.GetInt("online") == 0 || FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
             {
                 return "Session Upload Failed";
             }
@@ -535,34 +575,49 @@ namespace Fizzyo
             TimeSpan diff = DateTime.UtcNow - origin;
             int endTime = (int)Math.Floor(diff.TotalSeconds);
 
-            string postSession = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/:id/sessions";
+            Dictionary<string, string> formData = new Dictionary<string, string>();
+            formData.Add("id", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
+            formData.Add("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            formData.Add("userId", FizzyoFramework.Instance.User.UserID);
+            formData.Add("setCount", setCount.ToString());
+            formData.Add("breathCount", breathCount.ToString());
+            formData.Add("goodBreathCount", goodBreathCount.ToString());
+            formData.Add("badBreathCount", badBreathCount.ToString());
+            formData.Add("score", score.ToString());
+            formData.Add("startTime", startTime.ToString());
+            formData.Add("endTime", endTime.ToString());
 
-            WWWForm form = new WWWForm();
+            var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions", formData);
+            webRequest.SendWebRequest();
 
-            form.AddField("id", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
-            form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            form.AddField("setCount", setCount);
-            form.AddField("breathCount", breathCount);
-            form.AddField("goodBreathCount", goodBreathCount);
-            form.AddField("badBreathCount", badBreathCount);
-            form.AddField("score", score);
-            form.AddField("startTime", startTime);
-            form.AddField("endTime", endTime);
+            //string postSession = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/:id/sessions";
 
-            Dictionary<string, string> headers = form.headers;
-            headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+            //WWWForm form = new WWWForm();
 
-            byte[] rawData = form.data;
+            //form.AddField("id", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
+            //form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+            //form.AddField("setCount", setCount);
+            //form.AddField("breathCount", breathCount);
+            //form.AddField("goodBreathCount", goodBreathCount);
+            //form.AddField("badBreathCount", badBreathCount);
+            //form.AddField("score", score);
+            //form.AddField("startTime", startTime);
+            //form.AddField("endTime", endTime);
 
-            WWW sendPostSession = new WWW(postSession, rawData, headers);
+            //Dictionary<string, string> headers = form.headers;
+            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+
+            //byte[] rawData = form.data;
+
+            //WWW sendPostSession = new WWW(postSession, rawData, headers);
 
             string status = "Session Upload Complete";
 
-            while (!sendPostSession.isDone) { }
+            while (!webRequest.isDone) { }
 
-            if (sendPostSession.error != null)
+            if (webRequest.error != null)
             {
                 status = "Session Upload Failed";
             }
