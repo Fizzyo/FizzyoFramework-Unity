@@ -68,5 +68,6 @@ Fizzyo has engineered an "add-on" device for most of the popular airway clearanc
 ## Useful videos on Patient physio and technique
 
 - [Which is the best Airway Clearance method for Cystic Fibrosis?](https://www.youtube.com/watch?v=Wn5o5AgD9m0)
-- [Cystic fibrosis breathing techniques – acapella device](https://www.youtube.com/watch?v=DJFp6A_p2R8)
-- [Cystic fibrosis breathing techniques – positive expiratory pressure (PEP) mask](https://www.youtube.com/watch?v=C1SLdjvNg9U)
+- [Cystic fibrosis breathing techniques – Acapella Device](https://www.youtube.com/watch?v=9DVBpMWlhzM)
+- [Cystic fibrosis breathing techniques – Aerobika Oscillating Positive Expiratory Pressure (PEP) Therapy System](https://www.youtube.com/watch?v=iy2oYadhF9Q)
+- [Cystic fibrosis breathing techniques – Pari PEP System](https://www.youtube.com/watch?v=5R5JQsLIty0)
