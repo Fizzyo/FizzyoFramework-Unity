@@ -12,6 +12,7 @@ MonoBehaviour:
   m_Name: FizzyoConfigurationProfile
   m_EditorClassIdentifier: 
   showLoginAutomatically: 1
+  requireLaunchFromHub: 1
   showSetGamerTagAutomatically: 0
   showCalibrateAutomatically: 1
   gameID: <Enter GameID here/>

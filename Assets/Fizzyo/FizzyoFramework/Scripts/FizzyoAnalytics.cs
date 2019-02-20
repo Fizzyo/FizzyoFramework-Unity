@@ -130,31 +130,52 @@ namespace Fizzyo
         {
             if (FizzyoFramework.Instance != null && FizzyoFramework.Instance.FizzyoConfigurationProfile != null)
             {
+                if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+                {
+                    return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+                }
+
                 ///https://api.fizzyo-ucl.co.uk/api/v1/games/<id>/sessions
-                string postAnalytics = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
 
-                WWWForm form = new WWWForm();
-                form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-                form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-                form.AddField("sessionId", SessionId.ToString());
-                form.AddField("setCount", _setCount);
-                form.AddField("breathCount", BreathCount);
-                form.AddField("goodBreathCount", GoodBreathCount);
-                form.AddField("badBreathCount", BadBreathCount);
-                form.AddField("score", _score);
-                form.AddField("startTime", StartTime.ToString());
-                form.AddField("endTime", EndTime.ToString());
-                Dictionary<string, string> headers = form.headers;
-                headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-                headers["User-Agent"] = " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
+                Dictionary<string, string> formData = new Dictionary<string, string>();
+                formData.Add("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+                formData.Add("userId", FizzyoFramework.Instance.User.UserID);
+                formData.Add("sessionId", SessionId.ToString());
+                formData.Add("setCount", _setCount.ToString());
+                formData.Add("breathCount", BreathCount.ToString());
+                formData.Add("goodBreathCount", GoodBreathCount.ToString());
+                formData.Add("badBreathCount", BadBreathCount.ToString());
+                formData.Add("score", _score.ToString());
+                formData.Add("startTime", StartTime.ToString());
+                formData.Add("endTime", EndTime.ToString());
 
-                byte[] rawData = form.data;
+                var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions", formData);
+                webRequest.SendWebRequest();
 
-                WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
+                //string postAnalytics = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
 
-                while (!sendPostAnalytics.isDone) { };
+                //WWWForm form = new WWWForm();
+                //form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
+                //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
+                //form.AddField("sessionId", SessionId.ToString());
+                //form.AddField("setCount", _setCount);
+                //form.AddField("breathCount", BreathCount);
+                //form.AddField("goodBreathCount", GoodBreathCount);
+                //form.AddField("badBreathCount", BadBreathCount);
+                //form.AddField("score", _score);
+                //form.AddField("startTime", StartTime.ToString());
+                //form.AddField("endTime", EndTime.ToString());
+                //Dictionary<string, string> headers = form.headers;
+                //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
+                //headers["User-Agent"] = " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
 
-                if (sendPostAnalytics.error != null)
+                //byte[] rawData = form.data;
+
+                //WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
+
+                while (!webRequest.isDone) { };
+
+                if (webRequest.error != null)
                 {
                     Debug.Log("[FizzyoAnalytics] Posting analytics failed. ");
                     return FizzyoRequestReturnType.FAILED_TO_CONNECT;
