@@ -23,9 +23,6 @@ namespace Fizzyo
         private float lastBreathLength = 0;
         private float lastMaxPressure = 0;
         private int lastQuality = 0;
-
-        private float sessionStartTime = 0;
-        private float setStartTime = 0;
         private float timeBreathpaused = 0;
         private const float breathingPausedThreshold = 5f;
 
@@ -79,17 +76,6 @@ namespace Fizzyo
         public int CurrentBreathCount
         {
             get { return currentBreathCount; }
-        }
-
-        private List<SetResults> sessionResults = new List<SetResults>();
-
-        /// <summary>
-        /// Session managers record of the current session
-        /// </summary>
-        public List<SetResults> SessionResults
-        {
-            get { return sessionResults; }
-            set { sessionResults = value; }
         }
 
         /// <summary>
@@ -181,8 +167,6 @@ namespace Fizzyo
             currentBreathCount = 0;
             timeBreathpaused = 0;
             isSessionStarted = true;
-            sessionStartTime = DateTime.Now.ToFileTimeUtc();
-            sessionResults = new List<SetResults>();
 
             SessionStarted?.Invoke(this);
 
@@ -203,7 +187,6 @@ namespace Fizzyo
             Debug.Log("Set Starting");
             currentSetCount = SetNumber > 0 ? SetNumber : currentSetCount + 1;
             currentBreathCount = 0;
-            setStartTime = DateTime.Now.ToFileTimeUtc();
             isSetStarted = true;
             SetStarted?.Invoke(this, new SessionEventArgs(GetSessionStatus()));
         }
@@ -265,12 +248,12 @@ namespace Fizzyo
         }
 
         /// <summary>
-        /// Collate results of the current set
+        /// Collate results of the current set for events
         /// </summary>
         /// <returns></returns>
         private SetResults GetSessionStatus()
         {
-            return new SetResults() { Set = currentSetCount, Breath = currentBreathCount, BreathLength = lastBreathLength, MaxPressure = lastMaxPressure, SetTime = 0, Quality = lastQuality  };
+            return new SetResults() { Set = currentSetCount, Breath = currentBreathCount, BreathLength = lastBreathLength, MaxPressure = lastMaxPressure, Quality = lastQuality  };
         }
 
         /// <summary>
@@ -278,7 +261,6 @@ namespace Fizzyo
         /// </summary>
         private void Recogniser_BreathComplete(object sender, ExhalationCompleteEventArgs e)
         {
-            Debug.Log("Session Breath - Full? - " + e.IsBreathFull);
             if (e.IsBreathFull)
             {
                 currentBreathCount += 1;
@@ -324,7 +306,6 @@ namespace Fizzyo
         public int Breath;
         public float BreathLength;
         public float MaxPressure;
-        public float SetTime;
         public int Quality;
     }
 
@@ -357,11 +338,6 @@ namespace Fizzyo
         public float BreathVolume
         {
             get { return results.MaxPressure; }
-        }
-
-        public float Time
-        {
-            get { return results.SetTime; }
         }
 
         public int BreathQuality
