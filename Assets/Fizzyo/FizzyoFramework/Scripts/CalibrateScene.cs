@@ -11,7 +11,7 @@ public class CalibrateScene : MonoBehaviour {
 
     public PressureGraph pressureGraph;
     public Image progressEllipse;
-    public float minExhaleTime = 3.0f;
+    public float minExhaleTime = 2.0f;
     public int requiredBreaths = 1;
     public Text countdown;
     float startTime = 0;

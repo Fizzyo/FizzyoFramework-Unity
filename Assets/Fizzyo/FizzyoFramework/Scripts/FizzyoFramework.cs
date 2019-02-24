@@ -11,7 +11,7 @@ using UnityEngine.SceneManagement;
 /// </summary>
 namespace Fizzyo
 {
-    public enum FizzyoRequestReturnType { SUCCESS, INCORRECT_TOKEN, FAILED_TO_CONNECT }
+    public enum FizzyoRequestReturnType { SUCCESS, INCORRECT_TOKEN, FAILED_TO_CONNECT, NOT_FOUND, ALREADY_UNLOCKED }
 
     ///Fizzyo
     /// <summary>
@@ -127,6 +127,8 @@ namespace Fizzyo
 
         void Start()
         {
+            if (!IsInitialized) { InitializeInstance(); }
+
 #if ENABLE_WINMD_SUPPORT || UNITY_UWP
             //Pass credentials from hub
             string launchArguments = UnityEngine.WSA.Application.arguments;

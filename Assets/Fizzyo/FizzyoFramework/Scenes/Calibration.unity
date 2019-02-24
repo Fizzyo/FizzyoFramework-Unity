@@ -3065,7 +3065,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   pressureGraph: {fileID: 1139829352}
   progressEllipse: {fileID: 1558039018}
-  minExhaleTime: 3
+  minExhaleTime: 2
   requiredBreaths: 1
   countdown: {fileID: 903428270}
 --- !u!1 &62768144

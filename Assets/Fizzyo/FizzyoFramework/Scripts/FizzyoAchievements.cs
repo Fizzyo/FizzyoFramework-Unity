@@ -290,5 +290,51 @@ namespace Fizzyo
             }
                return FizzyoRequestReturnType.SUCCESS;
         }
+
+        public AchievementData GetAchievement(string AchivementName)
+        {
+            for (int i = 0; i < allAchievements.Length; i++)
+            {
+                if (allAchievements[i].title == AchivementName)
+                {
+                    return allAchievements[i];
+                }
+            }
+            return null;
+        }
+
+        public AchievementData GetUnlockedAchievement(string AchivementName)
+        {
+            for (int i = 0; i < unlockedAchievements.Length; i++)
+            {
+                if (unlockedAchievements[i].title == AchivementName)
+                {
+                    return unlockedAchievements[i];
+                }
+            }
+            return null;
+        }
+
+        public FizzyoRequestReturnType CheckAndUnlockAchivement(string AchievementName)
+        {
+            //Check if the user has already gained this achievement
+            var fizzyoUnlockedAchievement = GetUnlockedAchievement(AchievementName);
+
+            // If the player has not had this achievement before, unlock it
+            if (fizzyoUnlockedAchievement != null)
+            {
+                return FizzyoRequestReturnType.ALREADY_UNLOCKED;
+            }
+
+            //Check if an achievement for this name exists
+            var fizzyoAchievement = GetAchievement(AchievementName);
+
+            if (fizzyoAchievement != null && fizzyoUnlockedAchievement == null)
+            {
+                return UnlockAchievement(fizzyoAchievement.id);
+            }
+
+            return FizzyoRequestReturnType.NOT_FOUND;
+        }
     }
 }
