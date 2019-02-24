@@ -173,13 +173,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "auth/test-token", formData);
             webRequest.SendWebRequest();
 
-            //string postAuth = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "api/v1/auth/test-token";
-
-            //WWWForm form = new WWWForm();
-            //form.AddField("username", username);
-            //form.AddField("password", password);
-            //WWW sendPostAuth = new WWW(postAuth, form);
-
             while (!webRequest.isDone) { }
 
             if (webRequest.error != null)
@@ -339,14 +332,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID);
             webRequest.SendWebRequest();
 
-            //string getTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID;
-
-            //Dictionary<string, string> headers = new Dictionary<string, string>();
-            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-
-            //WWW sendGetTag = new WWW(getTag, null, headers);
-
             while (!webRequest.isDone) { }
 
             if (webRequest.error != null)
@@ -398,18 +383,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag", null);
             webRequest.SendWebRequest();
 
-            //string uploadTag = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/gamer-tag";
-
-            //WWWForm form = new WWWForm();
-            //form.AddField("gamerTag", tag);
-            //Dictionary<string, string> headers = form.headers;
-            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-            //byte[] rawData = form.data;
-
-            //WWW sendPostUnlock = new WWW(uploadTag, rawData, headers);
-
             while (!webRequest.isDone) { }
 
             if (webRequest.error != null)
@@ -436,14 +409,6 @@ namespace Fizzyo
             //https://api.fizzyo-ucl.co.uk/api/v1/users/<userId>/calibration
             var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/calibration");
             webRequest.SendWebRequest();
-
-            //string getCal = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/calibration";
-
-            //Dictionary<string, string> headers = new Dictionary<string, string>();
-            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-
-            //WWW sendGetCal = new WWW(getCal, null, headers);
 
             while (!webRequest.isDone) { }
 
@@ -512,18 +477,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/calibration", formData);
             webRequest.SendWebRequest();
 
-            //WWWForm form = new WWWForm();
-            //form.AddField("calibratedOn", calibratedOn);
-            //form.AddField("pressure", pressure.ToString());
-            //form.AddField("time", time.ToString());
-            //Dictionary<string, string> headers = form.headers;
-            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-            //byte[] rawData = form.data;
-
-            //WWW sendPostUnlock = new WWW(uploadCal, rawData, headers);
-
             while (!webRequest.isDone) { }
 
             if (webRequest.error != null)
@@ -589,29 +542,6 @@ namespace Fizzyo
 
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions", formData);
             webRequest.SendWebRequest();
-
-            //string postSession = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/:id/sessions";
-
-            //WWWForm form = new WWWForm();
-
-            //form.AddField("id", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
-            //form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            //form.AddField("setCount", setCount);
-            //form.AddField("breathCount", breathCount);
-            //form.AddField("goodBreathCount", goodBreathCount);
-            //form.AddField("badBreathCount", badBreathCount);
-            //form.AddField("score", score);
-            //form.AddField("startTime", startTime);
-            //form.AddField("endTime", endTime);
-
-            //Dictionary<string, string> headers = form.headers;
-            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-            //byte[] rawData = form.data;
-
-            //WWW sendPostSession = new WWW(postSession, rawData, headers);
 
             string status = "Session Upload Complete";
 

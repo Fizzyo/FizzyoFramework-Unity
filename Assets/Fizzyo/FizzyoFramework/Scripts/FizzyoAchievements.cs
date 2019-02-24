@@ -94,14 +94,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements");
             webRequest.SendWebRequest();
 
-            //string getAchievements = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements"; 
-
-            //Dictionary<string, string> headers = new Dictionary<string, string>();
-            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-
-            //WWW sendGetAchievements = new WWW(getAchievements, null, headers);
-
             while (!webRequest.isDone) { }
 
             string achievementsJSONData = webRequest.downloadHandler.text;
@@ -110,13 +102,6 @@ namespace Fizzyo
             //get unlocked achievements
             webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
             webRequest.SendWebRequest();
-
-            //string getUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID;
-
-            //headers = new Dictionary<string, string>();
-            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-            //WWW sendGetUnlock = new WWW(getUnlock, null, headers);
 
             while (!webRequest.isDone) { }
 
@@ -151,13 +136,6 @@ namespace Fizzyo
             }
                 var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores");
             webRequest.SendWebRequest();
-
-            //string getHighscores = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
-
-            //Dictionary<string, string> headers = new Dictionary<string, string>();
-            //headers.Add("Authorization", "Bearer " + FizzyoFramework.Instance.User.AccessToken);
-            //headers.Add("User-Agent", "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko");
-            //WWW sendGetHighscores = new WWW(getHighscores, null, headers);
 
             while (!webRequest.isDone) { }
 
@@ -194,21 +172,6 @@ namespace Fizzyo
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores", formData);
             webRequest.SendWebRequest();
 
-            //string uploadScore = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/highscores";
-
-            //WWWForm form = new WWWForm();
-            //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            //form.AddField("score", score);
-            //Dictionary<string, string> headers = form.headers;
-            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            //headers["User-Agent"] =  "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-
-            //byte[] rawData = form.data;
-
-            //WWW sendPostUnlock = new WWW(uploadScore, rawData, headers);
-
             while (!webRequest.isDone) { };
 
             if (webRequest.error != null)
@@ -241,20 +204,6 @@ namespace Fizzyo
 
             var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock", formData);
             webRequest.SendWebRequest();
-
-            //string unlockAchievement = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementId + "/unlock" ;
-
-            //WWWForm form = new WWWForm();
-            //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-            //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-            //form.AddField("achievementId", achievementId);
-            //Dictionary<string, string> headers = form.headers;
-            //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-            //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-            //byte[] rawData = form.data;
-
-            //WWW sendPostUnlock = new WWW(unlockAchievement, rawData, headers);
 
             while (!webRequest.isDone) { };
 
@@ -296,23 +245,6 @@ namespace Fizzyo
 
                         var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock", formData);
                         webRequest.SendWebRequest();
-
-                        //string postUnlock;
-
-                        //postUnlock = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "/api/v1/game/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements/" + achievementsToUploadArray[i] + "/unlock";
-
-                        //WWWForm form = new WWWForm();
-
-                        //form.AddField("gameSecret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-                        //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-
-                        //Dictionary<string, string> headers = form.headers;
-                        //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-                        //headers["User-Agent"] = "Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-                        //byte[] rawData = form.data;
-
-                        //WWW sendPostUnlock = new WWW(postUnlock, rawData, headers);
 
                         while (!webRequest.isDone) { }
 

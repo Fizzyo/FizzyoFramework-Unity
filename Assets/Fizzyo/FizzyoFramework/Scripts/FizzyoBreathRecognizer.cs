@@ -232,6 +232,14 @@ namespace Fizzyo
             }
         }
 
+        public float MinBreathThreshold
+        {
+            get
+            {
+                return this.minBreathThreshold;
+            }
+        }
+
         ///<summary>
         /// Adds a sample to the BreathAnalyser
         ///</summary>
@@ -239,7 +247,6 @@ namespace Fizzyo
         /// <param name="value">Float value indicating breath strength </param>
         public void AddSample(float dt, float value)
         {
-
             if (this.isExhaling && value < this.minBreathThreshold)
             {
                 // Notify the delegate that the exhaled breath is complete
@@ -252,7 +259,10 @@ namespace Fizzyo
                     isBreathFull,
                     this.breathPercentage,
                     breathQuality);
-                this.OnExhalationComplete(this, eventArgs);
+
+                BreathComplete?.Invoke(this, eventArgs);
+                
+                //is.OnExhalationComplete(this, eventArgs);
 
                 // Reset the state
                 this.breathLength = 0;
@@ -279,7 +289,6 @@ namespace Fizzyo
         /// Returns true if the breath was within the threshold of a 'good breath'
         /// Updates the good and bad breath counts. 
         ///</summary>
-        
         public bool IsBreathFull(float breathLength, float maxBreathLength, float exhaledVolume, float maxPressure)
         {
             bool isBreathFull = false;

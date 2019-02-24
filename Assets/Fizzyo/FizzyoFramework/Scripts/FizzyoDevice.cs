@@ -99,7 +99,8 @@ namespace Fizzyo
 #else
                     pressure = Input.GetAxisRaw("Horizontal");
 #endif
-                    Debug.Log("Pressure recorded at: " + pressure);
+                    if (FizzyoFramework.Instance.ShowPressure) { Debug.Log("Pressure recorded at: " + pressure); } 
+
                     //Check if pressure value is beyond the 0..1 range
                     if (pressure > 1)
                     {
@@ -164,15 +165,5 @@ namespace Fizzyo
             }
         }
 #endif
-
-        /// <summary>
-        /// Changes the maximum calibrated breath pressure and length to the specified values. Will set the Calibrated boolean to true.  
-        /// </summary>    
-        public void SetCalibrationLimits(float maxPressure = 1, float maxBreath = 1)
-        {
-            maxPressureCalibrated = maxPressure;
-            maxBreathCalibrated = maxBreath;
-            Calibrated = true;
-        }
     }
 }

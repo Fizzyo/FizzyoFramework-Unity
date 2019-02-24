@@ -87,13 +87,11 @@ namespace Fizzyo
         ///</summary>
         public void PostOnQuit()
         {
-//#if !UNITY_EDITOR
             Debug.Log("[FizzyoAnalytics] About to quit: creating session to upload.");
             CreateSession();
             Debug.Log("[FizzyoAnalytics] Session creation Finished.");
             Debug.Log("[FizzyoAnalytics] Posting Analytics...");
             PostAnalytics();
-//#endif
         }
 
         ///<summary>
@@ -151,27 +149,6 @@ namespace Fizzyo
 
                 var webRequest = FizzyoNetworking.PostWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions", formData);
                 webRequest.SendWebRequest();
-
-                //string postAnalytics = FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath + "api/v1/games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/sessions";
-
-                //WWWForm form = new WWWForm();
-                //form.AddField("secret", FizzyoFramework.Instance.FizzyoConfigurationProfile.GameSecret);
-                //form.AddField("userId", FizzyoFramework.Instance.User.UserID);
-                //form.AddField("sessionId", SessionId.ToString());
-                //form.AddField("setCount", _setCount);
-                //form.AddField("breathCount", BreathCount);
-                //form.AddField("goodBreathCount", GoodBreathCount);
-                //form.AddField("badBreathCount", BadBreathCount);
-                //form.AddField("score", _score);
-                //form.AddField("startTime", StartTime.ToString());
-                //form.AddField("endTime", EndTime.ToString());
-                //Dictionary<string, string> headers = form.headers;
-                //headers["Authorization"] = "Bearer " + FizzyoFramework.Instance.User.AccessToken;
-                //headers["User-Agent"] = " Mozilla/5.0 (Windows NT 6.3; Trident/7.0; rv:11.0) like Gecko";
-
-                //byte[] rawData = form.data;
-
-                //WWW sendPostAnalytics = new WWW(postAnalytics, rawData, headers);
 
                 while (!webRequest.isDone) { };
 

@@ -4,11 +4,8 @@
 using Fizzyo;
 using UnityEngine;
 
-[ExecuteInEditMode]
 public class PressureGraph : MonoBehaviour
 {
-
-
     public float maxTime = 3.0f;
     public int dataPoints = 10;
     public float width = 200.0f;
@@ -19,11 +16,6 @@ public class PressureGraph : MonoBehaviour
     float startTime = 0;
 
     private bool exhaling;
-
-    void Awake()
-    {
-        Debug.Log("Editor causes this Awake");
-    }
 
     // Use this for initialization
     void Start()
