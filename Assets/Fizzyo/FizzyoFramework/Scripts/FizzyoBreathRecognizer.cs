@@ -132,7 +132,7 @@ namespace Fizzyo
         private float maxPressure = 0;
         private float maxBreathLength = 0;
         private const float kTollerance = 0.80f;
-        private float minBreathThreshold = .05f;
+        private float minBreathThreshold = .1f;
         private float breathPercentage = 0;
 
         public event ExhalationCompleteEventHandler BreathComplete;

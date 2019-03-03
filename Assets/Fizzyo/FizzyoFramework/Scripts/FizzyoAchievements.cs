@@ -90,6 +90,19 @@ namespace Fizzyo
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
+            LoadAllAchievements();
+            LoadUnlockedAchievements();
+
+            return FizzyoRequestReturnType.SUCCESS;
+        }
+
+        internal FizzyoRequestReturnType LoadAllAchievements()
+        {
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+
             //Get all achievements from server
             var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "games/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID + "/achievements");
             webRequest.SendWebRequest();
@@ -99,13 +112,22 @@ namespace Fizzyo
             string achievementsJSONData = webRequest.downloadHandler.text;
             allAchievements = JsonUtility.FromJson<AllAchievementData>(achievementsJSONData).achievements;
 
+            return FizzyoRequestReturnType.SUCCESS;
+        }
+        internal FizzyoRequestReturnType LoadUnlockedAchievements()
+        {
+            if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
+            {
+                return FizzyoRequestReturnType.FAILED_TO_CONNECT;
+            }
+
             //get unlocked achievements
-            webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
+            var webRequest = FizzyoNetworking.GetWebRequest(FizzyoNetworking.ApiEndpoint + "users/" + FizzyoFramework.Instance.User.UserID + "/unlocked-achievements/" + FizzyoFramework.Instance.FizzyoConfigurationProfile.GameID);
             webRequest.SendWebRequest();
 
             while (!webRequest.isDone) { }
 
-            if(webRequest.error != null)
+            if (webRequest.error != null)
             {
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
@@ -212,6 +234,9 @@ namespace Fizzyo
                 return FizzyoRequestReturnType.FAILED_TO_CONNECT;
             }
 
+            //Refresh unlocked achievements to get the latest unlocked.
+            LoadUnlockedAchievements();
+
             return FizzyoRequestReturnType.SUCCESS;
         }
 
@@ -291,38 +316,49 @@ namespace Fizzyo
                return FizzyoRequestReturnType.SUCCESS;
         }
 
-        public AchievementData GetAchievement(string AchivementName)
+        public AchievementData GetAchievement(string AchievementName)
         {
-            for (int i = 0; i < allAchievements.Length; i++)
+            if (allAchievements != null && allAchievements.Length > 0)
             {
-                if (allAchievements[i].title == AchivementName)
+                for (int i = 0; i < allAchievements.Length; i++)
                 {
-                    return allAchievements[i];
+                    if (allAchievements[i].title.ToLower() == AchievementName.ToLower())
+                    {
+                        return allAchievements[i];
+                    }
                 }
             }
             return null;
         }
 
-        public AchievementData GetUnlockedAchievement(string AchivementName)
+        public AchievementData GetUnlockedAchievement(string AchievementName)
         {
-            for (int i = 0; i < unlockedAchievements.Length; i++)
+            if (unlockedAchievements != null && unlockedAchievements.Length > 0)
             {
-                if (unlockedAchievements[i].title == AchivementName)
+                for (int i = 0; i < unlockedAchievements.Length; i++)
                 {
-                    return unlockedAchievements[i];
+                    if (unlockedAchievements[i].title.ToLower() == AchievementName.ToLower())
+                    {
+                        return unlockedAchievements[i];
+                    }
                 }
             }
             return null;
         }
 
-        public FizzyoRequestReturnType CheckAndUnlockAchivement(string AchievementName)
+        public FizzyoRequestReturnType CheckAndUnlockAchievement(string AchievementName)
         {
+            if (unlockedAchievements != null)
+            {
+                Debug.LogError("Attempting to unlock [" + AchievementName + "]");
+            }
             //Check if the user has already gained this achievement
             var fizzyoUnlockedAchievement = GetUnlockedAchievement(AchievementName);
 
             // If the player has not had this achievement before, unlock it
             if (fizzyoUnlockedAchievement != null)
             {
+                Debug.LogError("[" + AchievementName + "] - Already Unlocked");
                 return FizzyoRequestReturnType.ALREADY_UNLOCKED;
             }
 
@@ -331,7 +367,14 @@ namespace Fizzyo
 
             if (fizzyoAchievement != null && fizzyoUnlockedAchievement == null)
             {
+                Debug.LogError("[" + AchievementName + "] - Unlocked");
+
                 return UnlockAchievement(fizzyoAchievement.id);
+            }
+
+            if (unlockedAchievements != null)
+            {
+                Debug.LogError("[" + AchievementName + "] - Not Found");
             }
 
             return FizzyoRequestReturnType.NOT_FOUND;

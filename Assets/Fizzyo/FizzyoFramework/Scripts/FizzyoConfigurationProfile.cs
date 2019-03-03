@@ -10,49 +10,7 @@ namespace Fizzyo
     {
         public enum TestHarnessData { p1_acapella, p1_pep, p2_acapella };
 
-        [Header("Script Behaviour")]
-        [Tooltip("Automatically show login screen at start of game.")]
-        [SerializeField]
-        private bool showLoginAutomatically = true;
-
-        /// <summary>
-        /// Show the Logon screen automatically when the application is launched
-        /// </summary>
-        public bool ShowLoginAutomatically
-        {
-            get
-            {
-                return showLoginAutomatically;
-            }
-
-            set
-            {
-                showLoginAutomatically = value;
-            }
-        }
-
-        [Tooltip("Require that the game is launched from the Fizzy Hub.")]
-        [SerializeField]
-        private bool requireLaunchFromHub = true;
-
-        /// <summary>
-        /// Require launch from Fizzyo Hub to run, also passes along login credentials. 
-        /// </summary>
-        public bool RequireLaunchFromHub
-        {
-            get
-            {
-                return requireLaunchFromHub;
-            }
-
-            set
-            {
-                requireLaunchFromHub = value;
-            }
-        }
-
-
-
+        [Header("Mandatory Game configuration")]
         [Tooltip("Automatically show gamer tag editor if user does not have this set.")]
         [SerializeField]
         private bool showSetGamerTagAutomatically = false;
@@ -73,7 +31,7 @@ namespace Fizzyo
             }
         }
 
-        [Tooltip("Automatically show calibration screen if never calibrated by user.")]
+        [Tooltip("Automatically show calibration screen if never calibrated by user.\nBy default this should always be set to true")]
         [SerializeField]
         private bool showCalibrateAutomatically = true;
 
@@ -194,6 +152,49 @@ namespace Fizzyo
             set
             {
                 testHarnessDataFile = value;
+            }
+        }
+
+
+        [Header("Testing configuration")]
+        [Tooltip("Automatically show login screen at start of game when the hub is not in use.")]
+        [SerializeField]
+        private bool loginFromDesktop = true;
+
+        /// <summary>
+        /// Show the Logon screen automatically when the application is launched from the desktop
+        /// </summary>
+        /// <remarks>Not to be used for a HUB deployment</remarks>
+        public bool LoginFromDesktop
+        {
+            get
+            {
+                return loginFromDesktop;
+            }
+
+            set
+            {
+                loginFromDesktop = value;
+            }
+        }
+
+        [Tooltip("Should always be set to true, unless testing the app without the hub.  Requires [LoginFromDesktop] to be set to allow login ")]
+        [SerializeField]
+        private bool requireLaunchFromHub = true;
+
+        /// <summary>
+        /// Require launch from Fizzyo Hub to run, also passes along login credentials. 
+        /// </summary>
+        public bool RequireLaunchFromHub
+        {
+            get
+            {
+                return requireLaunchFromHub;
+            }
+
+            set
+            {
+                requireLaunchFromHub = value;
             }
         }
     }

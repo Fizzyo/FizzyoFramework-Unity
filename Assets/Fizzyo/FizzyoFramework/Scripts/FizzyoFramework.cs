@@ -133,7 +133,6 @@ namespace Fizzyo
             //Pass credentials from hub
             string launchArguments = UnityEngine.WSA.Application.arguments;
             Dictionary<string, string> arguments = new Dictionary<string, string>();
-
             if (!string.IsNullOrEmpty(launchArguments))
             {
                 string[] firstParam = launchArguments.Split("?"[0]);
@@ -153,25 +152,27 @@ namespace Fizzyo
                     }
                 }
             }
-                    //allow api endpoint override
-                    if (arguments.ContainsKey("apiPath"))
-                    {
-                        FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath = arguments["apiPath"];
-                    }
-
-                    if(arguments.ContainsKey("accessToken") && arguments.ContainsKey("userId"))
-                    {
-                        User.Login(arguments["userId"], arguments["accessToken"]);
-                    }
-                    else
-                    {
-                        if (FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
-                        {
-                            SceneManager.LoadScene("Error");
-                            return;
-                        }
+            //allow api endpoint override
+            if (arguments.ContainsKey("apiPath"))
+            {
+                FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath = arguments["apiPath"];
             }
-            
+
+            if (arguments.ContainsKey("accessToken") && arguments.ContainsKey("userId"))
+            {
+                //Login using the Hubs pre-authenticated credentials
+                FizzyoFramework.Instance.User.LoginUsingHub(arguments["userId"], arguments["accessToken"]);
+            }
+            else
+            {
+                if (FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
+                {
+                    Debug.LogError("Launch Arguments -[" + launchArguments +"]");
+                    SceneManager.LoadScene("Error");
+                    return;
+                }
+            }
+
 #endif
             Load();
 
@@ -202,6 +203,7 @@ namespace Fizzyo
             }
             Debug.Log("[FizzyoFramework] Analytics is Null.");
         }
+
         private void OnApplicationFocus(bool focus)
         {
             if (Analytics != null)
@@ -270,10 +272,16 @@ namespace Fizzyo
         /// </returns>
         public bool Load()
         {
-            //Login to server
-            if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically && User!= null && !User.LoggedIn)
+            if (FizzyoConfigurationProfile == null)
             {
-                FizzyoNetworking.loginResult = User.Login();
+                PlayOffline();
+                return false;
+            }
+
+            //Login to server directly without the hub
+            if (FizzyoConfigurationProfile.LoginFromDesktop && FizzyoFramework.Instance.User != null && !FizzyoFramework.Instance.User.LoggedIn)
+            {
+                FizzyoNetworking.loginResult = FizzyoFramework.Instance.User.LoginMSA(FizzyoConfigurationProfile.GameID, FizzyoConfigurationProfile.ApiPath);
 
                 if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
                 {
@@ -281,14 +289,9 @@ namespace Fizzyo
                     return false;
                 }
             }
-            else
-            {
-                PlayOffline();
-                return false;
-            }
 
-            User.Load();
-            Achievements.Load();
+            FizzyoFramework.Instance.User.Load();
+            FizzyoFramework.Instance.Achievements.Load();
 
             return true;
         }
