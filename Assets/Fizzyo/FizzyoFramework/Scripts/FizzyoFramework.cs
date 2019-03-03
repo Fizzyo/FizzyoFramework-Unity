@@ -11,16 +11,27 @@ using UnityEngine.SceneManagement;
 /// </summary>
 namespace Fizzyo
 {
-    public enum FizzyoRequestReturnType { SUCCESS, INCORRECT_TOKEN, FAILED_TO_CONNECT }
+    public enum FizzyoRequestReturnType { SUCCESS, INCORRECT_TOKEN, FAILED_TO_CONNECT, NOT_FOUND, ALREADY_UNLOCKED }
 
     ///Fizzyo
     /// <summary>
     /// Interface class for Fizzyo Framework
     /// </summary>
-
     public class FizzyoFramework : MonoBehaviour
     {
         public FizzyoConfigurationProfile FizzyoConfigurationProfile;
+
+        /// <summary>
+        /// Flag to search for instance the first time Instance property is called.
+        /// Subsequent attempts will generally switch this flag false, unless the instance was destroyed.
+        /// </summary>
+        // ReSharper disable once StaticMemberInGenericType
+        private static bool searchForInstance = true;
+
+        /// <summary>
+        /// Returns whether the instance has been initialized or not.
+        /// </summary>
+        public static bool IsInitialized => _instance != null;
 
         ///<summary>
         ///The singleton instance of the Fizzyo Framework
@@ -31,53 +42,59 @@ namespace Fizzyo
         public FizzyoAchievements Achievements { get; set; }
         public BreathRecogniser Recogniser { get; set; }
         public FizzyoAnalytics Analytics { get; set; }
+        public FizzyoSession Session { get; set; }
 
         private static bool applicationIsQuitting = false;
         public string CallbackScenePath { get; private set; }
 
+        public bool ShowPressure = false;
+
         //Singleton instance
         public static FizzyoFramework Instance
         {
-            //singleton pattern from: http://wiki.unity3d.com/index.php?title=Singleton
             get
             {
-                if (applicationIsQuitting)
+                if (IsInitialized)
                 {
-                    Debug.LogWarning("[Singleton] Instance '" + typeof(FizzyoFramework) +
-                        "' already destroyed on application quit." +
-                        " Won't create again - returning null.");
+                    return _instance;
                 }
 
-                if (_instance == null)
+                if (Application.isPlaying && !searchForInstance)
                 {
-                    _instance = (FizzyoFramework)FindObjectOfType(typeof(FizzyoFramework));
-
-                    if (FindObjectsOfType(typeof(FizzyoFramework)).Length > 1)
-                    {
-                        Debug.LogError("[Singleton] Something went really wrong " +
-                            " - there should never be more than 1 singleton!" +
-                            " Reopening the scene might fix it.");
-                        return _instance;
-                    }
-
-                    if (_instance == null)
-                    {
-                        GameObject singleton = new GameObject();
-                        _instance = singleton.AddComponent<FizzyoFramework>();
-                        singleton.name = "(singleton) " + typeof(FizzyoFramework).ToString();
-
-                        DontDestroyOnLoad(singleton);
-
-                        Debug.Log("[Singleton] An instance of " + typeof(FizzyoFramework) +
-                            " is needed in the scene, so '" + singleton +
-                            "' was created with DontDestroyOnLoad.");
-                    }
-                    else
-                    {
-                        Debug.Log("[Singleton] Using instance already created: " +
-                            _instance.gameObject.name);
-                    }
+                    return null;
                 }
+
+                var objects = FindObjectsOfType<FizzyoFramework>();
+                searchForInstance = false;
+                FizzyoFramework newInstance;
+
+                switch (objects.Length)
+                {
+                    case 0:
+                        newInstance = new GameObject(nameof(FizzyoFramework)).AddComponent<FizzyoFramework>();
+                        break;
+                    case 1:
+                        newInstance = objects[0];
+                        break;
+                    default:
+                        Debug.LogError($"Expected exactly 1 {nameof(FizzyoFramework)} but found {objects.Length}.");
+                        return null;
+                }
+
+                Debug.Assert(newInstance != null);
+
+                if (!applicationIsQuitting)
+                {
+                    // Setup any additional things the instance needs.
+                    newInstance.InitializeInstance();
+                }
+                else
+                {
+                    // Don't do any additional setup because the app is quitting.
+                    _instance = newInstance;
+                }
+
+                Debug.Assert(_instance != null);
 
                 return _instance;
             }
@@ -87,32 +104,35 @@ namespace Fizzyo
         {
             if (_instance != null)
                 return;
+        }
 
-            Debug.Log("[FizzyoFramework] Instantiate.");
+        private void InitializeInstance()
+        {
+            if (IsInitialized) { return; }
+
+            _instance = this;
+
+            if (Application.isPlaying)
+            {
+                DontDestroyOnLoad(_instance.transform.root);
+            }
 
             User = new FizzyoUser();
             Device = new FizzyoDevice();
             Recogniser = new BreathRecogniser();
             Achievements = new FizzyoAchievements();
             Analytics = new FizzyoAnalytics();
-
-
+            Session = new FizzyoSession();
         }
 
         void Start()
         {
-            Debug.Log("[FizzyoFramework] Start.");
-
-            if (_instance != null)
-                return;
-
-            DontDestroyOnLoad(gameObject);
+            if (!IsInitialized) { InitializeInstance(); }
 
 #if ENABLE_WINMD_SUPPORT || UNITY_UWP
             //Pass credentials from hub
             string launchArguments = UnityEngine.WSA.Application.arguments;
             Dictionary<string, string> arguments = new Dictionary<string, string>();
-
             if (!string.IsNullOrEmpty(launchArguments))
             {
                 string[] firstParam = launchArguments.Split("?"[0]);
@@ -132,29 +152,29 @@ namespace Fizzyo
                     }
                 }
             }
-                    //allow api endpoint override
-                    if (arguments.ContainsKey("apiPath"))
-                    {
-                        FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath = arguments["apiPath"];
-                    }
-
-                    if(arguments.ContainsKey("accessToken") && arguments.ContainsKey("userId"))
-                    {
-                        User.Login(arguments["userId"], arguments["accessToken"]);
-                    }
-                    else
-                    {
-                        if (FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
-                        {
-                            SceneManager.LoadScene("Error");
-                            return;
-                        }
+            //allow api endpoint override
+            if (arguments.ContainsKey("apiPath"))
+            {
+                FizzyoFramework.Instance.FizzyoConfigurationProfile.ApiPath = arguments["apiPath"];
             }
-            
+
+            if (arguments.ContainsKey("accessToken") && arguments.ContainsKey("userId"))
+            {
+                //Login using the Hubs pre-authenticated credentials
+                FizzyoFramework.Instance.User.LoginUsingHub(arguments["userId"], arguments["accessToken"]);
+            }
+            else
+            {
+                if (FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
+                {
+                    Debug.LogError("Launch Arguments -[" + launchArguments +"]");
+                    SceneManager.LoadScene("Error");
+                    return;
+                }
+            }
+
 #endif
             Load();
-
-
 
             if (FizzyoConfigurationProfile.UseTestHarnessData)
             {
@@ -163,7 +183,7 @@ namespace Fizzyo
 #endif
             }
 
-            if (FizzyoConfigurationProfile.ShowCalibrateAutomatically && !Device.Calibrated)
+            if (FizzyoConfigurationProfile.ShowCalibrateAutomatically && Device != null && !Device.Calibrated)
             {
                 Scene scene = SceneManager.GetActiveScene();
                 CallbackScenePath = scene.path;
@@ -177,26 +197,30 @@ namespace Fizzyo
             {
                 Analytics.PostOnQuit();
             }
+            if (Session != null)
+            {
+                Session.SavePlayerPrefs();
+            }
             Debug.Log("[FizzyoFramework] Analytics is Null.");
         }
+
         private void OnApplicationFocus(bool focus)
         {
             if (Analytics != null)
             {
                 Analytics.OnApplicationFocus(focus);
             }
-
-
         }
-            private void Update()
+
+        private void Update()
         {
-            //update the breath recoginiser
+            //update the framework
             if (Device != null)
             {
-                Recogniser.AddSample(Time.deltaTime, Device.Pressure());
+                Recogniser?.AddSample(Time.deltaTime, Device.Pressure());
+                Session?.Update();
             }
         }
-
 
         /// <summary>
         /// Loads the user data from the Fizzyo API.
@@ -248,10 +272,16 @@ namespace Fizzyo
         /// </returns>
         public bool Load()
         {
-            //Login to server
-            if (FizzyoConfigurationProfile != null && FizzyoConfigurationProfile.ShowLoginAutomatically && !User.LoggedIn)
+            if (FizzyoConfigurationProfile == null)
             {
-                FizzyoNetworking.loginResult = User.Login();
+                PlayOffline();
+                return false;
+            }
+
+            //Login to server directly without the hub
+            if (FizzyoConfigurationProfile.LoginFromDesktop && FizzyoFramework.Instance.User != null && !FizzyoFramework.Instance.User.LoggedIn)
+            {
+                FizzyoNetworking.loginResult = FizzyoFramework.Instance.User.LoginMSA(FizzyoConfigurationProfile.GameID, FizzyoConfigurationProfile.ApiPath);
 
                 if (FizzyoNetworking.loginResult != LoginReturnType.SUCCESS)
                 {
@@ -259,14 +289,9 @@ namespace Fizzyo
                     return false;
                 }
             }
-            else
-            {
-                PlayOffline();
-                return false;
-            }
 
-            User.Load();
-            Achievements.Load();
+            FizzyoFramework.Instance.User.Load();
+            FizzyoFramework.Instance.Achievements.Load();
 
             return true;
         }
@@ -276,6 +301,28 @@ namespace Fizzyo
         /// </summary>
         private static void PlayOffline()
         {
+        }
+
+        /// <summary>
+        /// Changes the maximum calibrated breath pressure and length to the specified values. Will set the Calibrated boolean to true.  
+        /// </summary>    
+        public void SetCalibrationLimits(float maxPressure = 1, float maxBreath = 1)
+        {
+            //Set the device calibration values
+            if (Device != null)
+            {
+                Device.maxPressureCalibrated = maxPressure;
+                Device.maxBreathCalibrated = maxBreath;
+
+                Device.Calibrated = true;
+            }
+
+            //update the recognizer if in use.
+            if (Recogniser != null)
+            {
+                Recogniser.MaxPressure = maxPressure;
+                Recogniser.MaxBreathLength = maxBreath;
+            }
         }
 
         /// <summary>
@@ -289,7 +336,6 @@ namespace Fizzyo
         private void OnEnable()
         {
             applicationIsQuitting = false;
-
         }
     }
 }

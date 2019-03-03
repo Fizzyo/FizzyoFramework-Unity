@@ -11,7 +11,7 @@ public class CalibrateScene : MonoBehaviour {
 
     public PressureGraph pressureGraph;
     public Image progressEllipse;
-    public float minExhaleTime = 3.0f;
+    public float minExhaleTime = 2.0f;
     public int requiredBreaths = 1;
     public Text countdown;
     float startTime = 0;
@@ -22,7 +22,8 @@ public class CalibrateScene : MonoBehaviour {
 
 
     // Use this for initialization
-    void Start () {
+    void Start ()
+    {
         //Hookup the breath recognizer
         FizzyoFramework.Instance.Recogniser.BreathStarted += OnBreathStarted;
         FizzyoFramework.Instance.Recogniser.BreathComplete += OnBreathEnded;
@@ -93,7 +94,7 @@ public class CalibrateScene : MonoBehaviour {
             }
         }
 
-        FizzyoFramework.Instance.Device.SetCalibrationLimits(maxPressure, maxBreath);
+        FizzyoFramework.Instance.SetCalibrationLimits(maxPressure, maxBreath);
     }
 
     void NextScene()
