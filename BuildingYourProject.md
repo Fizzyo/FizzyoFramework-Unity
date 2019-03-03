@@ -15,7 +15,8 @@ Building your Unity project for the Universal Windows Platform (Windows 10 is fa
 > If the Universal Windows Platform selection is "greyed out" you do not have the Unity option for that platform installed, simply run the Unity setup again and ensure the WSA / Universal Windows platform options are included in your install.
 
 - Ensure the project is set to the Universal Windows Platform (as indicated by the Unity logo located next to the name, if not, select it and click "Switch Platform")
-- Set the build configuration to **master)) (as highlighted in the Image above)
+- Check you have both the "Calibration" and "Error" scenes in your scenes selection.  They should be at the end.
+- Set the build configuration to **master (as highlighted in the Image above)
 - Click on **Build** and Choose / create a folder to export the project to.
 
 ## Building the Windows Store project in Visual Studio
@@ -37,6 +38,43 @@ You also need to do some project customisation to set the artwork and prepare it
 > ![](/Images/ProtocolDeclarationsExample.png)
 
 - Save everything and close the Package.appxmanifest window.
+
+## Unity build bug fix.
+
+Due to an issue with the Unity Build Templates for UWP, a few things (it seems) were left out that prevent Fizzyo games working with the hub.
+
+You can either:
+
+### Update your Build settings in the Build Settings window. Change the Build Type from D3D to **XAML**
+
+> Note this may incur a slight performance drain due to the overhead of XAML rendering. Try it and see if your game still functions as expected.
+
+### Update the final D3D build project and add the proper activation code.
+To do this:
+
+* Build your project as normal
+* Open the built solution in Visual Studio
+* Open the "App.cpp" file in the Solution Explorer
+* Find the function called "void App::OnActivated(CoreApplicationView^ sender, IActivatedEventArgs^ args)"
+* Replace the function with the following code
+
+```cpp
+void App::OnActivated(CoreApplicationView^ sender, IActivatedEventArgs^ args)
+{
+    if (args->Kind == Windows::ApplicationModel::Activation::ActivationKind::Protocol)
+    {
+        Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs^ eventArgs =
+            dynamic_cast<Windows::ApplicationModel::Activation::ProtocolActivatedEventArgs^>(args);
+
+        m_AppCallbacks->SetAppArguments(eventArgs->Uri->AbsoluteUri);
+    }
+
+    m_CoreWindow->Activate();
+}
+```
+
+That will patch your built project and ensure the hub parameters it is sent at launch are passed as expected. 
+(Else you will just see the Framework Error screen)
 
 ## Testing your game
 
