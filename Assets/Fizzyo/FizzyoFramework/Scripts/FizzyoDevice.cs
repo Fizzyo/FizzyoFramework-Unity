@@ -88,7 +88,7 @@ namespace Fizzyo
         {
             if (!useRecordedData)
             { 
-                if (Input.GetKey(KeyCode.Z))
+                if (Input.GetKey(KeyCode.Z) && !FizzyoFramework.Instance.FizzyoConfigurationProfile.RequireLaunchFromHub)
                 {
                     return 1f;
                 }
