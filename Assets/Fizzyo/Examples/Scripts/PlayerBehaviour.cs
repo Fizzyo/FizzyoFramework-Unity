@@ -18,9 +18,11 @@ public class PlayerBehaviour : MonoBehaviour {
     public Text EndSetText;
     public Text EndSessionText;
     public Text PausedText;
+    public Text ButtonText;
     private int totalScore;
     private bool waitingForInput = true;
     private bool paused = false;
+    private bool buttonPressed = false;
 
     // Use this for initialization
     void Start ()
@@ -70,6 +72,12 @@ public class PlayerBehaviour : MonoBehaviour {
             //Device.Pressure() can return negative numbers if the player is breathing in. Clamp the player height to be above 0
             y = Mathf.Max(y, 0);
             transform.position = new Vector3(x, y, 0);
+            if (!buttonPressed && ( FizzyoFramework.Instance.Device.ButtonDown() || Input.GetKeyDown("Space")))
+            {
+                buttonPressed = true;
+                ButtonText.gameObject.SetActive(true);
+            }
+
         }
         else
         {
