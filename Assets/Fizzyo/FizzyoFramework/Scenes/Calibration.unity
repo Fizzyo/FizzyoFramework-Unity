@@ -3063,11 +3063,10 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: c9269b59a41a8834991c2e1d01448a8d, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  pressureGraph: {fileID: 1139829352}
-  progressEllipse: {fileID: 1558039018}
-  minExhaleTime: 2
-  requiredBreaths: 1
-  countdown: {fileID: 903428270}
+  PressureGraph: {fileID: 1139829352}
+  ProgressEllipse: {fileID: 1558039018}
+  Countdown: {fileID: 903428270}
+  DisplayText: {fileID: 693105862}
 --- !u!1 &62768144
 GameObject:
   m_ObjectHideFlags: 0
